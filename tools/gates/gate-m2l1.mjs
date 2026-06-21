@@ -31,8 +31,8 @@ let fail=0; const ok=(n,c,d='')=>{ if(!c){fail++;console.log('  FAIL '+n+(d?'  '
   ok('DoD1 machine->problem->decision before math', /decision/i.test(L.split('## 2.')[0]) && !/\\\[/.test(L.split('## 2.')[0]));
   ok('DoD2 states the decision', /decision you can now make/i.test(L));
   ok('DoD3 learner language', !/\b(artifact|benchmark|competency|pipeline|workcell)\b|\btwin\b|Physical AI/i.test(L));
-  ok('DoD4 rendered math, single-backslash display', L.includes('\\[') );
-  ok('GUARD no double-backslash math', !/\\\\[\[\](]|\\\\(times|frac|text|approx|pi)/.test(L));
+  ok('DoD4 rendered math, dollar-delimited (renders on site + github.com)', L.includes('$$') && /\$[^$]+\$/.test(L));
+  ok('GUARD no legacy backslash-bracket math', !/\\\[|\\\(/.test(L));
   for(const k of ['**Given**','**Find**','**Assumptions**','**Solution**','**Result**','**Engineering Interpretation**'])
     ok('DoD5 worked template '+k, L.includes(k));
   ok('DoD6/7 references reviewed SVG', L.includes('assets/m02-l1-cylinder-anatomy.svg'));

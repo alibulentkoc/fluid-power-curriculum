@@ -25,13 +25,13 @@ That splits the power unit's two questions cleanly. **Flow** decides how fast th
 
 ## 3. The Idea You Now Need
 
-To move the piston at a speed \( v \), fluid must arrive fast enough to fill the area it sweeps. So the flow the pump must deliver is the piston area times the speed:
+To move the piston at a speed $v$, fluid must arrive fast enough to fill the area it sweeps. So the flow the pump must deliver is the piston area times the speed:
 
-\[ Q = A \times v \]
+$$ Q = A \times v $$
 
 And the motor must supply the hydraulic power, which is the pressure the load demands times that flow — the same relationship you met in Module 01:
 
-\[ P = p \times Q \]
+$$ P = p \times Q $$
 
 These two set the whole power unit. Flow sizes the pump; pressure times flow sizes the motor; and the reservoir is sized to hold roughly two to three times the pump's per-minute flow, so it never runs dry or overheats.
 
@@ -51,9 +51,9 @@ Two machines, same pump idea. A log splitter pushes slowly with enormous force: 
 
 **Given**
 
-- Piston area (50 mm bore, from Module 01) \( A = 1.9635\times10^{-3}\ \text{m}^{2} \)
-- Target lift speed \( v = 85\ \text{mm/s} = 0.085\ \text{m/s} \)
-- Pressure the load demands \( p = 100\ \text{bar} = 1\times10^{7}\ \text{Pa} \)
+- Piston area (50 mm bore, from Module 01) $A = 1.9635\times10^{-3}\ \text{m}^{2}$
+- Target lift speed $v = 85\ \text{mm/s} = 0.085\ \text{m/s}$
+- Pressure the load demands $p = 100\ \text{bar} = 1\times10^{7}\ \text{Pa}$
 
 **Find** — the pump flow needed, and the motor power it demands.
 
@@ -64,15 +64,15 @@ Two machines, same pump idea. A log splitter pushes slowly with enormous force: 
 
 **Solution**
 
-\[ Q = A \times v = (1.9635\times10^{-3})(0.085) = 1.669\times10^{-4}\ \text{m}^{3}/\text{s} \]
+$$ Q = A \times v = (1.9635\times10^{-3})(0.085) = 1.669\times10^{-4}\ \text{m}^{3}/\text{s} $$
 
-\[ Q = 1.669\times10^{-4} \times 60000 = 10.0\ \text{L/min} \]
+$$ Q = 1.669\times10^{-4} \times 60000 = 10.0\ \text{L/min} $$
 
-\[ P = p \times Q = (1\times10^{7})(1.669\times10^{-4}) = 1669\ \text{W} \approx 1.67\ \text{kW} \]
+$$ P = p \times Q = (1\times10^{7})(1.669\times10^{-4}) = 1669\ \text{W} \approx 1.67\ \text{kW} $$
 
 **Result**
 
-\[ Q \approx 10\ \text{L/min}, \qquad P \approx 1.67\ \text{kW} \]
+$$ Q \approx 10\ \text{L/min}, \qquad P \approx 1.67\ \text{kW} $$
 
 **Engineering Interpretation** — A pump delivering about **10 L/min** lifts the platform at 85 mm/s, so a 600 mm lift takes roughly **7 seconds**. The motor must supply about **1.67 kW** to push that flow against the load. The reservoir is then sized at two to three times the per-minute flow — roughly **20–30 L** — so the pump always has fluid to draw and the oil stays cool.
 
@@ -131,8 +131,8 @@ You want the platform to lift in half the time. Explain what must change in the 
 **The decision you can now make:** size a pump's flow to a target lift speed, and find the motor power that flow demands.
 
 - A pump creates **flow**, not pressure; the **load** sets the pressure, and the relief valve caps it.
-- Flow sets speed: \( Q = A \times v \) — about 10 L/min lifts the platform at 85 mm/s.
-- Motor power is \( P = p \times Q \) — about 1.67 kW for the platform.
+- Flow sets speed: $Q = A \times v$ — about 10 L/min lifts the platform at 85 mm/s.
+- Motor power is $P = p \times Q$ — about 1.67 kW for the platform.
 - The reservoir holds two to three times the per-minute flow. Lesson 03 sizes the **lines, fittings, and ports** that must carry this flow without choking it.
 
 ## AI Learning Companion

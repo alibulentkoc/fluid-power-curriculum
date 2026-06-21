@@ -27,7 +27,7 @@ How far the rod can travel is the **stroke**. To return, the cylinder either let
 
 Two component choices follow. The **stroke** must at least equal the lift height you need. And the cap-side **swept volume** — the fluid the pump must push in for a full extension — is the piston area times the stroke:
 
-\[ V = A \times \text{stroke} = \frac{\pi}{4}d^{2} \times \text{stroke} \]
+$$ V = A \times \text{stroke} = \frac{\pi}{4}d^{2} \times \text{stroke} $$
 
 That volume matters twice: it tells the power unit (next lesson) how much fluid to deliver, and combined with flow it sets how long the lift takes. The **acting type** is the second choice — single-acting to save cost when gravity can do the returning, double-acting when the load must be lowered under control or held in place.
 
@@ -47,8 +47,8 @@ A bottle jack is single-acting: pump fluid in to raise the car, crack a valve an
 
 **Given**
 
-- Bore (from Module 01) \( d = 50\ \text{mm} = 0.050\ \text{m} \)
-- Required lift height, so stroke \( = 600\ \text{mm} = 0.600\ \text{m} \)
+- Bore (from Module 01) $d = 50\ \text{mm} = 0.050\ \text{m}$
+- Required lift height, so stroke $= 600\ \text{mm} = 0.600\ \text{m}$
 
 **Find** — the cap-side swept volume, the fluid needed for one full lift.
 
@@ -59,13 +59,13 @@ A bottle jack is single-acting: pump fluid in to raise the car, crack a valve an
 
 **Solution**
 
-\[ A = \frac{\pi}{4}d^{2} = \frac{\pi}{4}(0.050)^{2} = 1.9635\times10^{-3}\ \text{m}^{2} \]
+$$ A = \frac{\pi}{4}d^{2} = \frac{\pi}{4}(0.050)^{2} = 1.9635\times10^{-3}\ \text{m}^{2} $$
 
-\[ V = A \times \text{stroke} = (1.9635\times10^{-3})(0.600) = 1.178\times10^{-3}\ \text{m}^{3} \]
+$$ V = A \times \text{stroke} = (1.9635\times10^{-3})(0.600) = 1.178\times10^{-3}\ \text{m}^{3} $$
 
 **Result**
 
-\[ V \approx 1.18\ \text{L} \]
+$$ V \approx 1.18\ \text{L} $$
 
 **Engineering Interpretation** — A full lift needs about **1.18 litres** of fluid on the cap side. That is the demand the power unit must meet next lesson, and at the flow from Module 01 it fixes the lift time. Because the platform must lower under control and hold ±1 mm, it needs the rod-side line too — a **double-acting** cylinder.
 
@@ -121,7 +121,7 @@ The platform could be built single-acting (cheaper, fewer hoses, gravity lowers 
 **The decision you can now make:** specify a cylinder's stroke for a required lift, and choose single- or double-acting based on how the load must return and be held.
 
 - A cylinder is a piston in a barrel; cap-side fluid extends the rod, rod-side fluid retracts it.
-- **Stroke** equals the lift height; cap-side **swept volume** is \( V = A \times \text{stroke} \) — about 1.18 L for the platform.
+- **Stroke** equals the lift height; cap-side **swept volume** is $V = A \times \text{stroke}$ — about 1.18 L for the platform.
 - **Single-acting** returns on the load's weight (simple, cheap); **double-acting** is powered both ways and can hold position.
 - The platform needs a **double-acting** cylinder for controlled lowering and ±1 mm holding. Lesson 02 designs the **power unit** that must deliver this volume and flow.
 
