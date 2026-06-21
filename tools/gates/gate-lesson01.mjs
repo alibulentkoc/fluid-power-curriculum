@@ -54,6 +54,8 @@ let fail=0; const ok=(n,c,d='')=>{ if(!c){fail++;console.log('  FAIL '+n+(d?'  '
   const L=readFileSync(B+'/01_why_machine_needs_power.md','utf8');
   ok('breadcrumb present', L.includes('You are here'));
   ok('references the SVG asset', L.includes('assets/m05-l1-demand-handoff.svg'));
+  ok('DoD4 rendered math, dollar-delimited (renders on site + github.com)', L.includes('$$') && /\$[^$]+\$/.test(L));
+  ok('GUARD no legacy backslash-bracket math', !/\\\[|\\\(/.test(L));
   ok('has a mermaid diagram', L.includes('```mermaid'));
   ok('no ascii-art box drawing', !/[┌┐└┘─│►▼]/.test(L));
   ok('links the interactive demo', L.includes('demos/lesson01_flow_and_power_demand.html'));

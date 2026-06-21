@@ -30,17 +30,17 @@ A power source must supply **both at once**. A pump that delivers enormous flow 
 
 Two relationships carry this entire lesson.
 
-**Flow demand from velocity.** A cylinder is a moving piston of bore area \(A_\text{bore}\). To extend the rod at velocity \(v\), you must fill the volume it vacates at exactly that rate:
+**Flow demand from velocity.** A cylinder is a moving piston of bore area $A_\text{bore}$. To extend the rod at velocity $v$, you must fill the volume it vacates at exactly that rate:
 
-\[ Q = A_\text{bore}\, v, \qquad A_\text{bore} = \frac{\pi}{4} d_\text{bore}^2 \]
+$$ Q = A_\text{bore}\, v, \qquad A_\text{bore} = \frac{\pi}{4} d_\text{bore}^2 $$
 
-Flow is volume per unit time (\(\text{m}^3/\text{s}\)) — just geometry: bore area times speed.
+Flow is volume per unit time ($\text{m}^3/\text{s}$) — just geometry: bore area times speed.
 
 **Hydraulic power from pressure and flow.** The power carried by the fluid is the pressure it works against times the rate it is delivered:
 
-\[ P_\text{hyd} = p_\text{supply}\, Q \]
+$$ P_\text{hyd} = p_\text{supply}\, Q $$
 
-With \(p\) in pascals and \(Q\) in \(\text{m}^3/\text{s}\), \(P_\text{hyd}\) is in watts. That is the power the HPU must put *into* the fluid; because no pump or motor is perfect, the prime mover supplies somewhat more (Lesson 03).
+With $p$ in pascals and $Q$ in $\text{m}^3/\text{s}$, $P_\text{hyd}$ is in watts. That is the power the HPU must put *into* the fluid; because no pump or motor is perfect, the prime mover supplies somewhat more (Lesson 03).
 
 ## 4. Visual Explanation
 
@@ -65,17 +65,21 @@ An engineer who skips this lesson reaches for a pump catalogue and picks somethi
 
 ## 6. Worked Example
 
-**Given** (from the twin and canonical `wp-1.1.0`): \(d_\text{bore} = 0.050\ \text{m}\), \(v = 0.08453\ \text{m/s}\), \(p_\text{supply} = 10{,}000{,}000\ \text{Pa}\) (100 bar).
+**Given** (from the twin and canonical `wp-1.1.0`): $d_\text{bore} = 0.050\ \text{m}$, $v = 0.08453\ \text{m/s}$, $p_\text{supply} = 10{,}000{,}000\ \text{Pa}$ (100 bar).
 
 **Step 1 — bore area.**
-\[ A_\text{bore} = \frac{\pi}{4}(0.050)^2 = 1.9635\times10^{-3}\ \text{m}^2 \]
+
+$$ A_\text{bore} = \frac{\pi}{4}(0.050)^2 = 1.9635\times10^{-3}\ \text{m}^2 $$
 
 **Step 2 — flow demand.**
-\[ Q = A_\text{bore}\, v = 1.9635\times10^{-3}\times 0.08453 = 1.6598\times10^{-4}\ \text{m}^3/\text{s} \]
-Converting: \(1.6598\times10^{-4}\ \text{m}^3/\text{s} \times 1000 \times 60 = \mathbf{9.96\ L/min}\).
+
+$$ Q = A_\text{bore}\, v = 1.9635\times10^{-3}\times 0.08453 = 1.6598\times10^{-4}\ \text{m}^3/\text{s} $$
+
+Converting: $1.6598\times10^{-4}\ \text{m}^3/\text{s} \times 1000 \times 60 = \mathbf{9.96\ L/min}$.
 
 **Step 3 — hydraulic power.**
-\[ P_\text{hyd} = p_\text{supply}\, Q = 10^{7}\times 1.6598\times10^{-4} = 1659.8\ \text{W} \approx \mathbf{1.66\ kW} \]
+
+$$ P_\text{hyd} = p_\text{supply}\, Q = 10^{7}\times 1.6598\times10^{-4} = 1659.8\ \text{W} \approx \mathbf{1.66\ kW} $$
 
 So the machine demands roughly **10 L/min at 100 bar**, costing **1.66 kW** of fluid power. These are the exact figures the `power_unit` artifact carries; this lesson establishes where the first two come from. (Prime-mover power, ≈ 1.95 kW once efficiency is included, is Lesson 03.)
 
@@ -83,7 +87,7 @@ So the machine demands roughly **10 L/min at 100 bar**, costing **1.66 kW** of f
 
 [Open the demo in a new tab ↗](demos/lesson01_flow_and_power_demand.html)
 
-Drag the **extend velocity** and **bore** and watch the flow the pump must deliver — and the hydraulic power it costs — update live through \(Q = A v\) and \(P = pQ\). Confirm the canonical workcell figures (9.96 L/min at 100 bar = 1.66 kW), then predict before you drag: if you double the velocity, what happens to flow, and to power? The demo is the worked example made movable.
+Drag the **extend velocity** and **bore** and watch the flow the pump must deliver — and the hydraulic power it costs — update live through $Q = A v$ and $P = pQ$. Confirm the canonical workcell figures (9.96 L/min at 100 bar = 1.66 kW), then predict before you drag: if you double the velocity, what happens to flow, and to power? The demo is the worked example made movable.
 
 ## 8. Coding Exercise
 
@@ -134,7 +138,7 @@ The positioning benchmark (Task 1) requires the tool to **settle within a define
 
 - A prediction is not a power source. M05 exists to *supply* the motion M04 predicted.
 - The machine's demand is two numbers: a **flow** (set by velocity and bore) and a **pressure** (set by the load). Their product is **hydraulic power**.
-- \(Q = A_\text{bore}\,v\) and \(P_\text{hyd} = p_\text{supply}\,Q\) carry the whole lesson.
+- $Q = A_\text{bore}\,v$ and $P_\text{hyd} = p_\text{supply}\,Q$ carry the whole lesson.
 - For the canonical workcell at `wp-1.1.0`: ≈ **9.96 L/min at 100 bar = 1.66 kW** of fluid-power demand.
 - These numbers are *read from the twin*, not invented — which is what makes the curriculum a build rather than a guess. Lesson 02 uses this demand to choose the pump.
 
