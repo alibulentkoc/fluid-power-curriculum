@@ -30,12 +30,12 @@ let fail=0; const ok=(n,c,d='')=>{ if(!c){fail++;console.log('  FAIL '+n+(d?'  '
 // LESSON — the 12 Definition of Done items
 {
   const L=readFileSync(B+'/02_how_energy_is_transmitted.md','utf8');
-  // GUARD: math must use single-backslash delimiters (double-backslash falls through arithmatex and renders raw)
-  ok('no double-backslash math delimiters (renders raw)', !/\\\\[\[\](]|\\\\(times|frac|text|approx|pi)/.test(L), 'found \\\\[ or \\\\times');
+  // GUARD: math must use dollar delimiters ($ inline, $$ display) — renders on the site and on github.com
+  ok('GUARD no legacy backslash-bracket math', !/\\\[|\\\(/.test(L));
   ok('DoD1 opens machine->problem->decision before math', /decision/i.test(L.split('## 2.')[0]) && !/\\\[/.test(L.split('## 2.')[0]) && /platform|power unit/i.test(L.split('## 2.')[0]));
   ok('DoD2 states the engineering decision', /decision you can now make/i.test(L));
   ok('DoD3 learner language (no internal vocab)', !/\b(artifact|benchmark|competency|pipeline|workcell)\b|\btwin\b|Physical AI/i.test(L));
-  ok('DoD4 rendered math, no raw brackets', L.includes('\\[') && !/\[\s*P\s*=\s*p\s*[x×]\s*Q\s*\]/.test(L));
+  ok('DoD4 rendered math, dollar-delimited (renders on site + github.com)', L.includes('$$') && !/\[\s*P\s*=\s*p\s*[x×]\s*Q\s*\]/.test(L));
   for(const k of ['**Given**','**Find**','**Assumptions**','**Solution**','**Result**','**Engineering Interpretation**'])
     ok('DoD5 worked template '+k, L.includes(k));
   ok('DoD6/7 references reviewed SVG', L.includes('assets/m01-l2-energy-path.svg'));

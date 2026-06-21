@@ -29,9 +29,9 @@ That is why a hose-connected cylinder can sit exactly where you need the force, 
 
 Only now — once you feel *why* you need it — is the relationship worth writing down. Force, pressure, and area are tied together by one simple statement:
 
-\[ F = p \times A \]
+$$ F = p \times A $$
 
-A pressure \(p\) pushing on a piston of area \(A\) produces a force \(F\). Read it as a decision tool, not a fact to memorize: if you need more force, you can raise the pressure **or** widen the piston. A fluid lets you do both in a compact cylinder, which is precisely what a motor-and-gearbox cannot do in your shoebox.
+A pressure $p$ pushing on a piston of area $A$ produces a force $F$. Read it as a decision tool, not a fact to memorize: if you need more force, you can raise the pressure **or** widen the piston. A fluid lets you do both in a compact cylinder, which is precisely what a motor-and-gearbox cannot do in your shoebox.
 
 This is the seed of every later calculation in the course. For now, you only need to believe it does what your intuition already suggested.
 
@@ -59,8 +59,8 @@ Think about a hydraulic excavator. The engine and pump live in the cab; the real
 
 **Given**
 
-- Bore diameter \( d = 50\ \text{mm} = 0.050\ \text{m} \)
-- Working pressure \( p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa} \)
+- Bore diameter $d = 50\ \text{mm} = 0.050\ \text{m}$
+- Working pressure $p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa}$
 
 **Find** — the lifting force the cylinder can produce.
 
@@ -68,21 +68,21 @@ Think about a hydraulic excavator. The engine and pump live in the cab; the real
 
 - The full working pressure acts on the whole piston face.
 - The cylinder is holding or lifting steadily (not accelerating); friction and seal drag are neglected.
-- Standard gravity \( g = 9.81\ \text{m/s}^{2} \) is used to express the force as an equivalent mass.
+- Standard gravity $g = 9.81\ \text{m/s}^{2}$ is used to express the force as an equivalent mass.
 
 **Solution**
 
 First the piston area:
 
-\[ A = \frac{\pi}{4}\,d^{2} = \frac{\pi}{4}(0.050)^{2} = 1.9635\times10^{-3}\ \text{m}^{2} \]
+$$ A = \frac{\pi}{4}\,d^{2} = \frac{\pi}{4}(0.050)^{2} = 1.9635\times10^{-3}\ \text{m}^{2} $$
 
 Then the force that pressure makes on that area:
 
-\[ F = p\,A = (10{,}000{,}000)(1.9635\times10^{-3}) = 19{,}635\ \text{N} \]
+$$ F = p\,A = (10{,}000{,}000)(1.9635\times10^{-3}) = 19{,}635\ \text{N} $$
 
 **Result**
 
-\[ F \approx 19.6\ \text{kN} \approx 2{,}000\ \text{kg of lift — two tonnes.} \]
+$$ F \approx 19.6\ \text{kN} \approx 2{,}000\ \text{kg of lift — two tonnes.} $$
 
 **Engineering interpretation** — A piston the width of a coffee cup, fed by pressurized fluid, holds two tonnes. That single number is the whole argument for fluid power: a compact part, a modest pressure, and an enormous, steady force exactly where the machine needs it.
 
@@ -141,7 +141,7 @@ A colleague proposes replacing your hydraulic lift with an electric motor and a 
 
 - You are building a machine that must make a **large, steady force in a small space** — the reason fluid power exists.
 - Pressurized fluid carries effort through a hose and concentrates it at a piston: **compact in, enormous out.**
-- One relationship captures it: \(F = p \times A\). More force means more pressure or more area.
+- One relationship captures it: $F = p \times A$. More force means more pressure or more area.
 - A 50 mm cylinder at 100 bar holds about **two tonnes** — the argument for fluid power in a single number.
 - Keep your machine sketch: a power unit, a line, a cylinder, a load. Lesson 02 follows the energy along that line.
 

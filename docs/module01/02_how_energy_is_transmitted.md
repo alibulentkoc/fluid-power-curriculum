@@ -27,7 +27,7 @@ Two things ride along together. **Pressure** is *how hard* the fluid pushes — 
 
 Now that you can feel *why* it matters, the relationship is worth naming. The rate at which energy reaches the load — its **power** — is pressure times flow:
 
-\[ P = p \times Q \]
+$$ P = p \times Q $$
 
 Pressure (how hard) multiplied by flow (how fast) gives power (energy per second). Read it as a decision tool: a fast, gentle motion and a slow, forceful one can demand the *same* power. The line must carry whatever combination the job needs. (We will measure flow precisely, and account for the energy lost to friction along the way, in the Fluid Fundamentals module — here we only need the idea.)
 
@@ -54,8 +54,8 @@ A hydraulic excavator makes this vivid. Its engine and pump sit in the cab, but 
 
 **Given**
 
-- Line pressure \( p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa} \)
-- Flow the pump delivers \( Q = 9.96\ \text{L/min} = 1.66\times10^{-4}\ \text{m}^{3}/\text{s} \)
+- Line pressure $p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa}$
+- Flow the pump delivers $Q = 9.96\ \text{L/min} = 1.66\times10^{-4}\ \text{m}^{3}/\text{s}$
 
 **Find** — the power being delivered to the load through the line.
 
@@ -66,11 +66,11 @@ A hydraulic excavator makes this vivid. Its engine and pump sit in the cab, but 
 
 **Solution**
 
-\[ P = p \times Q = (10{,}000{,}000)(1.66\times10^{-4}) \]
+$$ P = p \times Q = (10{,}000{,}000)(1.66\times10^{-4}) $$
 
 **Result**
 
-\[ P \approx 1{,}660\ \text{W} \approx 1.66\ \text{kW} \]
+$$ P \approx 1{,}660\ \text{W} \approx 1.66\ \text{kW} $$
 
 **Engineering Interpretation** — About 1.66 kW of power is flowing down the hose to the load — the rate at which the fluid delivers energy. That number is what the power unit must be built to supply, and it is the figure you will size a motor and pump against later. Raise the flow and the platform climbs faster, but the power rises with it; the line and the power unit must be ready for whatever the job demands.
 
@@ -124,7 +124,7 @@ Your platform's power unit could sit right beside the cylinder, or ten metres aw
 **The decision you can now make:** read a machine's delivered power as pressure × flow, and decide what its line must carry — and therefore where the power unit can sit relative to the work.
 
 - Energy travels from the power unit to the load as **pressurized, flowing fluid** — no mechanical linkage along the way.
-- **Pressure** is how hard; **flow** is how fast; their product, \( P = p \times Q \), is the power delivered.
+- **Pressure** is how hard; **flow** is how fast; their product, $P = p \times Q$, is the power delivered.
 - For the lift platform's line at 100 bar and ~10 L/min, about **1.66 kW** reaches the load.
 - Because fluid carries the energy, the power unit can sit on the floor while the work happens up at the cylinder. Lesson 03 looks closer at how the cylinder multiplies that into force.
 

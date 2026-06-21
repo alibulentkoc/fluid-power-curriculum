@@ -27,13 +27,13 @@ That is the multiplication: you do not need more pressure to lift more, you need
 
 The relationship is the one from Lesson 01, now used as a sizing tool:
 
-\[ F = p \times A \]
+$$ F = p \times A $$
 
 Force equals pressure times piston area. Turn it around to **size the bore** for a load you must lift. First the area you need, then the diameter that gives it:
 
-\[ A = \frac{F}{p} \qquad d = \sqrt{\frac{4A}{\pi}} \]
+$$ A = \frac{F}{p} \qquad d = \sqrt{\frac{4A}{\pi}} $$
 
-Read it as a decision: fix the load \(F\) and the pressure \(p\) you can supply, and these tell you the smallest bore that will do the job.
+Read it as a decision: fix the load $F$ and the pressure $p$ you can supply, and these tell you the smallest bore that will do the job.
 
 ## 4. Visual Explanation
 
@@ -58,10 +58,10 @@ A hydraulic press shows the multiplication at its limit: a large-bore cylinder t
 
 **Given**
 
-- Load to lift \( F = 2\ \text{tonnes} = 19{,}620\ \text{N} \)
-- Available pressure \( p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa} \)
+- Load to lift $F = 2\ \text{tonnes} = 19{,}620\ \text{N}$
+- Available pressure $p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa}$
 
-**Find** — the smallest cylinder bore \( d \) that can lift the load.
+**Find** — the smallest cylinder bore $d$ that can lift the load.
 
 **Assumptions**
 
@@ -72,15 +72,15 @@ A hydraulic press shows the multiplication at its limit: a large-bore cylinder t
 
 The piston area the force demands:
 
-\[ A = \frac{F}{p} = \frac{19{,}620}{10{,}000{,}000} = 1.962\times10^{-3}\ \text{m}^{2} \]
+$$ A = \frac{F}{p} = \frac{19{,}620}{10{,}000{,}000} = 1.962\times10^{-3}\ \text{m}^{2} $$
 
 The bore diameter that gives that area:
 
-\[ d = \sqrt{\frac{4A}{\pi}} = \sqrt{\frac{4(1.962\times10^{-3})}{\pi}} \]
+$$ d = \sqrt{\frac{4A}{\pi}} = \sqrt{\frac{4(1.962\times10^{-3})}{\pi}} $$
 
 **Result**
 
-\[ d \approx 0.050\ \text{m} = 50\ \text{mm} \]
+$$ d \approx 0.050\ \text{m} = 50\ \text{mm} $$
 
 **Engineering Interpretation** — A **50 mm bore** is the smallest cylinder that lifts two tonnes at 100 bar — which is exactly the bore the platform uses. Choose anything smaller and it cannot raise the load; choose larger and you carry needless weight and cost, and the platform moves more slowly for the same flow. This single calculation is why the machine is built the way it is.
 
@@ -135,8 +135,8 @@ You could lift the same two tonnes with a smaller bore by running a higher press
 
 **The decision you can now make:** size a cylinder bore to lift a required load at a given pressure — and judge the trade between a small high-pressure cylinder and a wide low-pressure one.
 
-- A cylinder multiplies pressure into force through its area: \( F = p \times A \).
-- To size it, invert the relationship: \( A = F/p \), then \( d = \sqrt{4A/\pi} \).
+- A cylinder multiplies pressure into force through its area: $F = p \times A$.
+- To size it, invert the relationship: $A = F/p$, then $d = \sqrt{4A/\pi}$.
 - Lifting two tonnes at 100 bar needs about a **50 mm bore** — the platform's actual cylinder.
 - More area means more force but, for the same flow, less speed. Lesson 04 steps back to see this same physics at work in real industrial machines.
 

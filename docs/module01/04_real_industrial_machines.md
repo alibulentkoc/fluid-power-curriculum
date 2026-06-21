@@ -27,11 +27,11 @@ Only the actuator really varies. If the job is straight-line motion — lifting,
 
 You already have the cylinder's law from Lesson 03:
 
-\[ F = p \times A \]
+$$ F = p \times A $$
 
-A motor has the matching law for rotation. Its turning effort — torque — comes from the pressure and how much fluid it swallows per turn (its displacement \(D\)):
+A motor has the matching law for rotation. Its turning effort — torque — comes from the pressure and how much fluid it swallows per turn (its displacement $D$):
 
-\[ T = \frac{p \times D}{2\pi} \]
+$$ T = \frac{p \times D}{2\pi} $$
 
 Read the pair together: a cylinder converts pressure into **force** through its area; a motor converts the same pressure into **torque** through its displacement. Choosing between them is the first thing you decide when you meet a new machine. (Both actuators are studied in depth in Module 04 — here you only need to tell them apart.)
 
@@ -60,8 +60,8 @@ Trace four familiar machines and the pattern appears every time. The **excavator
 
 **Given**
 
-- A hydraulic motor with displacement \( D = 50\ \text{cm}^{3}/\text{rev} = 50\times10^{-6}\ \text{m}^{3}/\text{rev} \)
-- The same supply pressure as the platform, \( p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa} \)
+- A hydraulic motor with displacement $D = 50\ \text{cm}^{3}/\text{rev} = 50\times10^{-6}\ \text{m}^{3}/\text{rev}$
+- The same supply pressure as the platform, $p = 100\ \text{bar} = 10{,}000{,}000\ \text{Pa}$
 
 **Find** — the torque the motor produces to turn a winch drum.
 
@@ -72,11 +72,11 @@ Trace four familiar machines and the pattern appears every time. The **excavator
 
 **Solution**
 
-\[ T = \frac{p \times D}{2\pi} = \frac{(10{,}000{,}000)(50\times10^{-6})}{2\pi} \]
+$$ T = \frac{p \times D}{2\pi} = \frac{(10{,}000{,}000)(50\times10^{-6})}{2\pi} $$
 
 **Result**
 
-\[ T \approx 79.6\ \text{N}\,\text{m} \]
+$$ T \approx 79.6\ \text{N}\,\text{m} $$
 
 **Engineering Interpretation** — The very same 100 bar that drives the platform's cylinder produces about **80 N·m of torque** in this motor — enough to turn a winch drum or a conveyor. Nothing about the power unit changed; only the actuator did. That is the whole lesson: pick the cylinder when the job is a straight push, the motor when the job is a turn.
 
@@ -131,7 +131,7 @@ Pick a hydraulic machine you have seen in real life — a garbage truck's packer
 **The decision you can now make:** read any hydraulic machine as power unit → line → actuator → load, and choose a cylinder for linear jobs or a motor for rotary ones.
 
 - Every fluid-power machine shares four parts: **power unit, line, actuator, load**.
-- Only the actuator changes: a **cylinder** gives linear force (\(F = p \times A\)); a **motor** gives rotary torque (\(T = p \times D / 2\pi\)).
+- Only the actuator changes: a **cylinder** gives linear force ($F = p \times A$); a **motor** gives rotary torque ($T = p \times D / 2\pi$).
 - The lift platform is the cylinder case; a winch or conveyor is the motor case — same power unit, same pressure.
 - You can now sketch the System Concept Diagram for any machine. **That completes Module 01** — Module 02 opens up the parts themselves, beginning to design the platform component by component.
 

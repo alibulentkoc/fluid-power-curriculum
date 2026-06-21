@@ -32,10 +32,10 @@ let fail=0; const ok=(n,c,d='')=>{ if(!c){fail++;console.log('  FAIL '+n+(d?'  '
 // LESSON — formulas, worked example, vocabulary
 {
   const L=readFileSync(B+'/01_why_fluid_power_exists.md','utf8');
-  // GUARD: math must use single-backslash delimiters (double-backslash falls through arithmatex and renders raw)
-  ok('no double-backslash math delimiters (renders raw)', !/\\\\[\[\](]|\\\\(times|frac|text|approx|pi)/.test(L), 'found \\\\[ or \\\\times');
+  // GUARD: math must use dollar delimiters ($ inline, $$ display) — renders on the site and on github.com
+  ok('GUARD no legacy backslash-bracket math', !/\\\[|\\\(/.test(L));
   ok('no raw-text bracket equations like [ F = p x A ]', !/\[\s*F\s*=\s*p\s*[x×]\s*A\s*\]/.test(L));
-  ok('uses LaTeX display math', L.includes('\\[') && L.includes('\\frac{\\pi}{4}'));
+  ok('uses dollar display math', L.includes('$$') && L.includes('\\frac{\\pi}{4}'));
   for(const k of ['**Given**','**Find**','**Assumptions**','**Solution**','**Result**','**Engineering interpretation**'])
     ok('worked template has '+k, L.includes(k));
   ok('states the engineering decision (B1)', /decision you can now make/i.test(L));
