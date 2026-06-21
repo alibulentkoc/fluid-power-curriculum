@@ -1,0 +1,66 @@
+<svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="A precision hydraulic lift platform: a power unit feeds a vertical cylinder that drives a guided platform upward between two rails, lifting a load to a commanded height read on a position scale to within plus or minus one millimetre.">
+  <!-- Visual Standard v1.0 tiers: L1 26/700 ink | L2 15/700 teal caps | L3 13/600 mono steel | L4 12/400 slate | callout 20/700 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B3A55"/><stop offset="1" stop-color="#0C2235"/></linearGradient>
+    <linearGradient id="fluid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FB6AE"/><stop offset="1" stop-color="#0E7E8C"/></linearGradient>
+    <linearGradient id="load" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4A93C"/><stop offset="1" stop-color="#DD841A"/></linearGradient>
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="#0C2235" flood-opacity="0.16"/></filter>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="600" rx="20" fill="url(#bg)"/>
+  <text x="44" y="50" font-size="26" font-weight="700" fill="#0C2235">The Precision Hydraulic Lift Platform</text>
+  <text x="44" y="80" font-size="15" font-weight="400" fill="#586876">Raises a load to a commanded height &#8212; and holds it to within &#177;1&#160;mm.</text>
+
+  <!-- frame: baseplate + two guide rails -->
+  <rect x="250" y="512" width="430" height="22" rx="4" fill="url(#steel)"/>
+  <rect x="262" y="150" width="16" height="362" rx="4" fill="#D7E0E8" stroke="#BFCBD6"/>
+  <rect x="652" y="150" width="16" height="362" rx="4" fill="#D7E0E8" stroke="#BFCBD6"/>
+  <text x="240" y="360" font-size="12" font-weight="400" fill="#586876" transform="rotate(-90 240 360)">guide rail</text>
+
+  <!-- cylinder (vertical) in the base, fluid in cap chamber, piston, rod -->
+  <rect x="430" y="360" width="72" height="152" rx="8" fill="#FFFFFF" stroke="#1B3A55" stroke-width="3"/>
+  <rect x="436" y="440" width="60" height="66" rx="4" fill="url(#fluid)" opacity="0.9"/>
+  <rect x="436" y="424" width="60" height="16" rx="3" fill="#1B3A55"/>
+  <rect x="456" y="312" width="20" height="114" fill="#5B6B79"/>
+  <text x="512" y="430" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">CYLINDER</text>
+
+  <!-- platform (carriage) on the rod, spanning the rails -->
+  <rect x="270" y="300" width="392" height="22" rx="5" fill="url(#steel)"/>
+  <text x="270" y="290" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">PLATFORM</text>
+
+  <!-- load on the platform -->
+  <g filter="url(#soft)"><rect x="396" y="226" width="140" height="62" rx="8" fill="url(#load)"/></g>
+  <text x="466" y="265" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">2 t</text>
+
+  <!-- commanded-height target + precision band on the right rail -->
+  <line x1="668" y1="300" x2="724" y2="300" stroke="#DD841A" stroke-width="2.5" stroke-dasharray="5 4"/>
+  <rect x="676" y="294" width="58" height="12" rx="3" fill="#FEF4E6" stroke="#F4C98A"/>
+  <text x="705" y="287" font-size="13" font-weight="600" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">&#177;1 mm</text>
+  <text x="705" y="328" font-size="12" font-weight="400" fill="#586876" text-anchor="middle">commanded height</text>
+
+  <!-- POWER UNIT (left) -->
+  <g filter="url(#soft)"><rect x="44" y="372" width="170" height="130" rx="14" fill="#FFFFFF" stroke="#D7E0E8"/></g>
+  <text x="62" y="402" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">POWER UNIT</text>
+  <circle cx="92" cy="448" r="24" fill="url(#steel)"/>
+  <text x="92" y="454" font-size="15" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">M</text>
+  <text x="92" y="490" font-size="12" font-weight="400" fill="#586876" text-anchor="middle">motor + pump</text>
+  <rect x="138" y="430" width="58" height="38" rx="5" fill="#F1F6F9" stroke="#CBD7E0"/>
+  <path d="M146,450 q14,-9 29,0 t29,0" fill="none" stroke="#1FB6AE" stroke-width="2.5"/>
+  <text x="167" y="490" font-size="12" font-weight="400" fill="#586876" text-anchor="middle">reservoir</text>
+
+  <!-- fluid line to cylinder cap side + gauge -->
+  <text x="345" y="420" font-size="13" font-weight="600" fill="#0E7E8C" text-anchor="middle">pressurized fluid</text>
+  <rect x="208" y="444" width="13" height="16" rx="2" fill="#1B3A55"/>
+  <rect x="422" y="445" width="10" height="14" rx="2" fill="#1B3A55"/>
+  <path d="M221,452 H422" fill="none" stroke="url(#fluid)" stroke-width="11" stroke-linecap="round"/>
+  
+  <g transform="translate(322,452)">
+    <circle cx="0" cy="0" r="24" fill="#FFFFFF" stroke="#1B3A55" stroke-width="3"/>
+    <line x1="0" y1="0" x2="13" y2="-14" stroke="#C2463B" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="3" fill="#1B3A55"/>
+    <text x="0" y="42" font-size="13" font-weight="600" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">100 bar</text>
+  </g>
+
+  <text x="44" y="572" font-size="14" font-weight="400" fill="#586876">The same machine every module builds: <tspan font-weight="700" fill="#1B3A55">50 mm</tspan> bore, <tspan font-weight="700" fill="#1B3A55">100 bar</tspan>, lifts <tspan font-weight="700" fill="#DD841A">two tonnes</tspan>, positions to <tspan font-weight="700" fill="#1B3A55">&#177;1 mm</tspan>.</text>
+</svg>

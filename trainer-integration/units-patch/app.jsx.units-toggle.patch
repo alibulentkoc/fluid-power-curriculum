@@ -1,0 +1,441 @@
+--- /tmp/app.jsx.orig	2026-06-21 07:35:50.292444167 +0000
++++ src/app.jsx	2026-06-21 08:01:28.174219304 +0000
+@@ -1,4 +1,24 @@
+ import { calculate, VEL_SUCTION_MAX, VEL_PRESSURE_MAX, VEL_RETURN_MAX, NPSH_MIN_ABS, CST_TO_FT2S } from "./core/engine.js";
++import { convert as uConvert, convertTemperature as uConvertTemp } from "./units/index.js";
++// Display-only unit formatting (module-level so render components can use it once the display
++// mode is threaded in as a prop). Pure presentation: never used by calculate(), persistence, or
++// evidence. `mode` is "customary" | "SI". The native (engine) unit is passed explicitly per site;
++// customary shows it as-is, SI converts to the SI display unit for that dimension.
++const SI_DISPLAY = { in:"mm", ft:"m", psi:"bar", psia:"bar", lbf:"N", gpm:"L/min", "gal/min":"L/min", "in/s":"mm/s", "ft/s":"m/s", gal:"L", in2:"cm2", "lb-in":"N.m", HP:"kW", F:"C" };
++// Returns the display {value, unit}: native in customary mode, SI-converted in SI mode.
++function convU(nativeVal, nativeUnit, mode){
++  if(nativeVal==null || !isFinite(nativeVal)) return { value:nativeVal, unit:nativeUnit };
++  if(mode!=="SI") return { value:nativeVal, unit:nativeUnit };
++  const to = SI_DISPLAY[nativeUnit];
++  if(!to) return { value:nativeVal, unit:nativeUnit };
++  try{ const v = nativeUnit==="F" ? uConvertTemp(nativeVal,"F","C") : uConvert(nativeVal,nativeUnit==="gal/min"?"gpm":nativeUnit, to==="L/min"&&nativeUnit==="gal/min"?"L/min":to); return { value:v, unit:to }; }
++  catch(e){ return { value:nativeVal, unit:nativeUnit }; }
++}
++function fmtU(nativeVal, nativeUnit, mode, digits=2){
++  if(nativeVal==null || !isFinite(nativeVal)) return String(nativeVal);
++  const p = convU(nativeVal, nativeUnit, mode);
++  return (typeof p.value==="number"?p.value.toFixed(digits):p.value)+" "+p.unit;
++}
+ const { useState, useRef, useEffect, useMemo, useId } = React;
+ 
+ const T = {
+@@ -54,8 +74,8 @@
+ const PERSIST = { KEY:"hydraulic-trainer/state/v1", APP:"hydraulic-trainer", SCHEMA_VERSION:2 };
+ // Accessibility/display preferences (schema v2+). animation:"auto" follows the OS
+ // prefers-reduced-motion setting; "on"/"off" are explicit user overrides.
+-const PREF_DEFAULTS = { animation:"auto" };
+-const PREF_ENUMS = { animation:["auto","on","off"] };
++const PREF_DEFAULTS = { animation:"auto", display_mode:"customary" };
++const PREF_ENUMS = { animation:["auto","on","off"], display_mode:["customary","SI"] };
+ function coercePrefs(obj){
+   const src=(obj && typeof obj==="object")?obj:{};
+   const out={};
+@@ -156,7 +176,7 @@
+     <text x={cx} y={cy+16} textAnchor="middle" fill={on?T.elec:T.muted} fontSize={7} fontFamily="monospace">{on?"CLOSED":"OPEN"}</text>
+   </g>);
+ }
+-function Pump({cx,cy,flow,disp,running,clock,sc}){
++function Pump({cx,cy,flow,disp,running,clock,sc,du}){
+   const a=running?(clock*0.30)%360:0;
+   return (<g>
+     <circle cx={cx} cy={cy} r={24} fill={T.card} stroke={T.symStroke} strokeWidth={2}/>
+@@ -164,7 +184,7 @@
+       <polygon points={(cx-12)+","+(cy-13)+" "+(cx-12)+","+(cy+13)+" "+(cx+15)+","+cy} fill={T.symStroke}/>
+     </g>
+     <text x={cx} y={cy+38} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">HYD PUMP</text>
+-    {flow!=null && <text x={cx} y={cy+48} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{flow.toFixed(2)} gal/min</text>}
++    {flow!=null && <text x={cx} y={cy+48} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{fmtU(flow,"gpm",du,2)}</text>}
+   </g>);
+ }
+ function Reservoir({cx,cy,sc}){
+@@ -176,7 +196,7 @@
+     <text x={cx} y={B+15} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">RESERVOIR (VENTED)</text>
+   </g>);
+ }
+-function ReliefValve({cx,cy,setting,blowing,clock,sc}){
++function ReliefValve({cx,cy,setting,blowing,clock,sc,du}){
+   const pulse=blowing?0.5+0.5*Math.sin(clock*0.012):0, col=blowing?T.danger:T.symStroke, aop=blowing?0.6+0.4*pulse:0.85, s=16;
+   return (<g>
+     <rect x={cx-s} y={cy-s} width={2*s} height={2*s} fill={T.card} stroke={col} strokeWidth={1.6}/>
+@@ -191,7 +211,7 @@
+     <line x1={cx} y1={cy-s} x2={cx} y2={cy-s-14} stroke={T.symStroke} strokeWidth={1.6}/>
+     <line x1={cx} y1={cy+s} x2={cx} y2={cy+s+14} stroke={T.symStroke} strokeWidth={1.6}/>
+     <text x={cx+s+10} y={cy+s+12} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">RELIEF</text>
+-    {setting!=null && <text x={cx+s+10} y={cy+s+22} textAnchor="middle" fill={T.danger} fontSize={8*sc} fontFamily="monospace">{setting.toFixed(0)} psi</text>}
++    {setting!=null && <text x={cx+s+10} y={cy+s+22} textAnchor="middle" fill={T.danger} fontSize={8*sc} fontFamily="monospace">{fmtU(setting,"psi",du,0)}</text>}
+     {blowing && <text x={cx} y={cy-s-20} textAnchor="middle" fill={T.danger} fontSize={7*sc} fontFamily="monospace" opacity={aop}>RELIEVING</text>}
+   </g>);
+ }
+@@ -307,7 +327,7 @@
+   </g>);
+ }
+ 
+-function HydMotor({cx,cy,spin,clock,sc,torque,speed}){
++function HydMotor({cx,cy,spin,clock,sc,torque,speed,du}){
+   const a=spin!==0 ? (clock*0.0006*Math.abs(speed||300)*spin)%360 : 0;
+   return (<g>
+     <circle cx={cx} cy={cy} r={30} fill={T.card} stroke={T.symStroke} strokeWidth={2}/>
+@@ -324,7 +344,7 @@
+     <line x1={cx+14} y1={cy-30} x2={cx+14} y2={cy-44} stroke={T.symStroke} strokeWidth={1.6}/>
+     <text x={cx+14} y={cy-48} textAnchor="middle" fill={T.muted} fontSize={8*sc} fontFamily="monospace">B</text>
+     <text x={cx} y={cy+44} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">HYDRAULIC MOTOR</text>
+-    {torque!=null && <text x={cx} y={cy+54} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{torque.toFixed(0)} lb-in</text>}
++    {torque!=null && <text x={cx} y={cy+54} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{fmtU(torque,"lb-in",du,0)}</text>}
+     {spin!==0 && <text x={cx} y={cy+64} textAnchor="middle" fill={T.ok} fontSize={7*sc} fontFamily="monospace">{spin>0?"CW":"CCW"} {Math.abs(speed||0).toFixed(0)} rpm</text>}
+   </g>);
+ }
+@@ -341,16 +361,16 @@
+     <text x={cx} y={cy+42} textAnchor="middle" fill={T.muted} fontSize={7*sc} fontFamily="monospace">{label}</text>
+   </g>);
+ }
+-function NodeChip({x,y,p,q,color,label,sc}){
++function NodeChip({x,y,p,q,color,label,sc,du}){
+   return (<g transform={"translate("+x+","+y+")"}>
+     <rect x={-30} y={-13} width={60} height={26} rx={3} fill={T.panel} stroke={color} opacity={0.95}/>
+     <text x={0} y={-3} textAnchor="middle" fill={color} fontSize={6.5*sc} fontFamily="monospace">{label}</text>
+-    <text x={0} y={7} textAnchor="middle" fill={T.text} fontSize={6.5*sc} fontFamily="monospace">{p.toFixed(0)}psi {q.toFixed(1)}gpm</text>
++    <text x={0} y={7} textAnchor="middle" fill={T.text} fontSize={6.5*sc} fontFamily="monospace">{fmtU(p,"psi",du,0)+" "+fmtU(q,"gpm",du,1)}</text>
+   </g>);
+ }
+ 
+ // ---- SCHEMATIC ----
+-function Schematic({calc,inp,pos,pistonPos,clock,motorOn,dcvType,actuator,showGauges,showVectors,sc}){
++function Schematic({calc,inp,pos,pistonPos,clock,motorOn,dcvType,actuator,showGauges,showVectors,sc,du}){
+   const isCyl=actuator==="cylinder";
+   const isExt=pos==="extend", isRet=pos==="retract", neutral=pos==="neutral";
+   const bottomed=isCyl && ((isExt&&pistonPos>=0.999)||(isRet&&pistonPos<=0.001));
+@@ -428,15 +448,21 @@
+   if(calc){
+     const flowState = neutral ? (centerUnload?"valve centered, pump unloading to tank":"valve centered, no actuator flow")
+       : isExt ? "directional valve shifted to extend" : isRet ? "directional valve shifted to retract" : "holding";
++    // Display-only spelled-out units for the screen-reader narrative (customary unchanged).
++    const _si = du==="SI";
++    const _flow = _si ? (uConvert(calc.pumpFlow,"gpm","L/min").toFixed(1)+" liters per minute") : (calc.pumpFlow.toFixed(1)+" gallons per minute");
++    const _psi = (v)=> _si ? (uConvert(v,"psi","bar").toFixed(0)+" bar") : (v.toFixed(0)+" psi");
++    const _bore = _si ? (uConvert(calc.boreDia,"in","mm").toFixed(0)+"-millimeter") : (calc.boreDia+"-inch");
++    const _load = _si ? (uConvert(inp.load,"lbf","N").toFixed(0)+" newton") : (inp.load.toFixed(0)+" lbf");
+     if(isCyl){
+-      a11yDesc = "Fixed-displacement pump delivering about "+calc.pumpFlow.toFixed(1)+" gallons per minute, relief set at "
+-        +calc.rvSetting.toFixed(0)+" psi, feeding a "+calc.boreDia+"-inch bore cylinder. "
+-        +(running?("Currently "+flowState+". Extend pressure "+calc.pressExtend.toFixed(0)+" psi for the "+inp.load.toFixed(0)+" lbf load.")
++      a11yDesc = "Fixed-displacement pump delivering about "+_flow+", relief set at "
++        +_psi(calc.rvSetting)+", feeding a "+_bore+" bore cylinder. "
++        +(running?("Currently "+flowState+". Extend pressure "+_psi(calc.pressExtend)+" for the "+_load+" load.")
+                  :"Pump is off; turn the motor on to run the circuit.")
+         + (reliefBlowing?" Relief valve is blowing off.":"") + (stalled?" Actuator is stalled — load exceeds the pressure ceiling.":"");
+     } else {
+-      a11yDesc = "Fixed-displacement pump at about "+calc.pumpFlow.toFixed(1)+" gallons per minute driving a "
+-        +inp.motorDisp+" cubic-inch-per-rev hydraulic motor. Needs "+calc.reqPress.toFixed(0)+" psi; "
++      a11yDesc = "Fixed-displacement pump at about "+_flow+" driving a "
++        +inp.motorDisp+" cubic-inch-per-rev hydraulic motor. Needs "+_psi(calc.reqPress)+"; "
+         +(running?("running near "+calc.motorSpeed.toFixed(0)+" rpm, "+flowState+"."):"pump is off.")
+         + (stalled?" Motor is stalled — torque exceeds the pressure ceiling.":"");
+     }
+@@ -524,29 +550,29 @@
+       {calc && (<g>
+         <rect x={118} y={398} width={92} height={26} rx={2} fill="#00cc6615" stroke="#00cc6640"/>
+         <text x={164} y={409} textAnchor="middle" fill={T.suction} fontSize={8*sc} fontFamily="monospace">SUCTION</text>
+-        <text x={164} y={419} textAnchor="middle" fill={T.suction} fontSize={7*sc} fontFamily="monospace">{calc.suctionLine.id_in.toFixed(2)+'" '+calc.suctionLine.velocity.toFixed(1)+"ft/s"}</text>
++        <text x={164} y={419} textAnchor="middle" fill={T.suction} fontSize={7*sc} fontFamily="monospace">{fmtU(calc.suctionLine.id_in,"in",du,2)+" "+fmtU(calc.suctionLine.velocity,"ft/s",du,1)}</text>
+         <rect x={teeX+14} y={teeY-32} width={96} height={26} rx={2} fill="#ff553315" stroke="#ff553340"/>
+         <text x={teeX+62} y={teeY-21} textAnchor="middle" fill={T.hp} fontSize={8*sc} fontFamily="monospace">PRESSURE</text>
+-        <text x={teeX+62} y={teeY-11} textAnchor="middle" fill={T.hp} fontSize={7*sc} fontFamily="monospace">{calc.sysPress.toFixed(0)+"psi "+calc.pressureLine.velocity.toFixed(1)+"ft/s"}</text>
++        <text x={teeX+62} y={teeY-11} textAnchor="middle" fill={T.hp} fontSize={7*sc} fontFamily="monospace">{fmtU(calc.sysPress,"psi",du,0)+" "+fmtU(calc.pressureLine.velocity,"ft/s",du,1)}</text>
+         <rect x={588} y={404} width={92} height={26} rx={2} fill="#3388ff15" stroke="#3388ff40"/>
+         <text x={634} y={415} textAnchor="middle" fill={T.ret} fontSize={8*sc} fontFamily="monospace">RETURN</text>
+-        <text x={634} y={425} textAnchor="middle" fill={T.ret} fontSize={7*sc} fontFamily="monospace">{calc.returnLine.id_in.toFixed(2)+'" '+calc.returnLine.velocity.toFixed(1)+"ft/s"}</text>
++        <text x={634} y={425} textAnchor="middle" fill={T.ret} fontSize={7*sc} fontFamily="monospace">{fmtU(calc.returnLine.id_in,"in",du,2)+" "+fmtU(calc.returnLine.velocity,"ft/s",du,1)}</text>
+       </g>)}
+ 
+       <ElecMotor cx={motorX} cy={motorY} on={motorOn} clock={clock} sc={sc}/>
+-      <Pump cx={pumpX} cy={pumpY} flow={calc&&calc.maxFlow} disp={calc&&calc.pumpDisp} running={running} clock={clock} sc={sc}/>
++      <Pump cx={pumpX} cy={pumpY} flow={calc&&calc.maxFlow} disp={calc&&calc.pumpDisp} running={running} clock={clock} sc={sc} du={du}/>
+       <Reservoir cx={resX} cy={resY} sc={sc}/>
+-      <ReliefValve cx={rvX} cy={rvY} setting={calc&&calc.rvSetting} blowing={reliefBlowing} clock={clock} sc={sc}/>
++      <ReliefValve cx={rvX} cy={rvY} setting={calc&&calc.rvSetting} blowing={reliefBlowing} clock={clock} sc={sc} du={du}/>
+       <DCV cx={dcvX} cy={dcvY} pos={pos} dcvType={dcvType} sc={sc}/>
+       {isCyl
+         ? <g transform={rotXf}><Cylinder cx={cylX} cy={cylY} boreDia={calc&&calc.boreDia} rodDia={calc&&calc.rodDia} pistonPos={pistonPos} pos={pos} moving={moving} sc={sc}/></g>
+-        : <HydMotor cx={cylX} cy={cylY} spin={spin} clock={clock} sc={sc} torque={calc&&calc.torqueOut} speed={calc&&calc.motorSpeed}/>}
++        : <HydMotor cx={cylX} cy={cylY} spin={spin} clock={clock} sc={sc} torque={calc&&calc.torqueOut} speed={calc&&calc.motorSpeed} du={du}/>}
+       {calc && isCyl && (<g>
+         <rect x={cylX-78} y={cylY+96} width={156} height={32} rx={3} fill={T.panel} stroke={moving?T.ok:T.border}/>
+         <text x={cylX} y={cylY+109} textAnchor="middle" fill={moving?T.ok:T.muted} fontSize={8.5*sc} fontFamily="monospace">
+-          {moving?((isExt?"EXTEND ":"RETRACT ")+(isExt?calc.velExt:calc.velRet).toFixed(2)+" in/s"):("ext "+calc.velExt.toFixed(2)+" / ret "+calc.velRet.toFixed(2)+" in/s")}
++          {moving?((isExt?"EXTEND ":"RETRACT ")+fmtU((isExt?calc.velExt:calc.velRet),"in/s",du,2)):("ext "+fmtU(calc.velExt,"in/s",du,2)+" / ret "+fmtU(calc.velRet,"in/s",du,2))}
+         </text>
+-        <text x={cylX} y={cylY+121} textAnchor="middle" fill={T.muted} fontSize={7.5*sc} fontFamily="monospace">{"load "+inp.load.toFixed(0)+" lbf -> cyl force "+(isRet?calc.forceRetract:calc.forceExtend).toFixed(0)+" lbf"}</text>
++        <text x={cylX} y={cylY+121} textAnchor="middle" fill={T.muted} fontSize={7.5*sc} fontFamily="monospace">{"load "+fmtU(inp.load,"lbf",du,0)+" -> cyl force "+fmtU((isRet?calc.forceRetract:calc.forceExtend),"lbf",du,0)}</text>
+       </g>)}
+       {calc && !isCyl && (<g>
+         <rect x={cylX-78} y={cylY+96} width={156} height={20} rx={3} fill={T.panel} stroke={moving?T.ok:T.border}/>
+@@ -557,11 +583,11 @@
+ 
+       {/* per-section gauges */}
+       {showGauges && calc && (<g>
+-        <NodeChip x={250} y={250} p={Ppump} q={Qpump} color={T.hp} label="PUMP OUT" sc={sc}/>
+-        <NodeChip x={Ax-44} y={portAy-26} p={isExt?supplyP:retP} q={aActive?supplyQ:0} color={isExt?T.hp:T.ret} label="PORT A" sc={sc}/>
+-        <NodeChip x={Bx+44} y={portAy-26} p={isRet?supplyP:retP} q={bActive?supplyQ:0} color={isRet?T.hp:T.ret} label="PORT B" sc={sc}/>
+-        <NodeChip x={retX} y={mergeY+30} p={0} q={tReturn?supplyQ:0} color={T.ret} label="TANK RET" sc={sc}/>
+-        <NodeChip x={rvX-46} y={rvY} p={calc.rvSetting} q={reliefBlowing?Qpump:0} color={T.danger} label="RELIEF" sc={sc}/>
++        <NodeChip x={250} y={250} p={Ppump} q={Qpump} color={T.hp} label="PUMP OUT" sc={sc} du={du}/>
++        <NodeChip x={Ax-44} y={portAy-26} p={isExt?supplyP:retP} q={aActive?supplyQ:0} color={isExt?T.hp:T.ret} label="PORT A" sc={sc} du={du}/>
++        <NodeChip x={Bx+44} y={portAy-26} p={isRet?supplyP:retP} q={bActive?supplyQ:0} color={isRet?T.hp:T.ret} label="PORT B" sc={sc} du={du}/>
++        <NodeChip x={retX} y={mergeY+30} p={0} q={tReturn?supplyQ:0} color={T.ret} label="TANK RET" sc={sc} du={du}/>
++        <NodeChip x={rvX-46} y={rvY} p={calc.rvSetting} q={reliefBlowing?Qpump:0} color={T.danger} label="RELIEF" sc={sc} du={du}/>
+       </g>)}
+ 
+       {/* legend */}
+@@ -655,11 +681,15 @@
+     {children}
+   </div>);
+ }
+-function RR({label,value,unit,hi,warn,ok}){
++function RR({label,value,unit,hi,warn,ok,du,digits=0}){
+   const col=warn?T.danger:ok?T.ok:hi?T.warn:T.text;
++  // Display-only conversion: numeric values convert via convU; non-numeric pass through unchanged.
++  const isNum = typeof value==="number" && isFinite(value);
++  const p = isNum ? convU(value, unit, du) : { value, unit };
++  const shown = isNum && typeof p.value==="number" ? p.value.toFixed(digits) : p.value;
+   return (<div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",padding:"2px 0",borderBottom:"1px solid "+T.line}}>
+     <span style={{color:T.muted,fontSize:"0.74em"}}>{label}</span>
+-    <span style={{color:col,fontSize:"0.8em",fontWeight:"bold"}}>{value} <span style={{color:T.muted,fontSize:"0.62em"}}>{unit}</span></span>
++    <span style={{color:col,fontSize:"0.8em",fontWeight:"bold"}}>{shown} <span style={{color:T.muted,fontSize:"0.62em"}}>{p.unit}</span></span>
+   </div>);
+ }
+ function LineTable({line}){
+@@ -759,6 +789,9 @@
+   const fileInputRef=useRef(null);
+   // Phase 4: accessibility preferences. animation pref "auto" follows the OS reduced-motion setting.
+   const [animPref,setAnimPref]=useState(INITPREFS.animation);
++  const [displayMode,setDisplayMode]=useState(INITPREFS.display_mode||"customary");
++  // Display-only conversion in App scope; delegates to the module-level formatter.
++  const disp=(val,unit,d=2)=>fmtU(val,unit,displayMode,d);
+   const [reducedMotion,setReducedMotion]=useState(()=>{ try{ return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } });
+   useEffect(()=>{
+     let mq; try{ mq=window.matchMedia("(prefers-reduced-motion: reduce)"); }catch(e){ return; }
+@@ -830,11 +863,11 @@
+   // Debounced autosave. Storage failure (private mode, file://, disabled) degrades silently.
+   useEffect(()=>{
+     setSaved("saving");
+-    const id=setTimeout(()=>{ setSaved(saveSession(curInputs, {animation:animPref})?"saved":"idle"); },500);
++    const id=setTimeout(()=>{ setSaved(saveSession(curInputs, {animation:animPref,display_mode:displayMode})?"saved":"idle"); },500);
+     return ()=>clearTimeout(id);
+   },[actuator,sizeMode,load,angle,stroke,safetyFactor,frictionPre,customMu,loadTorque,motorDisp,
+      targetSpeedCyl,targetSpeedMot,maxPressure,pumpDisp,pumpRPM,fluidIdx,mountIdx,filterIdx,
+-     ambientTemp,targetOilTemp,dutyCyclePct,pumpElevIn,valveDP,suctionLen,pressureLen,returnLen,powerSrcIdx,animPref]);
++     ambientTemp,targetOilTemp,dutyCyclePct,pumpElevIn,valveDP,suctionLen,pressureLen,returnLen,powerSrcIdx,animPref,displayMode]);
+ 
+   const applyInputs=(ci)=>{
+     setActuator(ci.actuator); setSizeMode(ci.sizeMode);
+@@ -851,13 +884,13 @@
+   };
+   const onReset=()=>{
+     try{ if(window.confirm && !window.confirm("Reset all inputs to defaults? This clears your saved session in this browser.")) return; }catch(e){}
+-    storageClear(); applyInputs(coerceInputs(null)); setAnimPref(PREF_DEFAULTS.animation);
++    storageClear(); applyInputs(coerceInputs(null)); setAnimPref(PREF_DEFAULTS.animation); setDisplayMode(PREF_DEFAULTS.display_mode);
+   };
+   const onImportFile=(ev)=>{
+     const f=ev.target.files && ev.target.files[0]; if(!f) return;
+     const reader=new FileReader();
+     reader.onload=()=>{ const parsed=parseEnvelope(String(reader.result));
+-      if(parsed){ applyInputs(parsed.inputs); if(parsed.prefs&&parsed.prefs.animation) setAnimPref(parsed.prefs.animation); }
++      if(parsed){ applyInputs(parsed.inputs); if(parsed.prefs&&parsed.prefs.animation) setAnimPref(parsed.prefs.animation); if(parsed.prefs&&parsed.prefs.display_mode) setDisplayMode(parsed.prefs.display_mode); }
+       else { try{ window.alert && window.alert("That file could not be read as a saved hydraulic design."); }catch(e){} }
+       try{ ev.target.value=""; }catch(e){}
+     };
+@@ -1062,6 +1095,19 @@
+             <div style={{color:T.muted,fontSize:"0.6em",marginTop:4}}>{animate?"Animation on.":"Animation off — static schematic, state colors preserved."}</div>
+           </Sec>
+ 
++          <Sec title="UNITS">
++            <div style={{color:T.muted,fontSize:"0.62em",marginBottom:6,lineHeight:1.4}}>
++              Display units. Customary (psi, in, gpm) or SI (bar, mm, L/min). Display only — calculations, stored data, and exports are unchanged.
++            </div>
++            <div role="group" aria-label="Display unit system" style={{display:"flex",gap:4}}>
++              {[["customary","Customary"],["SI","SI"]].map(o=>(
++                <button key={o[0]} onClick={()=>setDisplayMode(o[0])} aria-pressed={displayMode===o[0]}
++                  style={{...segBtn(displayMode===o[0],T.accent),flex:1}}>{o[1]}</button>
++              ))}
++            </div>
++            <div style={{color:T.muted,fontSize:"0.6em",marginTop:4}}>Active: {displayMode==="SI"?"SI (metric)":"US customary"}.</div>
++          </Sec>
++
+           <Sec title="SAVE / EXPORT">
+             <div style={{color:T.muted,fontSize:"0.62em",marginBottom:6,lineHeight:1.4}}>
+               {bootStatus==="restored"?"Session restored in this browser.":bootStatus==="recovered"?"Saved data was unreadable - restored defaults.":"Your work autosaves to this browser."}
+@@ -1070,7 +1116,7 @@
+               {saved==="saving"?"Saving\u2026":saved==="saved"?"\u2713 Saved":"Autosave on"}
+             </div>
+             <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+-              <button onClick={()=>exportJSON(curInputs,{animation:animPref})} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Export JSON</button>
++              <button onClick={()=>exportJSON(curInputs,{animation:animPref,display_mode:displayMode})} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Export JSON</button>
+               <button onClick={()=>fileInputRef.current&&fileInputRef.current.click()} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Import JSON</button>
+               <button onClick={()=>exportReport(inp,calc,curInputs)} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Save report</button>
+               <button onClick={()=>exportSVG()} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Save SVG</button>
+@@ -1096,7 +1142,7 @@
+             <span style={{color:T.muted,fontSize:"0.62em",marginLeft:6}}>{!motorOn?"Turn the motor ON to run the pump":DCV_TYPES[dcvType].neutral}</span>
+           </div>
+           <div style={{flex:1,overflow:"auto"}}>
+-            <Schematic calc={calc} inp={inp} pos={posRef.current} pistonPos={pistonRef.current} clock={clockRef.current}
++            <Schematic du={displayMode} calc={calc} inp={inp} pos={posRef.current} pistonPos={pistonRef.current} clock={clockRef.current}
+               motorOn={motorOn} dcvType={dcvType} actuator={actuator} showGauges={showGauges} showVectors={showVectors} sc={SC}/>
+           </div>
+         </main>
+@@ -1199,76 +1245,76 @@
+               </Sec>)}
+               {isCyl ? (<div>
+                 {mode!=="beginner" && (<Sec title="FORCE ANALYSIS">
+-                  <RR label="Max load (input)" value={inp.load.toFixed(0)} unit="lbf"/>
+-                  <RR label="Gravity component" value={calc.gravForce.toFixed(0)} unit="lbf"/>
+-                  <RR label="Friction force" value={calc.frictionForce.toFixed(0)} unit="lbf"/>
+-                  <RR label="Cyl force extend" value={calc.forceExtend.toFixed(0)} unit="lbf" hi/>
+-                  <RR label="Cyl force retract" value={calc.forceRetract.toFixed(0)} unit="lbf"/>
++                  <RR label="Max load (input)" value={inp.load} digits={0} unit="lbf" du={displayMode}/>
++                  <RR label="Gravity component" value={calc.gravForce} digits={0} unit="lbf" du={displayMode}/>
++                  <RR label="Friction force" value={calc.frictionForce} digits={0} unit="lbf" du={displayMode}/>
++                  <RR label="Cyl force extend" value={calc.forceExtend} digits={0} unit="lbf" hi du={displayMode}/>
++                  <RR label="Cyl force retract" value={calc.forceRetract} digits={0} unit="lbf" du={displayMode}/>
+                 </Sec>)}
+                 <Sec title="CYLINDER (sized)">
+-                  <RR label="Selected bore" value={calc.boreDia} unit="in" hi/>
+-                  <RR label="Rod diameter" value={calc.rodDia} unit="in"/>
+-                  <RR label="Bore area" value={calc.boreArea.toFixed(3)} unit="in2"/>
+-                  {mode!=="beginner" && <RR label="Annulus area" value={calc.annArea.toFixed(3)} unit="in2"/>}
+-                  {mode==="advanced" && <RR label="Buckling Pcr" value={calc.Pcr.toFixed(0)} unit="lbf"/>}
+-                  {mode==="advanced" && <RR label="Buckling SF" value={calc.buckSF.toFixed(1)} unit="x" warn={calc.buckSF<2} ok={calc.buckSF>=2}/>}
++                  <RR label="Selected bore" value={calc.boreDia} digits={2} unit="in" hi du={displayMode}/>
++                  <RR label="Rod diameter" value={calc.rodDia} digits={2} unit="in" du={displayMode}/>
++                  <RR label="Bore area" value={calc.boreArea} digits={3} unit="in2" du={displayMode}/>
++                  {mode!=="beginner" && <RR label="Annulus area" value={calc.annArea} digits={3} unit="in2" du={displayMode}/>}
++                  {mode==="advanced" && <RR label="Buckling Pcr" value={calc.Pcr} digits={0} unit="lbf" du={displayMode}/>}
++                  {mode==="advanced" && <RR label="Buckling SF" value={calc.buckSF} digits={1} unit="x" warn={calc.buckSF<2} ok={calc.buckSF>=2} du={displayMode}/>}
+                 </Sec>
+                 <Sec title="PRESSURE (computed)">
+-                  <RR label="Extend pressure" value={calc.pressExtend.toFixed(0)} unit="psi" warn={calc.stallExtend}/>
+-                  <RR label="Retract pressure" value={calc.pressRetract.toFixed(0)} unit="psi" warn={calc.stallRetract}/>
+-                  <RR label="Max sys (input)" value={calc.maxPressure.toFixed(0)} unit="psi" hi/>
+-                  <RR label="Relief setting" value={calc.rvSetting.toFixed(0)} unit="psi"/>
++                  <RR label="Extend pressure" value={calc.pressExtend} digits={0} unit="psi" warn={calc.stallExtend} du={displayMode}/>
++                  <RR label="Retract pressure" value={calc.pressRetract} digits={0} unit="psi" warn={calc.stallRetract} du={displayMode}/>
++                  <RR label="Max sys (input)" value={calc.maxPressure} digits={0} unit="psi" hi du={displayMode}/>
++                  <RR label="Relief setting" value={calc.rvSetting} digits={0} unit="psi" du={displayMode}/>
+                   <div style={{color:T.muted,fontSize:"0.6em",marginTop:3,lineHeight:1.4}}>Extend pushes on the full bore area; retract pushes on the annulus (bore - rod). The same force on the smaller area needs different pressure, so the two differ.</div>
+                 </Sec>
+                 <Sec title="SPEED & TIME (computed)">
+-                  <RR label="Pump flow" value={calc.pumpFlow.toFixed(2)} unit="gal/min" hi/>
+-                  <RR label="Extend speed" value={calc.velExt.toFixed(2)} unit="in/s"/>
+-                  <RR label="Retract speed" value={calc.velRet.toFixed(2)} unit="in/s"/>
+-                  <RR label="Extend time" value={calc.extTime.toFixed(2)} unit="s"/>
+-                  <RR label="Retract time" value={calc.retTime.toFixed(2)} unit="s"/>
+-                  <RR label="Cycle time" value={calc.cycleTime.toFixed(2)} unit="s" hi/>
++                  <RR label="Pump flow" value={calc.pumpFlow} digits={2} unit="gal/min" hi du={displayMode}/>
++                  <RR label="Extend speed" value={calc.velExt} digits={2} unit="in/s" du={displayMode}/>
++                  <RR label="Retract speed" value={calc.velRet} digits={2} unit="in/s" du={displayMode}/>
++                  <RR label="Extend time" value={calc.extTime} digits={2} unit="s" du={displayMode}/>
++                  <RR label="Retract time" value={calc.retTime} digits={2} unit="s" du={displayMode}/>
++                  <RR label="Cycle time" value={calc.cycleTime} digits={2} unit="s" hi du={displayMode}/>
+                   <div style={{color:T.muted,fontSize:"0.6em",marginTop:3,lineHeight:1.4}}>Retract is faster: the same flow fills the smaller annulus, so v_ret = v_ext x bore_area / annulus_area.</div>
+                 </Sec>
+               </div>) : (<div>
+                 <Sec title="MOTOR PRESSURE">
+-                  <RR label="Load torque (input)" value={calc.loadTorque.toFixed(0)} unit="lb-in"/>
+-                  <RR label="Pressure needed" value={calc.reqPress.toFixed(0)} unit="psi" warn={calc.stalled}/>
+-                  <RR label="Max sys (input)" value={calc.maxPressure.toFixed(0)} unit="psi" hi/>
+-                  <RR label="Operating pressure" value={calc.sysPress.toFixed(0)} unit="psi"/>
++                  <RR label="Load torque (input)" value={calc.loadTorque} digits={0} unit="lb-in" du={displayMode}/>
++                  <RR label="Pressure needed" value={calc.reqPress} digits={0} unit="psi" warn={calc.stalled} du={displayMode}/>
++                  <RR label="Max sys (input)" value={calc.maxPressure} digits={0} unit="psi" hi du={displayMode}/>
++                  <RR label="Operating pressure" value={calc.sysPress} digits={0} unit="psi" du={displayMode}/>
+                 </Sec>
+                 <Sec title="MOTOR OUTPUT (computed)">
+-                  <RR label="Pump flow" value={calc.pumpFlow.toFixed(2)} unit="gal/min" hi/>
+-                  <RR label="Motor speed" value={calc.motorSpeed.toFixed(0)} unit="rpm" hi warn={calc.stalled}/>
+-                  <RR label="Output torque" value={calc.torqueOut.toFixed(0)} unit="lb-in"/>
+-                  <RR label="Displacement" value={calc.motorDisp.toFixed(2)} unit="in3/rev"/>
+-                  <RR label="Shaft power" value={calc.shaftHP.toFixed(2)} unit="HP"/>
++                  <RR label="Pump flow" value={calc.pumpFlow} digits={2} unit="gal/min" hi du={displayMode}/>
++                  <RR label="Motor speed" value={calc.motorSpeed} digits={0} unit="rpm" hi warn={calc.stalled} du={displayMode}/>
++                  <RR label="Output torque" value={calc.torqueOut} digits={0} unit="lb-in" du={displayMode}/>
++                  <RR label="Displacement" value={calc.motorDisp} digits={2} unit="in3/rev" du={displayMode}/>
++                  <RR label="Shaft power" value={calc.shaftHP} digits={2} unit="HP" du={displayMode}/>
+                   {calc.stalled && <div style={{color:T.danger,fontSize:"0.7em",marginTop:4}}>Stalled: torque needs more than max pressure.</div>}
+                 </Sec>
+               </div>)}
+               <Sec title="PUMP & DRIVE">
+-                <RR label="Pump displacement" value={calc.pumpDisp.toFixed(3)} unit="in3/rev"/>
+-                <RR label="Pump speed" value={calc.pumpRPM} unit="RPM"/>
+-                <RR label="Hydraulic power" value={calc.hydHP.toFixed(2)} unit="HP"/>
+-                <RR label="Drive motor" value={calc.motorPwrHP.toFixed(2)} unit="HP" hi warn={calc.motorPwrHP>25}/>
++                <RR label="Pump displacement" value={calc.pumpDisp} digits={3} unit="in3/rev" du={displayMode}/>
++                <RR label="Pump speed" value={calc.pumpRPM} unit="RPM" du={displayMode}/>
++                <RR label="Hydraulic power" value={calc.hydHP} digits={2} unit="HP" du={displayMode}/>
++                <RR label="Drive motor" value={calc.motorPwrHP} digits={2} unit="HP" hi warn={calc.motorPwrHP>25} du={displayMode}/>
+               </Sec>
+               {mode!=="beginner" && (<Sec title="LOSSES">
+-                <RR label="Total line loss" value={calc.totalLineLoss.toFixed(1)} unit="psi" warn={calc.totalLineLoss>calc.sysPress*0.15}/>
+-                <RR label="Pump inlet" value={calc.suctionInletAbs.toFixed(1)} unit="psia" warn={calc.suctionInletAbs<NPSH_MIN_ABS}/>
+-                <RR label="Return backpressure" value={calc.returnBackP.toFixed(1)} unit="psi" warn={calc.returnBackP>50}/>
+-                <RR label="Loss as heat" value={calc.lineHeatHP.toFixed(2)} unit="HP"/>
++                <RR label="Total line loss" value={calc.totalLineLoss} digits={1} unit="psi" warn={calc.totalLineLoss>calc.sysPress*0.15} du={displayMode}/>
++                <RR label="Pump inlet" value={calc.suctionInletAbs} digits={1} unit="psia" warn={calc.suctionInletAbs<NPSH_MIN_ABS} du={displayMode}/>
++                <RR label="Return backpressure" value={calc.returnBackP} digits={1} unit="psi" warn={calc.returnBackP>50} du={displayMode}/>
++                <RR label="Loss as heat" value={calc.lineHeatHP} digits={2} unit="HP" du={displayMode}/>
+               </Sec>)}
+               {mode==="advanced" && (<Sec title="THERMAL / COOLING">
+-                <RR label="Heat load" value={calc.heatHP.toFixed(2)} unit="HP"/>
+-                <RR label="Heat load" value={calc.heatBTU.toFixed(0)} unit="BTU/hr"/>
+-                <RR label="Reservoir" value={calc.tankGal.toFixed(0)} unit="gal"/>
+-                <RR label="Tank rejects" value={calc.resDissipHP.toFixed(2)} unit="HP"/>
+-                <RR label="Steady oil temp" value={calc.steadyOilTemp.toFixed(0)} unit="F" warn={calc.steadyOilTemp>calc.targetOil}/>
+-                <RR label="Cooler needed" value={calc.coolerBTU.toFixed(0)} unit="BTU/hr" warn={calc.coolerHP>0} ok={calc.coolerHP<=0}/>
++                <RR label="Heat load" value={calc.heatHP} digits={2} unit="HP" du={displayMode}/>
++                <RR label="Heat load" value={calc.heatBTU} digits={0} unit="BTU/hr" du={displayMode}/>
++                <RR label="Reservoir" value={calc.tankGal} digits={0} unit="gal" du={displayMode}/>
++                <RR label="Tank rejects" value={calc.resDissipHP} digits={2} unit="HP" du={displayMode}/>
++                <RR label="Steady oil temp" value={calc.steadyOilTemp} digits={0} unit="F" warn={calc.steadyOilTemp>calc.targetOil} du={displayMode}/>
++                <RR label="Cooler needed" value={calc.coolerBTU} digits={0} unit="BTU/hr" warn={calc.coolerHP>0} ok={calc.coolerHP<=0} du={displayMode}/>
+                 <div style={{color:T.muted,fontSize:"0.6em",marginTop:3,lineHeight:1.4}}>Toil = ambient + heat / (tank dissipation). Heat = drive HP - useful HP, times duty cycle. Tank rejects ~0.001 x area x (Toil-ambient) HP. Simplified steady-state estimate - real coolers/temps need a thermal datasheet.</div>
+               </Sec>)}
+               {mode==="advanced" && (<Sec title="RATINGS">
+-                <RR label="Pressure-line rating" value={calc.minTubeRating.toFixed(0)} unit="psi" warn={!calc.ratingOK} ok={calc.ratingOK}/>
+-                <RR label="Vs max pressure" value={calc.maxPressure.toFixed(0)} unit="psi"/>
++                <RR label="Pressure-line rating" value={calc.minTubeRating} digits={0} unit="psi" warn={!calc.ratingOK} ok={calc.ratingOK} du={displayMode}/>
++                <RR label="Vs max pressure" value={calc.maxPressure} digits={0} unit="psi" du={displayMode}/>
+                 <div style={{color:T.muted,fontSize:"0.62em",marginTop:2}}>Barlow: P = 2 S t / OD. Hose burst should be 4x working.</div>
+               </Sec>)}
+             </div>)
+@@ -1279,10 +1325,10 @@
+               <LineTable line={calc.returnLine}/>
+               <div style={{background:T.bg,borderRadius:3,padding:"6px 8px",border:"1px solid "+T.border,marginBottom:8}}>
+                 <div style={{color:T.accent,fontSize:"0.74em",marginBottom:4,letterSpacing:1}}>PRESSURE-DROP BUDGET</div>
+-                {calc.budget.map(b=>(<RR key={b.k} label={b.k} value={b.v.toFixed(1)} unit="psi"/>))}
+-                <RR label="TOTAL dP" value={calc.totalDP.toFixed(1)} unit="psi" hi warn={calc.totalDP>calc.sysPress*0.15}/>
+-                <RR label="% of sys P" value={(100*calc.totalDP/calc.sysPress).toFixed(1)} unit="%" warn={calc.totalDP>calc.sysPress*0.15}/>
+-                <RR label="Loss as heat" value={calc.lineHeatHP.toFixed(2)} unit="HP"/>
++                {calc.budget.map(b=>(<RR key={b.k} label={b.k} value={b.v} digits={1} unit="psi" du={displayMode}/>))}
++                <RR label="TOTAL dP" value={calc.totalDP} digits={1} unit="psi" hi warn={calc.totalDP>calc.sysPress*0.15} du={displayMode}/>
++                <RR label="% of sys P" value={(100*calc.totalDP/calc.sysPress)} digits={1} unit="%" warn={calc.totalDP>calc.sysPress*0.15} du={displayMode}/>
++                <RR label="Loss as heat" value={calc.lineHeatHP} digits={2} unit="HP" du={displayMode}/>
+               </div>
+             </div>)
+             : tab==="physics" ? (<div style={{fontSize:"0.78em",lineHeight:1.7}}>
+@@ -1324,9 +1370,9 @@
+                 <div style={{color:T.muted}}>balances friction heat against plumbing cost.</div>
+               </Sec>
+               {calc && (<Sec title="THIS SYSTEM">
+-                <RR label="Pump inlet" value={calc.suctionInletAbs.toFixed(1)} unit="psia" warn={calc.suctionInletAbs<NPSH_MIN_ABS}/>
+-                <RR label="Return backpressure" value={calc.returnBackP.toFixed(1)} unit="psi" warn={calc.returnBackP>50}/>
+-                <RR label="Loss as heat" value={calc.lineHeatHP.toFixed(2)} unit="HP"/>
++                <RR label="Pump inlet" value={calc.suctionInletAbs} digits={1} unit="psia" warn={calc.suctionInletAbs<NPSH_MIN_ABS} du={displayMode}/>
++                <RR label="Return backpressure" value={calc.returnBackP} digits={1} unit="psi" warn={calc.returnBackP>50} du={displayMode}/>
++                <RR label="Loss as heat" value={calc.lineHeatHP} digits={2} unit="HP" du={displayMode}/>
+               </Sec>)}
+             </div>)
+             : (<div>

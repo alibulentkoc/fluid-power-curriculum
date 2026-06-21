@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · The hydraulic jack</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--amber:#DD841A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .controls{display:grid;gap:16px;margin-top:18px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;margin-bottom:8px}
+  .ctl .val{font-family:var(--mono);font-size:15px;color:var(--teal);font-weight:700}
+  input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:6px;background:#E3EAF0;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer;box-shadow:0 1px 4px rgba(12,34,53,.25)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer}
+  .row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .btn{background:var(--teal);border:none;color:#fff;font-family:var(--sans);font-size:14px;font-weight:600;padding:10px 18px;border-radius:9px;cursor:pointer}
+  .btn:hover{background:#0b6b77}.btn.ghost{background:none;border:1px solid var(--line);color:var(--slate)}
+  .btn.ghost:hover{border-color:var(--teal);color:var(--teal)}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:18px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg)}
+  .tile .k{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:21px;font-weight:700;margin-top:3px}
+  .tile.factor{background:#0C2235;border-color:#0C2235}.tile.factor .k{color:#F4C98A}.tile.factor .v{color:#fff}
+  .tile.force .v{color:var(--amber)}.tile.press .v{color:var(--teal)}
+  .note{font-size:12.5px;color:var(--slate);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The hydraulic jack</h1>
+  <p class="sub">A real two-cylinder jack. Press the pump and the small piston drives fluid through the hose; the big piston lifts the load. Watch the gauge, and watch how far each piston travels.</p>
+
+  <div class="card">
+    <svg id="jack" viewBox="0 0 720 372" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <!-- output cylinder (large, right) -->
+      <rect x="430" y="150" width="150" height="170" rx="8" fill="#fff" stroke="#1B3A55" stroke-width="3"/>
+      <rect id="outFluid" x="436" y="250" width="138" height="64" rx="4" fill="#1FB6AE" opacity="0.9"/>
+      <rect id="outPiston" x="436" y="234" width="138" height="18" rx="3" fill="#1B3A55"/>
+      <rect id="outRod" x="495" y="120" width="20" height="120" fill="#5B6B79"/>
+      <g id="outLoad"><rect x="455" y="86" width="100" height="40" rx="6" fill="#DD841A"/>
+        <text x="505" y="112" font-size="18" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">load</text></g>
+      <text x="505" y="356" font-size="13" fill="#586876" text-anchor="middle">large piston</text>
+
+      <!-- input cylinder (small, left) -->
+      <rect x="150" y="170" width="70" height="150" rx="7" fill="#fff" stroke="#1B3A55" stroke-width="3"/>
+      <rect id="inFluid" x="156" y="250" width="58" height="64" rx="4" fill="#1FB6AE" opacity="0.9"/>
+      <rect id="inPiston" x="156" y="234" width="58" height="16" rx="3" fill="#1B3A55"/>
+      <rect id="inRod" x="178" y="150" width="14" height="86" fill="#5B6B79"/>
+      <g id="inHandle"><rect x="150" y="138" width="70" height="14" rx="5" fill="#0C2235"/></g>
+      <text x="185" y="356" font-size="13" fill="#586876" text-anchor="middle">pump piston</text>
+      <line id="pushArrow" x1="185" y1="118" x2="185" y2="134" stroke="#C2463B" stroke-width="4"/>
+      <polygon id="pushHead" points="185,138 178,124 192,124" fill="#C2463B"/>
+
+      <!-- port fittings at the two cylinder cap ends -->
+      <rect x="178" y="312" width="14" height="10" rx="2" fill="#1B3A55"/>
+      <rect x="498" y="312" width="14" height="10" rx="2" fill="#1B3A55"/>
+      <!-- hose connecting the two lower chambers, port to port -->
+      <path d="M185,314 V332 H505 V314" fill="none" stroke="#0E7E8C" stroke-width="11" stroke-linecap="round"/>
+
+      <!-- pressure gauge -->
+      <g transform="translate(330,150)">
+        <circle cx="0" cy="0" r="40" fill="#fff" stroke="#1B3A55" stroke-width="3"/>
+        <line id="needle" x1="0" y1="0" x2="-20" y2="-28" stroke="#C2463B" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="0" cy="0" r="4" fill="#1B3A55"/>
+        <text x="0" y="60" font-size="13" font-weight="700" fill="#0C2235" text-anchor="middle" font-family="'IBM Plex Mono',monospace"><tspan id="gaugeTxt">10 bar</tspan></text>
+      </g>
+    </svg>
+
+    <div class="controls">
+      <div class="ctl"><label>Push on the pump handle <span class="val"><span id="fVal">500</span> N</span></label>
+        <input id="f" type="range" min="50" max="2000" step="10" value="500"/></div>
+      <div class="ctl"><label>Large piston diameter <span class="val"><span id="doVal">100</span> mm</span></label>
+        <input id="do" type="range" min="40" max="160" step="5" value="100"/></div>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="pump">Pump one stroke ↓</button>
+      <button class="btn ghost" id="reset">Reset</button>
+    </div>
+
+    <div class="out">
+      <div class="tile press"><div class="k">Gauge pressure</div><div class="v"><span id="pOut">10.19</span> <span style="font-size:12px;color:var(--slate)">bar</span></div></div>
+      <div class="tile factor"><div class="k">Force multiplied</div><div class="v"><span id="kOut">16.0</span>&times;</div></div>
+      <div class="tile force"><div class="k">Lift force out</div><div class="v"><span id="foOut">8.00</span> <span style="font-size:12px;color:var(--slate)">kN</span></div></div>
+    </div>
+    <p class="note" id="note"></p>
+  </div>
+</div>
+
+<script>
+  const raf=(typeof requestAnimationFrame!=='undefined')?requestAnimationFrame:(cb=>setTimeout(()=>cb(Date.now()),16));
+  const now=()=>(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
+  const F=document.getElementById('f'),DO=document.getElementById('do');
+  const fVal=document.getElementById('fVal'),doVal=document.getElementById('doVal');
+  const pOut=document.getElementById('pOut'),kOut=document.getElementById('kOut'),foOut=document.getElementById('foOut');
+  const gaugeTxt=document.getElementById('gaugeTxt'),needle=document.getElementById('needle'),note=document.getElementById('note');
+  const outPiston=document.getElementById('outPiston'),outFluid=document.getElementById('outFluid'),outRod=document.getElementById('outRod'),outLoad=document.getElementById('outLoad');
+  const inPiston=document.getElementById('inPiston'),inFluid=document.getElementById('inFluid'),inRod=document.getElementById('inRod'),inHandle=document.getElementById('inHandle'),pushArrow=document.getElementById('pushArrow'),pushHead=document.getElementById('pushHead');
+  const DEF={f:500,do:100}, D_IN=25, PMAX=250;
+  let lift=0; // accumulated output rise (px)
+
+  function compute(){
+    const Fin=+F.value, do_mm=+DO.value;
+    const Ain=Math.PI/4*(D_IN/1000)**2, Aout=Math.PI/4*(do_mm/1000)**2;
+    const P=Fin/Ain, Fout=P*Aout, factor=Aout/Ain;
+    return {Fin,do_mm,Ain,Aout,P,Fout,factor};
+  }
+  function render(){
+    const c=compute();
+    fVal.textContent=c.Fin; doVal.textContent=c.do_mm;
+    pOut.textContent=(c.P/1e5).toFixed(2); kOut.textContent=c.factor.toFixed(1); foOut.textContent=(c.Fout/1000).toFixed(2);
+    gaugeTxt.textContent=(c.P/1e5).toFixed(0)+' bar';
+    // needle angle: -120deg (0 bar) .. +120deg (PMAX)
+    const frac=Math.min(1,(c.P/1e5)/PMAX), a=(-120+frac*240)*Math.PI/180, L=30;
+    needle.setAttribute('x2',(L*Math.sin(a)).toFixed(1)); needle.setAttribute('y2',(-L*Math.cos(a)).toFixed(1));
+    note.textContent = (c.Fin===DEF.f&&c.do_mm===DEF.do)
+      ? "A 500 N push on the 25 mm pump piston raises "+(c.Fout/1000).toFixed(1)+" kN on the "+c.do_mm+" mm piston — "+c.factor.toFixed(0)+"× more force. Press \u201CPump\u201D and watch the small piston fall far while the load barely rises: more force, less distance."
+      : "Same pressure on both pistons. Bigger output piston = more force, but it rises proportionally less. Press \u201CPump\u201D to see the trade.";
+  }
+  function doPump(){
+    const c=compute();
+    // input piston travels down a fixed visual stroke; output rises by area ratio (Ain/Aout)
+    const stroke=26, rise=stroke*(c.Ain/c.Aout);
+    // input down
+    inPiston.setAttribute('y',+inPiston.getAttribute('y')+0); // visual: animate via transform
+    animate(inPiston,'y',234, 234+stroke); animate(inFluid,'y',250,250+stroke); animate(inFluid,'height',64,64-stroke);
+    animate(inRod,'y',150,150+stroke); animate(inHandle,'transform-y',0,stroke); 
+    // output up
+    lift=Math.min(70, lift+rise);
+    const oy=234-lift;
+    animate(outPiston,'y',+outPiston.getAttribute('y'),oy);
+    animate(outRod,'y',120,120-lift); animate(outRod,'height',120,120+lift);
+    animate(outLoad,'transform-y',+(outLoad.dataset.ty||0), -lift, ()=>{outLoad.dataset.ty=-lift;});
+    animate(outFluid,'y',250,250-lift); animate(outFluid,'height',64,64+lift);
+    setTimeout(()=>{ // return input piston (refill stroke)
+      animate(inPiston,'y',234+stroke,234); animate(inFluid,'y',250+stroke,250); animate(inFluid,'height',64-stroke,64);
+      animate(inRod,'y',150+stroke,150); animate(inHandle,'transform-y',stroke,0);
+    },380);
+  }
+  function animate(el,attr,from,to,done){
+    const t0=now(),dur=320;
+    function step(t){const k=Math.min(1,(t-t0)/dur),e=1-(1-k)*(1-k),v=from+(to-from)*e;
+      if(attr==='transform-y'){el.setAttribute('transform','translate(0,'+v.toFixed(1)+')');}
+      else el.setAttribute(attr,v.toFixed(1));
+      if(k<1)raf(step); else if(done)done();}
+    raf(step);
+  }
+  function resetAll(){
+    lift=0; F.value=DEF.f; DO.value=DEF.do;
+    outPiston.setAttribute('y',234); outFluid.setAttribute('y',250); outFluid.setAttribute('height',64);
+    outRod.setAttribute('y',120); outRod.setAttribute('height',120); outLoad.setAttribute('transform','translate(0,0)'); outLoad.dataset.ty=0;
+    inPiston.setAttribute('y',234); inFluid.setAttribute('y',250); inFluid.setAttribute('height',64); inRod.setAttribute('y',150); inHandle.setAttribute('transform','translate(0,0)');
+    render();
+  }
+  [F,DO].forEach(el=>el.addEventListener('input',()=>{lift=0;outPiston.setAttribute('y',234);outFluid.setAttribute('y',250);outFluid.setAttribute('height',64);outRod.setAttribute('y',120);outRod.setAttribute('height',120);outLoad.setAttribute('transform','translate(0,0)');render();}));
+  document.getElementById('pump').addEventListener('click',doPump);
+  document.getElementById('reset').addEventListener('click',resetAll);
+  render();
+</script>
+</body>
+</html>

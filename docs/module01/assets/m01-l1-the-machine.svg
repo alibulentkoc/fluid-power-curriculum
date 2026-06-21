@@ -1,0 +1,63 @@
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="A power unit raises fluid pressure; the fluid flows through a line into the lower chamber of a vertical cylinder and pushes the piston and rod upward, lifting a heavy load.">
+  <!-- TYPE HIERARCHY (Visual Standard v1.0):
+       L1 figure title 26/700 #0C2235 | L2 section 15/700 letterspaced #0E7E8C
+       L3 parameter 13/600 mono #1B3A55 | L4 annotation 12/400 #586876
+       callout value (on object) 20/700 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B3A55"/><stop offset="1" stop-color="#0C2235"/></linearGradient>
+    <linearGradient id="fluid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FB6AE"/><stop offset="1" stop-color="#0E7E8C"/></linearGradient>
+    <linearGradient id="load" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4A93C"/><stop offset="1" stop-color="#DD841A"/></linearGradient>
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="#0C2235" flood-opacity="0.16"/></filter>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="560" rx="20" fill="url(#bg)"/>
+  <!-- L1 title -->
+  <text x="44" y="50" font-size="26" font-weight="700" fill="#0C2235">The machine you are building</text>
+  <!-- L4 subtitle -->
+  <text x="44" y="80" font-size="15" font-weight="400" fill="#586876">A small power unit pressurizes fluid; the fluid pushes a piston up to lift a heavy load.</text>
+
+  <!-- POWER UNIT -->
+  <g filter="url(#soft)"><rect x="44" y="300" width="250" height="190" rx="16" fill="#FFFFFF" stroke="#D7E0E8"/></g>
+  <text x="68" y="334" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">POWER UNIT</text>
+  <circle cx="110" cy="394" r="32" fill="url(#steel)"/>
+  <text x="110" y="401" font-size="18" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">M</text>
+  <text x="110" y="450" font-size="12" font-weight="400" fill="#586876" text-anchor="middle">motor + pump</text>
+  <rect x="178" y="374" width="88" height="56" rx="6" fill="#F1F6F9" stroke="#CBD7E0"/>
+  <path d="M188,404 q22,-14 44,0 t44,0" fill="none" stroke="#1FB6AE" stroke-width="3"/>
+  <text x="222" y="450" font-size="12" font-weight="400" fill="#586876" text-anchor="middle">reservoir</text>
+
+  <!-- FLUID LINE into cap side, with gauge -->
+  <text x="300" y="356" font-size="13" font-weight="600" fill="#0E7E8C">pressurized fluid</text>
+  <rect x="288" y="384" width="13" height="16" rx="2" fill="#1B3A55"/>
+  <rect x="512" y="384" width="10" height="16" rx="2" fill="#1B3A55"/>
+  <path d="M301,392 H512" fill="none" stroke="url(#fluid)" stroke-width="13" stroke-linecap="round"/>
+  
+  <g transform="translate(400,392)">
+    <circle cx="0" cy="0" r="28" fill="#FFFFFF" stroke="#1B3A55" stroke-width="3"/>
+    <line x1="0" y1="0" x2="15" y2="-16" stroke="#C2463B" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="3.5" fill="#1B3A55"/>
+    <!-- L3 parameter: subordinate to section titles -->
+    <text x="0" y="50" font-size="13" font-weight="600" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">100 bar</text>
+  </g>
+
+  <!-- CYLINDER -->
+  <rect x="520" y="250" width="116" height="190" rx="10" fill="#FFFFFF" stroke="#1B3A55" stroke-width="3"/>
+  <rect x="526" y="352" width="104" height="82" rx="5" fill="url(#fluid)" opacity="0.9"/>
+  <rect x="526" y="332" width="104" height="20" rx="3" fill="#1B3A55"/>
+  <rect x="568" y="222" width="20" height="112" fill="#5B6B79"/>
+  <text x="656" y="356" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">CYLINDER</text>
+  <text x="656" y="380" font-size="12" font-weight="400" fill="#586876">pressure</text>
+  <text x="656" y="397" font-size="12" font-weight="400" fill="#586876">becomes force</text>
+
+  <!-- LOAD + lift -->
+  <g filter="url(#soft)"><rect x="520" y="160" width="116" height="62" rx="8" fill="url(#load)"/></g>
+  <!-- callout value on object -->
+  <text x="578" y="199" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">2 t</text>
+  <line x1="578" y1="154" x2="578" y2="120" stroke="#DD841A" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="578,108 568,126 588,126" fill="#DD841A"/>
+  <text x="600" y="140" font-size="14" font-weight="700" fill="#DD841A">lift</text>
+
+  <!-- figure caption (L4) -->
+  <text x="44" y="528" font-size="14" font-weight="400" fill="#586876">A cylinder the width of a coffee cup, at <tspan font-weight="700" fill="#1B3A55">100&#160;bar</tspan>, lifts roughly <tspan font-weight="700" fill="#DD841A">two&#160;tonnes</tspan>.</text>
+</svg>

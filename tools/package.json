@@ -1,0 +1,7 @@
+{
+  "name": "fluid-power-curriculum-tools",
+  "private": true,
+  "type": "module",
+  "description": "Build + Definition-of-Done gate tooling for the curriculum",
+  "devDependencies": { "jsdom": "^24.0.0" }
+}

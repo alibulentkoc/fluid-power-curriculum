@@ -1,0 +1,58 @@
+<svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Energy path: the power unit converts electrical power into fluid energy; the line carries it as pressure and flow; the cylinder converts it back into force and motion to lift the load.">
+  <!-- Visual Standard v1.0 tiers -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B3A55"/><stop offset="1" stop-color="#0C2235"/></linearGradient>
+    <linearGradient id="fluid" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1FB6AE"/><stop offset="1" stop-color="#0E7E8C"/></linearGradient>
+    <linearGradient id="load" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4A93C"/><stop offset="1" stop-color="#DD841A"/></linearGradient>
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="#0C2235" flood-opacity="0.16"/></filter>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="440" rx="20" fill="url(#bg)"/>
+  <text x="44" y="50" font-size="26" font-weight="700" fill="#0C2235">How energy reaches the load</text>
+  <text x="44" y="78" font-size="15" font-weight="400" fill="#586876">The power unit makes fluid energy; the line carries it; the cylinder turns it back into force and motion.</text>
+
+  <!-- STAGE 1: POWER UNIT -->
+  <g filter="url(#soft)"><rect x="44" y="150" width="200" height="170" rx="14" fill="#FFFFFF" stroke="#D7E0E8"/></g>
+  <text x="64" y="180" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">POWER UNIT</text>
+  <circle cx="104" cy="240" r="28" fill="url(#steel)"/>
+  <text x="104" y="246" font-size="16" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">M</text>
+  <rect x="150" y="220" width="70" height="42" rx="6" fill="#F1F6F9" stroke="#CBD7E0"/>
+  <path d="M158,242 q17,-11 35,0 t35,0" fill="none" stroke="#1FB6AE" stroke-width="2.5"/>
+  <text x="144" y="298" font-size="12" font-weight="400" fill="#586876" text-anchor="middle">electric power &#8594; fluid energy</text>
+
+  <!-- ENERGY ARROW 1 -->
+  <path d="M244,235 H306" stroke="url(#fluid)" stroke-width="12" stroke-linecap="round"/>
+  <polygon points="312,235 296,226 296,244" fill="#0E7E8C"/>
+
+  <!-- STAGE 2: THE LINE (pressure + flow) -->
+  <g filter="url(#soft)"><rect x="318" y="150" width="232" height="170" rx="14" fill="#FFFFFF" stroke="#D7E0E8"/></g>
+  <text x="338" y="180" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">THE LINE</text>
+  <text x="338" y="216" font-size="13" font-weight="600" fill="#1B3A55" font-family="'IBM Plex Mono',ui-monospace,monospace">pressure  100 bar</text>
+  <text x="338" y="240" font-size="13" font-weight="600" fill="#1B3A55" font-family="'IBM Plex Mono',ui-monospace,monospace">flow      ~10 L/min</text>
+  <rect x="332" y="262" width="208" height="40" rx="8" fill="#0C2235"/>
+  <text x="436" y="287" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">power = pressure &#215; flow</text>
+
+  <!-- ENERGY ARROW 2 -->
+  <path d="M550,235 H612" stroke="url(#fluid)" stroke-width="12" stroke-linecap="round"/>
+  <polygon points="618,235 602,226 602,244" fill="#0E7E8C"/>
+
+  <!-- STAGE 3: CYLINDER + LOAD -->
+  <g filter="url(#soft)"><rect x="624" y="150" width="232" height="170" rx="14" fill="#FFFFFF" stroke="#D7E0E8"/></g>
+  <text x="644" y="180" font-size="15" font-weight="700" letter-spacing="1.2" fill="#0E7E8C">CYLINDER</text>
+  <!-- mini vertical cylinder lifting a load -->
+  <rect x="700" y="232" width="48" height="74" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+  <rect x="705" y="268" width="38" height="34" rx="3" fill="url(#fluid)" opacity="0.9"/>
+  <rect x="705" y="256" width="38" height="12" rx="2" fill="#1B3A55"/>
+  <rect x="717" y="206" width="14" height="56" fill="#5B6B79"/>
+  <rect x="694" y="186" width="60" height="22" rx="5" fill="url(#load)"/>
+  <text x="724" y="202" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,monospace">2 t</text>
+  <line x1="724" y1="182" x2="724" y2="162" stroke="#DD841A" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="724,154 717,168 731,168" fill="#DD841A"/>
+  <text x="792" y="262" font-size="12" font-weight="400" fill="#586876">fluid energy</text>
+  <text x="792" y="280" font-size="12" font-weight="400" fill="#586876">&#8594; force + motion</text>
+
+  <!-- bottom strip -->
+  <g><rect x="44" y="356" width="812" height="44" rx="10" fill="#13314A"/>
+  <text x="68" y="384" font-size="15" fill="#FFFFFF">The same power, routed through fluid, travels from the floor up to the load.</text></g>
+</svg>

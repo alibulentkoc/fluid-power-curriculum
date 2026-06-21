@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Transmitting energy to the load</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--amber:#DD841A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .controls{display:grid;gap:16px;margin-top:18px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;margin-bottom:8px}
+  .ctl .val{font-family:var(--mono);font-size:15px;color:var(--teal);font-weight:700}
+  .ctl.amber .val{color:var(--amber)}
+  input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:6px;background:#E3EAF0;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer;box-shadow:0 1px 4px rgba(12,34,53,.25)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer}
+  .ctl.amber input[type=range]::-webkit-slider-thumb{border-color:var(--amber)}
+  .ctl.amber input[type=range]::-moz-range-thumb{border-color:var(--amber)}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:18px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg)}
+  .tile .k{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:21px;font-weight:700;margin-top:3px}
+  .tile.press .v{color:var(--teal)}.tile.flow .v{color:var(--amber)}
+  .tile.power{background:#0C2235;border-color:#0C2235}.tile.power .k{color:#F4C98A}.tile.power .v{color:#fff}
+  .note{font-size:12.5px;color:var(--slate);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Transmitting energy to the load</h1>
+  <p class="sub">The power unit pushes fluid through the line; the cylinder lifts the platform. Raise the flow and the platform rises faster. Raise the pressure and the gauge climbs. Their product is the power delivered.</p>
+
+  <div class="card">
+    <svg id="rig" viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <!-- GUIDE RAILS -->
+      <rect x="446" y="70" width="12" height="222" rx="3" fill="#D7E0E8"/>
+      <rect x="628" y="70" width="12" height="222" rx="3" fill="#D7E0E8"/>
+
+      <!-- POWER UNIT with pump-outlet PORT -->
+      <rect x="20" y="180" width="150" height="120" rx="10" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <text x="34" y="204" font-size="12" font-weight="700" letter-spacing="1" fill="#0E7E8C">POWER UNIT</text>
+      <circle cx="62" cy="252" r="22" fill="#1B3A55"/>
+      <text x="62" y="258" font-size="14" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',monospace">M</text>
+      <rect x="98" y="236" width="54" height="34" rx="5" fill="#F1F6F9" stroke="#CBD7E0"/>
+      <path d="M106,254 q13,-8 27,0 t27,0" fill="none" stroke="#1FB6AE" stroke-width="2.5"/>
+      <rect x="168" y="251" width="13" height="18" rx="2" fill="#1B3A55"/>
+      <text x="174" y="288" font-size="10" font-weight="400" fill="#586876" text-anchor="middle">outlet port</text>
+
+      <!-- CYLINDER with cap PORT at the bottom -->
+      <rect x="494" y="176" width="98" height="116" rx="8" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <rect id="cylFluid" x="500" y="236" width="86" height="50" rx="3" fill="#1FB6AE" opacity="0.9"/>
+      <rect id="cylPiston" x="500" y="220" width="86" height="16" rx="3" fill="#1B3A55"/>
+      <rect id="cylRod" x="536" y="164" width="14" height="56" fill="#5B6B79"/>
+      <rect x="512" y="288" width="18" height="10" rx="2" fill="#1B3A55"/>
+      <text x="566" y="270" font-size="10" font-weight="400" fill="#586876">cap port</text>
+
+      <!-- PLATFORM + LOAD on the rod -->
+      <rect id="platform" x="450" y="150" width="174" height="14" rx="4" fill="#1B3A55"/>
+      <rect id="load" x="510" y="116" width="66" height="34" rx="5" fill="#DD841A"/>
+      <text id="loadTxt" x="543" y="138" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+
+      <!-- HOSE: pump outlet port -> under frame -> cylinder cap port (base + animated flow) -->
+      <path d="M181,260 H430 V312 H521 V298" fill="none" stroke="#0E7E8C" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+      <path id="flowdash" d="M181,260 H430 V312 H521 V298" fill="none" stroke="#9FE7E1" stroke-width="5" stroke-linecap="round" stroke-dasharray="6 14"/>
+
+      <!-- GAUGE on the line -->
+      <g transform="translate(330,260)">
+        <circle cx="0" cy="0" r="24" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+        <line id="needle" x1="0" y1="0" x2="-12" y2="-16" stroke="#C2463B" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="0" cy="0" r="3" fill="#1B3A55"/>
+        <text id="gaugeTxt" x="0" y="-32" font-size="12" font-weight="600" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',monospace">100 bar</text>
+      </g>
+    </svg>
+
+    <div class="controls">
+      <div class="ctl amber"><label>Flow from the pump (how fast) <span class="val"><span id="qVal">10.0</span> L/min</span></label>
+        <input id="q" type="range" min="2" max="30" step="0.5" value="10"/></div>
+      <div class="ctl"><label>Pressure in the line (how hard) <span class="val"><span id="pVal">100</span> bar</span></label>
+        <input id="p" type="range" min="40" max="250" step="5" value="100"/></div>
+    </div>
+
+    <div class="out">
+      <div class="tile flow"><div class="k">Flow</div><div class="v"><span id="qOut">10.0</span> <span style="font-size:12px;color:var(--slate)">L/min</span></div></div>
+      <div class="tile press"><div class="k">Pressure</div><div class="v"><span id="pOut">100</span> <span style="font-size:12px;color:var(--slate)">bar</span></div></div>
+      <div class="tile power"><div class="k">Power delivered = p × Q</div><div class="v"><span id="wOut">1.67</span> <span style="font-size:12px;color:var(--slate)">kW</span></div></div>
+    </div>
+    <p class="note" id="note"></p>
+  </div>
+</div>
+
+<script>
+  const raf=(typeof requestAnimationFrame!=='undefined')?requestAnimationFrame:(cb=>setTimeout(()=>cb(Date.now()),16));
+  const now=()=>(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
+  const Q=document.getElementById('q'),P=document.getElementById('p');
+  const qVal=document.getElementById('qVal'),pVal=document.getElementById('pVal');
+  const qOut=document.getElementById('qOut'),pOut=document.getElementById('pOut'),wOut=document.getElementById('wOut');
+  const needle=document.getElementById('needle'),gaugeTxt=document.getElementById('gaugeTxt'),note=document.getElementById('note');
+  const dash=document.getElementById('flowdash');
+  const platform=document.getElementById('platform'),load=document.getElementById('load'),loadTxt=document.getElementById('loadTxt'),rod=document.getElementById('cylRod'),piston=document.getElementById('cylPiston'),fluid=document.getElementById('cylFluid');
+  const PMAX=250, DEF={q:10,p:100};
+  let rise=0, dashOff=0, last=now();
+
+  function compute(){ const q=+Q.value, p=+P.value; const W=(p*1e5)*(q/60000)/1000; return {q,p,W}; }
+  function readout(){
+    const c=compute(); qVal.textContent=c.q.toFixed(1); pVal.textContent=c.p.toFixed(0);
+    qOut.textContent=c.q.toFixed(1); pOut.textContent=c.p.toFixed(0); wOut.textContent=c.W.toFixed(2);
+    gaugeTxt.textContent=c.p.toFixed(0)+' bar';
+    const a=(-120+Math.min(1,c.p/PMAX)*240)*Math.PI/180, L=20;
+    needle.setAttribute('x2',(L*Math.sin(a)).toFixed(1)); needle.setAttribute('y2',(-L*Math.cos(a)).toFixed(1));
+    note.textContent=(c.q===DEF.q&&c.p===DEF.p)
+      ? "At 100 bar and 10 L/min the line delivers 1.67 kW to the load. Flow sets how fast the platform climbs; pressure sets how hard it pushes; the power is their product."
+      : "Power delivered = pressure × flow. More flow lifts faster; more pressure pushes harder. Watch the platform speed track the flow, not the pressure.";
+  }
+  function frame(){
+    const t=now(), dt=(t-last)/1000; last=t; const c=compute();
+    // flow animates the dashes and the platform rise speed (flow = how fast)
+    dashOff-=c.q*1.4*dt*16; dash.setAttribute('stroke-dashoffset',dashOff.toFixed(1));
+    rise+=c.q*0.9*dt; if(rise>64) rise=0;  // platform climbs at a rate set by flow, then resets
+    const dy=-rise;
+    platform.setAttribute('y',150+dy); load.setAttribute('y',116+dy); loadTxt.setAttribute('y',138+dy);
+    rod.setAttribute('y',164+dy); rod.setAttribute('height',56+rise);
+    raf(frame);
+  }
+  [Q,P].forEach(el=>el.addEventListener('input',readout));
+  readout(); raf(frame);
+</script>
+</body>
+</html>

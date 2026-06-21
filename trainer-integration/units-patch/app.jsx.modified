@@ -1,0 +1,1395 @@
+import { calculate, VEL_SUCTION_MAX, VEL_PRESSURE_MAX, VEL_RETURN_MAX, NPSH_MIN_ABS, CST_TO_FT2S } from "./core/engine.js";
+import { convert as uConvert, convertTemperature as uConvertTemp } from "./units/index.js";
+// Display-only unit formatting (module-level so render components can use it once the display
+// mode is threaded in as a prop). Pure presentation: never used by calculate(), persistence, or
+// evidence. `mode` is "customary" | "SI". The native (engine) unit is passed explicitly per site;
+// customary shows it as-is, SI converts to the SI display unit for that dimension.
+const SI_DISPLAY = { in:"mm", ft:"m", psi:"bar", psia:"bar", lbf:"N", gpm:"L/min", "gal/min":"L/min", "in/s":"mm/s", "ft/s":"m/s", gal:"L", in2:"cm2", "lb-in":"N.m", HP:"kW", F:"C" };
+// Returns the display {value, unit}: native in customary mode, SI-converted in SI mode.
+function convU(nativeVal, nativeUnit, mode){
+  if(nativeVal==null || !isFinite(nativeVal)) return { value:nativeVal, unit:nativeUnit };
+  if(mode!=="SI") return { value:nativeVal, unit:nativeUnit };
+  const to = SI_DISPLAY[nativeUnit];
+  if(!to) return { value:nativeVal, unit:nativeUnit };
+  try{ const v = nativeUnit==="F" ? uConvertTemp(nativeVal,"F","C") : uConvert(nativeVal,nativeUnit==="gal/min"?"gpm":nativeUnit, to==="L/min"&&nativeUnit==="gal/min"?"L/min":to); return { value:v, unit:to }; }
+  catch(e){ return { value:nativeVal, unit:nativeUnit }; }
+}
+function fmtU(nativeVal, nativeUnit, mode, digits=2){
+  if(nativeVal==null || !isFinite(nativeVal)) return String(nativeVal);
+  const p = convU(nativeVal, nativeUnit, mode);
+  return (typeof p.value==="number"?p.value.toFixed(digits):p.value)+" "+p.unit;
+}
+const { useState, useRef, useEffect, useMemo, useId } = React;
+
+const T = {
+  bg:"#080c10", panel:"#0c1118", card:"#101820", border:"#1a2736",
+  line:"#111c26", accent:"#00aaff", accentDim:"#005580", warn:"#ffaa00", danger:"#ff4444",
+  ok:"#00cc88", text:"#cad9e6", muted:"#6a89a0", dim:"#2a3d50", borderHi:"#4a6a92",
+  hp:"#ff5533", ret:"#3388ff", suction:"#00cc66", symStroke:"#a8cbe0", gridLine:"#0e1620", elec:"#ffd24d",
+};
+
+const FLUIDS=[                       // ISO VG grades, kinematic viscosity (cSt @ ~40C)
+  {label:"ISO VG 22",cSt:22},{label:"ISO VG 32",cSt:32},{label:"ISO VG 46",cSt:46},
+  {label:"ISO VG 68",cSt:68},{label:"ISO VG 100",cSt:100},
+];
+const MOUNTS=[                       // cylinder rod end-condition factor K (Euler)
+  {label:"Fixed / Free (worst)",K:2.0},{label:"Pinned / Pinned",K:1.0},
+  {label:"Fixed / Pinned",K:0.7},{label:"Fixed / Fixed (best)",K:0.5},
+];
+const FILTERS=[                      // location -> typical clean pressure drop (psi)
+  {label:"Pressure filter (10 micron)",loc:"pressure",micron:10,dp:20},
+  {label:"Return filter (25 micron)",loc:"return",micron:25,dp:8},
+  {label:"Suction strainer (100 micron)",loc:"suction",micron:100,dp:2},
+];
+
+const FRICTION=[
+  {label:"Steel / Steel (dry)",mu:0.40},{label:"Steel / Steel (oiled)",mu:0.12},
+  {label:"Steel / Bronze",mu:0.16},{label:"Steel / PTFE",mu:0.05},
+  {label:"Steel / Cast Iron",mu:0.18},{label:"Custom mu",mu:null},
+];
+// Representative power sources (relief psi, available remote flow GPM). TYPICAL values - verify against the
+// unit's own NTTL/OECD report or operator manual. Sources: NTTL summaries & OEM spec sheets.
+const POWER_SOURCES=[
+  {label:"-- none (I am designing my own) --",psi:null,gpm:null},
+  {label:"Compact tractor (~2500 psi, 5 GPM)",psi:2500,gpm:5},
+  {label:"Utility tractor (~2500 psi, 12 GPM)",psi:2500,gpm:12},
+  {label:"Utility tractor (~2320 psi, 17 GPM)",psi:2320,gpm:17},
+  {label:"Row-crop PFC (~2900 psi, 29 GPM)",psi:2900,gpm:29},
+  {label:"Large ag (~2700 psi, 40 GPM)",psi:2700,gpm:40},
+  {label:"Industrial power unit (~3000 psi, 10 GPM)",psi:3000,gpm:10},
+  {label:"Small power pack (~2000 psi, 3 GPM)",psi:2000,gpm:3},
+];
+
+const DCV_TYPES={
+  closed:{name:"Closed center",neutral:"P, T, A, B all blocked. Pump deadheads -> relief opens; actuator locked."},
+  tandem:{name:"Tandem center",neutral:"P connected to T; A & B blocked. Pump unloads to tank at low pressure; actuator locked."},
+  float:{name:"Float center",neutral:"P blocked; A, B, T connected. Pump deadheads -> relief; actuator floats to tank."},
+  open:{name:"Open center",neutral:"A, B, P, T all connected. Pump unloads; actuator floats."},
+};
+
+// ---- PERSISTENCE CORE (Phase 3; pure, no DOM, unit-tested) ----
+// Stored: the design inputs, plus (since schema v2) a small `prefs` block for accessibility
+// preferences. Everything derived (calc, schematic, warnings) is recomputed. The KEY name keeps
+// its original suffix as a storage slot; the envelope's schemaVersion is the authoritative version.
+const PERSIST = { KEY:"hydraulic-trainer/state/v1", APP:"hydraulic-trainer", SCHEMA_VERSION:2 };
+// Accessibility/display preferences (schema v2+). animation:"auto" follows the OS
+// prefers-reduced-motion setting; "on"/"off" are explicit user overrides.
+const PREF_DEFAULTS = { animation:"auto", display_mode:"customary" };
+const PREF_ENUMS = { animation:["auto","on","off"], display_mode:["customary","SI"] };
+function coercePrefs(obj){
+  const src=(obj && typeof obj==="object")?obj:{};
+  const out={};
+  for(const k in PREF_DEFAULTS){ out[k]=src[k]; }
+  for(const k in PREF_ENUMS){ if(PREF_ENUMS[k].indexOf(out[k])===-1) out[k]=PREF_DEFAULTS[k]; }
+  return out;
+}
+// Canonical persisted fields and defaults. These MUST equal the App's initial input state.
+const INPUT_DEFAULTS = {
+  actuator:"cylinder", sizeMode:"design",
+  load:5000, angle:45, stroke:12, safetyFactor:1.25,
+  frictionPre:1, customMu:0.15,
+  loadTorque:600, motorDisp:2.0,
+  targetSpeedCyl:3, targetSpeedMot:500,
+  maxPressure:2500, pumpDisp:0.60, pumpRPM:1750,
+  fluidIdx:2, mountIdx:1, filterIdx:0,
+  ambientTemp:80, targetOilTemp:140, dutyCyclePct:70, pumpElevIn:0, valveDP:50,
+  suctionLen:36, pressureLen:120, returnLen:120,
+  powerSrcIdx:0,
+};
+const PERSIST_ENUMS = { actuator:["cylinder","motor"], sizeMode:["design","analyze"] };
+const PERSIST_IDX = { fluidIdx:()=>FLUIDS.length, mountIdx:()=>MOUNTS.length, filterIdx:()=>FILTERS.length, frictionPre:()=>FRICTION.length, powerSrcIdx:()=>POWER_SOURCES.length };
+// Coerce any object into a complete, valid inputs object. Never throws; fills gaps from defaults.
+function coerceInputs(obj){
+  const src=(obj && typeof obj==="object")?obj:{};
+  const out={};
+  for(const k in INPUT_DEFAULTS){
+    const def=INPUT_DEFAULTS[k]; let v=src[k];
+    if(typeof def==="number"){ v=Number(v); if(!Number.isFinite(v)) v=def; }
+    else { if(typeof v!=="string") v=def; }
+    out[k]=v;
+  }
+  for(const k in PERSIST_ENUMS){ if(PERSIST_ENUMS[k].indexOf(out[k])===-1) out[k]=INPUT_DEFAULTS[k]; }
+  for(const k in PERSIST_IDX){ const n=PERSIST_IDX[k](); let i=Math.round(out[k]); out[k]=(i>=0&&i<n)?i:INPUT_DEFAULTS[k]; }
+  return out;
+}
+// Migrate a stored/imported envelope to the current schema, returning {inputs, prefs} or null.
+function migrateEnvelope(raw){
+  if(!raw || typeof raw!=="object") return null;
+  // Version chain: v1 had inputs only -> add default prefs. v2 adds prefs. Unknown/newer versions
+  // are coerced best-effort rather than rejected, so a file from a future build still opens.
+  const inputs=coerceInputs(raw.inputs!=null?raw.inputs:raw);
+  const prefs=coercePrefs(raw.prefs);   // absent in v1 -> defaults (the v1 -> v2 upgrade)
+  return { inputs, prefs };
+}
+function makeEnvelope(inputs, prefs){
+  return { app:PERSIST.APP, schemaVersion:PERSIST.SCHEMA_VERSION, savedAt:new Date().toISOString(),
+    inputs:coerceInputs(inputs), prefs:coercePrefs(prefs) };
+}
+function parseEnvelope(text){
+  try{ const m=migrateEnvelope(JSON.parse(text)); return m||null; }
+  catch(e){ return null; }
+}
+// ---- end persistence core ----
+
+// ---- FLOW PATH ----
+function FlowPath({d,color,glow,active,speed=1,width=2.5,reverse=false,particles=5,clock}){
+  const ref=useRef(null);
+  const [len,setLen]=useState(0);
+  useEffect(()=>{ if(ref.current){ try{setLen(ref.current.getTotalLength());}catch(e){} } },[d]);
+  const dots=[];
+  if(active && len>0 && ref.current){
+    for(let i=0;i<particles;i++){
+      let frac=((clock*speed*0.00016)+(i/particles))%1;
+      if(frac<0) frac+=1;
+      if(reverse) frac=1-frac;
+      try{const p=ref.current.getPointAtLength(frac*len); const fade=Math.sin(frac*Math.PI);
+        dots.push(<circle key={i} cx={p.x} cy={p.y} r={2.6} fill={color} opacity={0.5+0.45*fade}/>);}catch(e){}
+    }
+  }
+  return (<g>
+    <path d={d} stroke={T.dim} strokeWidth={width+1.5} fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+    {active && <path d={d} stroke={glow} strokeWidth={width+8} fill="none" strokeLinecap="round" strokeLinejoin="round" style={{filter:"blur(5px)",opacity:0.28}}/>}
+    <path ref={ref} d={d} stroke={active?color:T.dim} strokeWidth={width} fill="none" strokeLinecap="round" strokeLinejoin="round" style={{transition:"stroke 0.4s",opacity:active?0.85:1}}/>
+    {dots}
+  </g>);
+}
+
+// ---- SYMBOLS ----
+function ElecMotor({cx,cy,on,clock,sc}){
+  const a=(clock*0.22)%360;
+  return (<g>
+    <circle cx={cx} cy={cy} r={24} fill={T.card} stroke={on?T.elec:T.dim} strokeWidth={2}/>
+    {on && <line x1={cx} y1={cy} x2={cx+Math.cos(a*Math.PI/180)*15} y2={cy+Math.sin(a*Math.PI/180)*15} stroke={T.elec+"99"} strokeWidth={2}/>}
+    <text x={cx} y={cy+5} textAnchor="middle" fill={on?T.elec:T.muted} fontSize={15*sc} fontFamily="monospace" fontWeight="bold">M</text>
+    <text x={cx} y={cy+38} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">ELEC MOTOR</text>
+    <text x={cx} y={cy+48} textAnchor="middle" fill={on?T.ok:T.muted} fontSize={8*sc} fontFamily="monospace">{on?"RUNNING":"OFF"}</text>
+  </g>);
+}
+function Switch({cx,cy,on}){
+  // SPST electrical switch on the motor supply line (horizontal)
+  return (<g>
+    <line x1={cx-22} y1={cy} x2={cx-6} y2={cy} stroke={on?T.elec:T.muted} strokeWidth={2}/>
+    <circle cx={cx-6} cy={cy} r={2.5} fill={on?T.elec:T.muted}/>
+    <line x1={cx-6} y1={cy} x2={cx+8} y2={on?cy:cy-12} stroke={on?T.elec:T.muted} strokeWidth={2}/>
+    <circle cx={cx+8} cy={cy} r={2.5} fill={on?T.elec:T.muted}/>
+    <line x1={cx+8} y1={cy} x2={cx+24} y2={cy} stroke={on?T.elec:T.muted} strokeWidth={2}/>
+    <text x={cx} y={cy+16} textAnchor="middle" fill={on?T.elec:T.muted} fontSize={7} fontFamily="monospace">{on?"CLOSED":"OPEN"}</text>
+  </g>);
+}
+function Pump({cx,cy,flow,disp,running,clock,sc,du}){
+  const a=running?(clock*0.30)%360:0;
+  return (<g>
+    <circle cx={cx} cy={cy} r={24} fill={T.card} stroke={T.symStroke} strokeWidth={2}/>
+    <g transform={"rotate("+a+" "+cx+" "+cy+")"}>
+      <polygon points={(cx-12)+","+(cy-13)+" "+(cx-12)+","+(cy+13)+" "+(cx+15)+","+cy} fill={T.symStroke}/>
+    </g>
+    <text x={cx} y={cy+38} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">HYD PUMP</text>
+    {flow!=null && <text x={cx} y={cy+48} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{fmtU(flow,"gpm",du,2)}</text>}
+  </g>);
+}
+function Reservoir({cx,cy,sc}){
+  const w=190,h=54,L=cx-w/2,R=cx+w/2,B=cy+h;
+  return (<g>
+    <polyline points={(L+16)+","+cy+" "+L+","+cy+" "+L+","+B+" "+R+","+B+" "+R+","+cy+" "+(R-16)+","+cy}
+      fill="none" stroke={T.symStroke} strokeWidth={2.5} strokeLinejoin="round"/>
+    <line x1={L+10} y1={cy+12} x2={R-10} y2={cy+12} stroke={T.suction} strokeWidth={1} strokeDasharray="5 3" opacity={0.45}/>
+    <text x={cx} y={B+15} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">RESERVOIR (VENTED)</text>
+  </g>);
+}
+function ReliefValve({cx,cy,setting,blowing,clock,sc,du}){
+  const pulse=blowing?0.5+0.5*Math.sin(clock*0.012):0, col=blowing?T.danger:T.symStroke, aop=blowing?0.6+0.4*pulse:0.85, s=16;
+  return (<g>
+    <rect x={cx-s} y={cy-s} width={2*s} height={2*s} fill={T.card} stroke={col} strokeWidth={1.6}/>
+    <line x1={cx-4} y1={cy+9} x2={cx-4} y2={cy-9} stroke={col} strokeWidth={1.7} opacity={aop}/>
+    <polygon points={(cx-8)+","+(cy+3)+" "+(cx-4)+","+(cy+11)+" "+cx+","+(cy+3)} fill={col} opacity={aop}/>
+    <line x1={cx+5} y1={cy-s} x2={cx+5} y2={cy-s+6} stroke={T.dim} strokeWidth={1.2}/>
+    <line x1={cx+5} y1={cy+s} x2={cx+5} y2={cy+s-6} stroke={T.dim} strokeWidth={1.2}/>
+    <path d={"M"+(cx+s)+","+cy+" l5,-6 l4,12 l4,-12 l4,12 l4,-6"} fill="none" stroke={T.symStroke} strokeWidth={1.3}/>
+    <line x1={cx+s+21} y1={cy-9} x2={cx+s+21} y2={cy+9} stroke={T.symStroke} strokeWidth={1.6}/>
+    <line x1={cx+s-1} y1={cy+13} x2={cx+s+19} y2={cy-13} stroke={T.symStroke} strokeWidth={1}/>
+    <path d={"M"+cx+","+(cy-s-7)+" L"+(cx-s-15)+","+(cy-s-7)+" L"+(cx-s-15)+","+cy+" L"+(cx-s)+","+cy} fill="none" stroke={T.symStroke} strokeWidth={0.9} strokeDasharray="3 2"/>
+    <line x1={cx} y1={cy-s} x2={cx} y2={cy-s-14} stroke={T.symStroke} strokeWidth={1.6}/>
+    <line x1={cx} y1={cy+s} x2={cx} y2={cy+s+14} stroke={T.symStroke} strokeWidth={1.6}/>
+    <text x={cx+s+10} y={cy+s+12} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">RELIEF</text>
+    {setting!=null && <text x={cx+s+10} y={cy+s+22} textAnchor="middle" fill={T.danger} fontSize={8*sc} fontFamily="monospace">{fmtU(setting,"psi",du,0)}</text>}
+    {blowing && <text x={cx} y={cy-s-20} textAnchor="middle" fill={T.danger} fontSize={7*sc} fontFamily="monospace" opacity={aop}>RELIEVING</text>}
+  </g>);
+}
+
+function DCV({cx,cy,pos,dcvType,sc}){
+  const bw=42,bh=52,cbT=cy-bh/2,cbB=cy+bh/2,ins=8;
+  const pxL=cx-bw/4,pxR=cx+bw/4;
+  const spoolShift=pos==="extend"?bw:pos==="retract"?-bw:0;
+  const activeIdx=pos==="extend"?-1:pos==="retract"?1:0;
+  const head=(x,y,dir,c)=>{
+    if(dir==="up") return <polygon points={(x-3.5)+","+(y+5)+" "+x+","+y+" "+(x+3.5)+","+(y+5)} fill={c}/>;
+    if(dir==="down") return <polygon points={(x-3.5)+","+(y-5)+" "+x+","+y+" "+(x+3.5)+","+(y-5)} fill={c}/>;
+    return null;
+  };
+  function Center({bx,on}){
+    const L=bx-bw/4,R=bx+bw/4,Tp=cy-bh/2+ins,Bt=cy+bh/2-ins,c=on?T.accent:T.symStroke,mid=cy;
+    const cap=(x,y,v)=>(v==="v")?<line x1={x-3} y1={y} x2={x+3} y2={y} stroke={T.dim} strokeWidth={1.3}/>:null;
+    if(dcvType==="closed") return (<g stroke={T.dim} strokeWidth={1.3} fill="none">
+      <line x1={L} y1={cy-bh/2} x2={L} y2={Tp}/>{cap(L,Tp)}<line x1={R} y1={cy-bh/2} x2={R} y2={Tp}/>{cap(R,Tp)}
+      <line x1={L} y1={cy+bh/2} x2={L} y2={Bt}/>{cap(L,Bt)}<line x1={R} y1={cy+bh/2} x2={R} y2={Bt}/>{cap(R,Bt)}
+    </g>);
+    if(dcvType==="tandem") return (<g fill="none">
+      {/* A,B blocked (top) */}
+      <g stroke={T.dim} strokeWidth={1.3}><line x1={L} y1={cy-bh/2} x2={L} y2={Tp}/>{cap(L,Tp)}<line x1={R} y1={cy-bh/2} x2={R} y2={Tp}/>{cap(R,Tp)}</g>
+      {/* P-T joined (bottom) */}
+      <g stroke={c} strokeWidth={1.5}><line x1={L} y1={cy+bh/2} x2={L} y2={Bt}/><line x1={L} y1={Bt} x2={R} y2={Bt}/><line x1={R} y1={Bt} x2={R} y2={cy+bh/2}/></g>
+      <polygon points={(R-4)+","+(Bt-3)+" "+R+","+(Bt+3)+" "+(R+4)+","+(Bt-3)} fill={c}/>
+    </g>);
+    if(dcvType==="float") return (<g fill="none">
+      {/* P blocked (bottom-left) */}
+      <g stroke={T.dim} strokeWidth={1.3}><line x1={L} y1={cy+bh/2} x2={L} y2={Bt}/>{cap(L,Bt)}</g>
+      {/* A,B,T joined */}
+      <g stroke={c} strokeWidth={1.5}>
+        <line x1={L} y1={cy-bh/2} x2={L} y2={mid}/><line x1={R} y1={cy-bh/2} x2={R} y2={mid}/>
+        <line x1={R} y1={cy+bh/2} x2={R} y2={mid}/><line x1={L} y1={mid} x2={R} y2={mid}/>
+      </g>
+      <circle cx={(L+R)/2} cy={mid} r={2} fill={c}/>
+    </g>);
+    // open: all joined
+    return (<g stroke={c} strokeWidth={1.5} fill="none">
+      <line x1={L} y1={cy-bh/2} x2={L} y2={mid}/><line x1={R} y1={cy-bh/2} x2={R} y2={mid}/>
+      <line x1={L} y1={cy+bh/2} x2={L} y2={mid}/><line x1={R} y1={cy+bh/2} x2={R} y2={mid}/>
+      <line x1={L} y1={mid} x2={R} y2={mid}/><circle cx={(L+R)/2} cy={mid} r={2} fill={c}/>
+    </g>);
+  }
+  function Side({bx,kind,on}){
+    const L=bx-bw/4,R=bx+bw/4,Tp=cy-bh/2+ins,Bt=cy+bh/2-ins,fc=on?T.hp:T.symStroke,sw=on?1.9:1.4;
+    return (<g stroke={fc} strokeWidth={sw} fill="none">
+      {kind==="parallel" && (<g><line x1={L} y1={Bt} x2={L} y2={Tp+4}/>{head(L,Tp+2,"up",fc)}<line x1={R} y1={Tp} x2={R} y2={Bt-4}/>{head(R,Bt-2,"down",fc)}</g>)}
+      {kind==="crossed" && (<g><line x1={L} y1={Bt} x2={R} y2={Tp+4}/><polygon points={(R-4)+","+(Tp+6)+" "+R+","+(Tp+1)+" "+(R+1)+","+(Tp+7)} fill={fc}/><line x1={L} y1={Tp} x2={R} y2={Bt-4}/><polygon points={(R-4)+","+(Bt-6)+" "+R+","+(Bt-1)+" "+(R+1)+","+(Bt-7)} fill={fc}/></g>)}
+    </g>);
+  }
+  const box=(bx,on)=><rect x={bx-bw/2} y={cy-bh/2} width={bw} height={bh} fill={on?"#00aaff14":T.card} stroke={on?T.accent:T.symStroke} strokeWidth={on?2:1.5}/>;
+  return (<g>
+    <g style={{transform:"translateX("+spoolShift+"px)",transition:"transform 0.35s ease"}}>
+      {box(cx-bw,activeIdx===-1)}{box(cx,activeIdx===0)}{box(cx+bw,activeIdx===1)}
+      <Side bx={cx-bw} kind="parallel" on={activeIdx===-1}/>
+      <g><Center bx={cx} on={activeIdx===0}/></g>
+      <Side bx={cx+bw} kind="crossed" on={activeIdx===1}/>
+      <g stroke={T.symStroke} strokeWidth={1.4} fill={T.card}>
+        <rect x={cx-bw*1.5-20} y={cy-9} width={18} height={18} fill={pos==="extend"?"#ff553330":T.card}/>
+        <line x1={cx-bw*1.5-20} y1={cy-9} x2={cx-bw*1.5-2} y2={cy+9}/>
+        <rect x={cx+bw*1.5+2} y={cy-9} width={18} height={18} fill={pos==="retract"?"#3388ff30":T.card}/>
+        <line x1={cx+bw*1.5+2} y1={cy-9} x2={cx+bw*1.5+20} y2={cy+9}/>
+      </g>
+      {[-1,1].map(s=>{const sx=cx+s*(bw*1.5+1);return(<path key={s} d={"M"+sx+","+(cy-7)+" q"+(s*5)+",3 0,7 q"+(-s*5)+",3 0,7"} fill="none" stroke={T.symStroke} strokeWidth={1.2}/>);})}
+    </g>
+    <line x1={pxL} y1={cbT} x2={pxL} y2={cbT-16} stroke={T.symStroke} strokeWidth={1.6}/>
+    <line x1={pxR} y1={cbT} x2={pxR} y2={cbT-16} stroke={T.symStroke} strokeWidth={1.6}/>
+    <line x1={pxL} y1={cbB} x2={pxL} y2={cbB+16} stroke={T.symStroke} strokeWidth={1.6}/>
+    <line x1={pxR} y1={cbB} x2={pxR} y2={cbB+16} stroke={T.symStroke} strokeWidth={1.6}/>
+    <circle cx={pxL} cy={cbT} r={2.5} fill={T.symStroke}/><circle cx={pxR} cy={cbT} r={2.5} fill={T.symStroke}/>
+    <circle cx={pxL} cy={cbB} r={2.5} fill={T.symStroke}/><circle cx={pxR} cy={cbB} r={2.5} fill={T.symStroke}/>
+    <text x={pxL-8} y={cbT-6} textAnchor="middle" fill={T.muted} fontSize={9*sc} fontFamily="monospace">A</text>
+    <text x={pxR+8} y={cbT-6} textAnchor="middle" fill={T.muted} fontSize={9*sc} fontFamily="monospace">B</text>
+    <text x={pxL-8} y={cbB+13} textAnchor="middle" fill={T.muted} fontSize={9*sc} fontFamily="monospace">P</text>
+    <text x={pxR+8} y={cbB+13} textAnchor="middle" fill={T.muted} fontSize={9*sc} fontFamily="monospace">T</text>
+    <text x={cx} y={cbT-26} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">{"4/3 DCV - "+DCV_TYPES[dcvType].name.toUpperCase()}</text>
+  </g>);
+}
+
+// Cylinder: ports at the extreme ends (behind the sealed piston). Piston never covers a port.
+function Cylinder({cx,cy,boreDia,rodDia,pistonPos,pos,moving,sc}){
+  const bodyHalf=58,top=cy-18,bot=cy+18,h=36,bodyL=cx-bodyHalf,bodyR=cx+bodyHalf,pistonW=9;
+  const minX=bodyL+24, maxX=bodyR-30;           // piston travel limits (stays between ports)
+  const pistonX=minX+pistonPos*(maxX-minX);
+  const rodTipX=pistonX+pistonW+95;
+  const capPortX=bodyL+12, rodPortX=bodyR-12;    // ports outboard of piston travel
+  const extending=pos==="extend", retracting=pos==="retract";
+  const capColor=extending?T.hp:retracting?T.ret:T.dim, rodColor=retracting?T.hp:extending?T.ret:T.dim;
+  return (<g>
+    <rect x={bodyL+3} y={top+2} width={Math.max(pistonX-(bodyL+3),0)} height={h-4} fill={capColor} opacity={0.16}/>
+    <rect x={pistonX+pistonW} y={top+2} width={Math.max(bodyR-3-(pistonX+pistonW),0)} height={h-4} fill={rodColor} opacity={0.16}/>
+    <rect x={bodyL} y={top} width={bodyHalf*2} height={h} fill="none" stroke={T.symStroke} strokeWidth={1.5}/>
+    <line x1={bodyL} y1={top} x2={bodyL} y2={bot} stroke={T.symStroke} strokeWidth={3.5}/>
+    <line x1={bodyR} y1={top} x2={bodyR} y2={cy-6} stroke={T.symStroke} strokeWidth={2.5}/>
+    <line x1={bodyR} y1={cy+6} x2={bodyR} y2={bot} stroke={T.symStroke} strokeWidth={2.5}/>
+    {/* sealed piston */}
+    <rect x={pistonX} y={top+2} width={pistonW} height={h-4} fill={T.symStroke} opacity={0.9}/>
+    <line x1={pistonX+2} y1={top+2} x2={pistonX+2} y2={bot-2} stroke={T.bg} strokeWidth={0.8}/>
+    <line x1={pistonX+pistonW-2} y1={top+2} x2={pistonX+pistonW-2} y2={bot-2} stroke={T.bg} strokeWidth={0.8}/>
+    <rect x={pistonX+pistonW} y={cy-6} width={rodTipX-(pistonX+pistonW)} height={12} fill={T.symStroke} opacity={0.7} rx={1}/>
+    {/* cap-end port (far left, always behind piston) */}
+    <line x1={capPortX} y1={top} x2={capPortX} y2={top-16} stroke={T.symStroke} strokeWidth={1.6}/>
+    <circle cx={capPortX} cy={top-16} r={3} fill={capColor}/>
+    <text x={capPortX} y={top-22} textAnchor="middle" fill={T.muted} fontSize={8*sc} fontFamily="monospace">A(cap)</text>
+    {/* rod-end port (far right, always ahead of piston) */}
+    <line x1={rodPortX} y1={top} x2={rodPortX} y2={top-16} stroke={T.symStroke} strokeWidth={1.6}/>
+    <circle cx={rodPortX} cy={top-16} r={3} fill={rodColor}/>
+    <text x={rodPortX} y={top-22} textAnchor="middle" fill={T.muted} fontSize={8*sc} fontFamily="monospace">B(rod)</text>
+    <text x={cx} y={bot+16} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">DOUBLE-ACTING CYLINDER</text>
+    {boreDia!=null && <text x={cx} y={bot+26} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{"bore "+boreDia+'" rod '+rodDia+'"'}</text>}
+  </g>);
+}
+
+function HydMotor({cx,cy,spin,clock,sc,torque,speed,du}){
+  const a=spin!==0 ? (clock*0.0006*Math.abs(speed||300)*spin)%360 : 0;
+  return (<g>
+    <circle cx={cx} cy={cy} r={30} fill={T.card} stroke={T.symStroke} strokeWidth={2}/>
+    {/* motor = triangles pointing INWARD */}
+    <polygon points={(cx-30)+","+(cy-10)+" "+(cx-30)+","+(cy+10)+" "+(cx-14)+","+cy} fill={T.symStroke}/>
+    <polygon points={(cx+30)+","+(cy-10)+" "+(cx+30)+","+(cy+10)+" "+(cx+14)+","+cy} fill={T.symStroke}/>
+    <g transform={"rotate("+a+" "+cx+" "+cy+")"}>
+      <line x1={cx-9} y1={cy} x2={cx+9} y2={cy} stroke={T.accent} strokeWidth={2}/>
+      <line x1={cx} y1={cy-9} x2={cx} y2={cy+9} stroke={T.accent} strokeWidth={2}/>
+    </g>
+    {/* ports A,B on top */}
+    <line x1={cx-14} y1={cy-30} x2={cx-14} y2={cy-44} stroke={T.symStroke} strokeWidth={1.6}/>
+    <text x={cx-14} y={cy-48} textAnchor="middle" fill={T.muted} fontSize={8*sc} fontFamily="monospace">A</text>
+    <line x1={cx+14} y1={cy-30} x2={cx+14} y2={cy-44} stroke={T.symStroke} strokeWidth={1.6}/>
+    <text x={cx+14} y={cy-48} textAnchor="middle" fill={T.muted} fontSize={8*sc} fontFamily="monospace">B</text>
+    <text x={cx} y={cy+44} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">HYDRAULIC MOTOR</text>
+    {torque!=null && <text x={cx} y={cy+54} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{fmtU(torque,"lb-in",du,0)}</text>}
+    {spin!==0 && <text x={cx} y={cy+64} textAnchor="middle" fill={T.ok} fontSize={7*sc} fontFamily="monospace">{spin>0?"CW":"CCW"} {Math.abs(speed||0).toFixed(0)} rpm</text>}
+  </g>);
+}
+
+function Gauge({cx,cy,value,max,label,sc}){
+  const frac=Math.min(value/Math.max(max,1),1),ang=-120+frac*240,rad=ang*Math.PI/180;
+  const nx=cx+Math.sin(rad)*22,ny=cy-Math.cos(rad)*22,col=frac>0.9?T.danger:frac>0.7?T.warn:T.ok;
+  return (<g>
+    <circle cx={cx} cy={cy} r={28} fill={T.card} stroke={T.border} strokeWidth={1.5}/>
+    {[-120,-60,0,60,120].map((aa,i)=>{const rr=aa*Math.PI/180;return(<line key={i} x1={cx+Math.sin(rr)*24} y1={cy-Math.cos(rr)*24} x2={cx+Math.sin(rr)*28} y2={cy-Math.cos(rr)*28} stroke={T.muted} strokeWidth={1}/>);})}
+    <line x1={cx} y1={cy} x2={nx} y2={ny} stroke={col} strokeWidth={2} strokeLinecap="round" style={{transition:"all 0.15s"}}/>
+    <circle cx={cx} cy={cy} r={3} fill={col}/>
+    <text x={cx} y={cy+19} textAnchor="middle" fill={col} fontSize={8*sc} fontFamily="monospace" fontWeight="bold">{value.toFixed(0)}</text>
+    <text x={cx} y={cy+42} textAnchor="middle" fill={T.muted} fontSize={7*sc} fontFamily="monospace">{label}</text>
+  </g>);
+}
+function NodeChip({x,y,p,q,color,label,sc,du}){
+  return (<g transform={"translate("+x+","+y+")"}>
+    <rect x={-30} y={-13} width={60} height={26} rx={3} fill={T.panel} stroke={color} opacity={0.95}/>
+    <text x={0} y={-3} textAnchor="middle" fill={color} fontSize={6.5*sc} fontFamily="monospace">{label}</text>
+    <text x={0} y={7} textAnchor="middle" fill={T.text} fontSize={6.5*sc} fontFamily="monospace">{fmtU(p,"psi",du,0)+" "+fmtU(q,"gpm",du,1)}</text>
+  </g>);
+}
+
+// ---- SCHEMATIC ----
+function Schematic({calc,inp,pos,pistonPos,clock,motorOn,dcvType,actuator,showGauges,showVectors,sc,du}){
+  const isCyl=actuator==="cylinder";
+  const isExt=pos==="extend", isRet=pos==="retract", neutral=pos==="neutral";
+  const bottomed=isCyl && ((isExt&&pistonPos>=0.999)||(isRet&&pistonPos<=0.001));
+  const stalled=calc ? (isCyl ? ((isExt&&calc.stallExtend)||(isRet&&calc.stallRetract)) : calc.stalled) : false;
+  const moving=motorOn && !neutral && !bottomed && !stalled;
+  const deadheadNeutral=motorOn && neutral && (dcvType==="closed"||dcvType==="float");
+  const centerUnload=motorOn && neutral && (dcvType==="tandem"||dcvType==="open");
+  const reliefBlowing=deadheadNeutral || (motorOn && !neutral && (bottomed||stalled));
+  const running=motorOn;
+  const pToValve=running && (!neutral || centerUnload) && !stalled;
+
+  const motorX=80,motorY=300, pumpX=190,pumpY=300, resX=300,resY=510, teeX=320,teeY=300, rvX=320,rvY=415, dcvX=560,dcvY=360, cylX=800,cylY=330;
+  const bw=42,bh=52;
+  const Px=dcvX-bw/4, Tx=dcvX+bw/4, portBy=dcvY+bh/2+16, Ax=dcvX-bw/4, Bx=dcvX+bw/4, portAy=dcvY-bh/2-16;
+  const sucX=230, retX=370, mergeY=478;          // return manifold y (relief outlet ties in here)
+
+  // cylinder geometry mirrored from Cylinder()
+  const bodyHalf=58, minX=cylX-bodyHalf+24, maxX=cylX+bodyHalf-30;
+  const pistonX=minX+pistonPos*(maxX-minX), rodTipX=pistonX+9+95, loadX=rodTipX+24;
+  const capPortX=cylX-bodyHalf+12, rodPortX=cylX+bodyHalf-12;
+  // mount-angle tilt: cylinder hinges at the cap (mount) end. 0deg = horizontal, 90deg = vertical lift.
+  const angleDeg=isCyl?(inp&&inp.angleDeg||0):0;
+  const tiltDeg=-angleDeg;                        // SVG y is down, so tilt "up" is negative
+  const pivotX=cylX-bodyHalf, pivotY=cylY, ra=tiltDeg*Math.PI/180;
+  const rotPt=(x,y)=>{const dx=x-pivotX,dy=y-pivotY;return [pivotX+dx*Math.cos(ra)-dy*Math.sin(ra), pivotY+dx*Math.sin(ra)+dy*Math.cos(ra)];};
+  const rotXf="rotate("+tiltDeg+" "+pivotX+" "+pivotY+")";
+  // motor port positions
+  const motAx=cylX-14, motBx=cylX+14, motPortY=cylY-44;
+  const capPt=isCyl?rotPt(capPortX,cylY-34):[motAx,motPortY];
+  const rodPt=isCyl?rotPt(rodPortX,cylY-34):[motBx,motPortY];
+  const aPortX=capPt[0], aPortY=capPt[1], bPortX=rodPt[0], bPortY=rodPt[1];
+  const manAY=cylY-150, manBY=cylY-132;
+
+  // flow activity
+  const aActive=moving, bActive=moving, tReturn=moving||centerUnload;
+  // pressure the pump must supply for the CURRENT direction (extend and retract differ for a cylinder)
+  const actingPress=calc ? (isCyl ? (isExt?calc.pressExtend : isRet?calc.pressRetract : calc.sysPress) : calc.sysPress) : 0;
+  // pump outlet pressure
+  let Ppump=0;
+  if(motorOn){ if(reliefBlowing) Ppump=calc?calc.rvSetting:0; else if(centerUnload) Ppump=calc?calc.returnBackP:0; else if(moving) Ppump=actingPress; }
+  const Qpump=running&&calc?calc.maxFlow:0;
+  let gv=Ppump;
+  const supplyP=actingPress, supplyQ=calc?(isCyl?(isExt?calc.flowExt:calc.flowRet):calc.maxFlow):0;
+  const retP=calc?calc.returnBackP:0;
+
+  // spin for motor
+  const spin=!isCyl&&moving?(isExt?1:-1):0;
+
+  // safety alarm banner conditions
+  const alarms=[];
+  if(calc){
+    if(calc.suctionInletAbs<NPSH_MIN_ABS||calc.suctionLine.overVel) alarms.push("CAVITATION RISK - suction velocity / inlet pressure");
+    if(stalled && motorOn) alarms.push(isCyl?"CYLINDER STALLED - load exceeds pressure ceiling":"MOTOR STALLED - torque exceeds pressure ceiling");
+    if(calc.pressureLine.overVel) alarms.push("PRESSURE LINE OVER "+VEL_PRESSURE_MAX+" ft/s - excess heat");
+    if(calc.steadyOilTemp>calc.targetOil) alarms.push("OVERHEAT - oil ~"+calc.steadyOilTemp.toFixed(0)+" F, add cooling");
+    if(!calc.ratingOK) alarms.push("TUBE UNDER-RATED for "+calc.maxPressure.toFixed(0)+" psi");
+  }
+
+  const fvArrow=(ox,oy,vx,vy,color,lbl,dash,wide)=>{
+    const len=Math.hypot(vx,vy); if(len<2) return null;
+    const ex=ox+vx, ey=oy+vy, ux=vx/len, uy=vy/len, hb=4;
+    const hx=ex-ux*8, hy=ey-uy*8, px=-uy, py=ux;
+    return (<g>
+      <line x1={ox} y1={oy} x2={ex} y2={ey} stroke={color} strokeWidth={wide?2.8:1.5} strokeDasharray={dash?"4 3":"0"}/>
+      <polygon points={ex+","+ey+" "+(hx+px*hb)+","+(hy+py*hb)+" "+(hx-px*hb)+","+(hy-py*hb)} fill={color}/>
+      {lbl && <text x={ex+ux*5} y={ey+uy*5+(uy>0?7:0)} fill={color} fontSize={7.5*sc} fontFamily="monospace" textAnchor={vx<-0.5?"end":"start"}>{lbl}</text>}
+    </g>);
+  };
+
+  // Phase 4 (ADR-003): expose the schematic as ONE described image. role="img" prunes the
+  // decorative internals from the accessibility tree; a screen reader reads this curated,
+  // live text equivalent instead of the ~50 disconnected <text> fragments inside.
+  const a11yTitle = "Hydraulic system schematic — "+(isCyl?"cylinder":"motor")+" circuit, "+(running?"pump running":"pump off");
+  let a11yDesc;
+  if(calc){
+    const flowState = neutral ? (centerUnload?"valve centered, pump unloading to tank":"valve centered, no actuator flow")
+      : isExt ? "directional valve shifted to extend" : isRet ? "directional valve shifted to retract" : "holding";
+    // Display-only spelled-out units for the screen-reader narrative (customary unchanged).
+    const _si = du==="SI";
+    const _flow = _si ? (uConvert(calc.pumpFlow,"gpm","L/min").toFixed(1)+" liters per minute") : (calc.pumpFlow.toFixed(1)+" gallons per minute");
+    const _psi = (v)=> _si ? (uConvert(v,"psi","bar").toFixed(0)+" bar") : (v.toFixed(0)+" psi");
+    const _bore = _si ? (uConvert(calc.boreDia,"in","mm").toFixed(0)+"-millimeter") : (calc.boreDia+"-inch");
+    const _load = _si ? (uConvert(inp.load,"lbf","N").toFixed(0)+" newton") : (inp.load.toFixed(0)+" lbf");
+    if(isCyl){
+      a11yDesc = "Fixed-displacement pump delivering about "+_flow+", relief set at "
+        +_psi(calc.rvSetting)+", feeding a "+_bore+" bore cylinder. "
+        +(running?("Currently "+flowState+". Extend pressure "+_psi(calc.pressExtend)+" for the "+_load+" load.")
+                 :"Pump is off; turn the motor on to run the circuit.")
+        + (reliefBlowing?" Relief valve is blowing off.":"") + (stalled?" Actuator is stalled — load exceeds the pressure ceiling.":"");
+    } else {
+      a11yDesc = "Fixed-displacement pump at about "+_flow+" driving a "
+        +inp.motorDisp+" cubic-inch-per-rev hydraulic motor. Needs "+_psi(calc.reqPress)+"; "
+        +(running?("running near "+calc.motorSpeed.toFixed(0)+" rpm, "+flowState+"."):"pump is off.")
+        + (stalled?" Motor is stalled — torque exceeds the pressure ceiling.":"");
+    }
+  } else {
+    a11yDesc = "Enter valid inputs to compute the system. Pump, directional valve, relief valve and actuator are shown.";
+  }
+
+  return (
+    <svg id="schematic-svg" viewBox="0 0 1040 600" role="img" aria-labelledby="schematic-title schematic-desc"
+      style={{width:"100%",display:"block",background:T.bg}}>
+      <title id="schematic-title">{a11yTitle}</title>
+      <desc id="schematic-desc">{a11yDesc}</desc>
+      {Array.from({length:35},(_,i)=><line key={"v"+i} x1={i*30} y1={0} x2={i*30} y2={600} stroke={T.gridLine} strokeWidth={0.4}/>)}
+      {Array.from({length:21},(_,i)=><line key={"h"+i} x1={0} y1={i*30} x2={1040} y2={i*30} stroke={T.gridLine} strokeWidth={0.4}/>)}
+
+
+      {/* electrical supply -> switch -> motor */}
+      <line x1={motorX} y1={motorY-58} x2={motorX} y2={motorY-30} stroke={motorOn?T.elec:T.muted} strokeWidth={2}/>
+      <Switch cx={motorX} cy={motorY-58} on={motorOn}/>
+      <line x1={motorX-22} y1={motorY-58} x2={motorX-40} y2={motorY-58} stroke={motorOn?T.elec:T.muted} strokeWidth={2}/>
+      <text x={motorX-44} y={motorY-55} textAnchor="end" fill={T.muted} fontSize={7*sc} fontFamily="monospace">L1</text>
+
+      {/* SUCTION: tank pickup -> pump */}
+      <FlowPath clock={clock} d={"M "+sucX+" "+(resY+38)+" L "+sucX+" 332 L "+pumpX+" 332 L "+pumpX+" "+(pumpY+24)} color={T.suction} glow={T.suction} active={running} speed={0.7} width={3} particles={4}/>
+      {/* PRESSURE: pump -> tee -> under -> up into P */}
+      <FlowPath clock={clock} d={"M "+(pumpX+24)+" "+pumpY+" L "+teeX+" "+teeY+" L 400 "+teeY+" L 400 440 L "+Px+" 440 L "+Px+" "+portBy} color={T.hp} glow={T.hp} active={pToValve} speed={1.5} width={2.5} particles={5}/>
+      {/* pump -> tee segment always live when pump runs (so deadhead shows) */}
+      <FlowPath clock={clock} d={"M "+(pumpX+24)+" "+pumpY+" L "+teeX+" "+teeY} color={T.hp} glow={T.hp} active={running&&!pToValve} speed={1.3} width={2.5} particles={3}/>
+      {/* RELIEF branch tee -> RV inlet */}
+      <FlowPath clock={clock} d={"M "+teeX+" "+teeY+" L "+rvX+" "+(rvY-30)} color={reliefBlowing?T.danger:T.hp} glow={reliefBlowing?T.danger:T.hp} active={reliefBlowing} speed={1.0} width={2} particles={3}/>
+      {/* RELIEF outlet RV -> joins return manifold -> tank */}
+      <FlowPath clock={clock} d={"M "+rvX+" "+(rvY+30)+" L "+rvX+" "+mergeY+" L "+retX+" "+mergeY} color={T.danger} glow={T.danger} active={reliefBlowing} speed={1.2} width={2} particles={5}/>
+      {/* A line: DCV A -> actuator cap/A port (tracks the tilted cylinder) */}
+      <FlowPath clock={clock} d={"M "+Ax+" "+portAy+" L "+Ax+" "+manAY+" L "+aPortX+" "+manAY+" L "+aPortX+" "+aPortY} color={isExt?T.hp:T.ret} glow={isExt?T.hp:T.ret} active={aActive} speed={isExt?1.5:1.0} width={2.5} reverse={isRet} particles={5}/>
+      {/* B line: DCV B -> actuator rod/B port (tracks the tilted cylinder) */}
+      <FlowPath clock={clock} d={"M "+Bx+" "+portAy+" L "+Bx+" "+manBY+" L "+bPortX+" "+manBY+" L "+bPortX+" "+bPortY} color={isRet?T.hp:T.ret} glow={isRet?T.hp:T.ret} active={bActive} speed={isRet?1.5:1.0} width={2.5} reverse={isExt} particles={5}/>
+      {/* RETURN: DCV T -> manifold -> tank (flow goes T -> reservoir) */}
+      <FlowPath clock={clock} d={"M "+Tx+" "+portBy+" L "+Tx+" "+mergeY+" L "+retX+" "+mergeY+" L "+retX+" "+resY} color={T.ret} glow={T.ret} active={tReturn} speed={1.0} width={2.5} particles={5}/>
+
+      {/* mechanical: rod -> load (cylinder only), tilted to the mount angle */}
+      {isCyl && (<g transform={rotXf}>
+        <line x1={rodTipX} y1={cylY} x2={loadX-24} y2={cylY} stroke={T.symStroke} strokeWidth={2.5}/>
+        <rect x={loadX-24} y={cylY-20} width={48} height={40} fill={T.card} stroke={T.warn} strokeWidth={1.5} rx={2}/>
+        <text x={loadX} y={cylY+5} textAnchor="middle" fill={T.warn} fontSize={13*sc} fontFamily="monospace" fontWeight="bold">W</text>
+        <text x={loadX} y={cylY+36} textAnchor="middle" fill={T.accent} fontSize={8*sc} fontFamily="monospace">{inp.load.toFixed(0)} lbf</text>
+      </g>)}
+      {/* ground reference + angle arc at the cap mount */}
+      {isCyl && (<g>
+        <line x1={pivotX-12} y1={pivotY} x2={pivotX+70} y2={pivotY} stroke={T.dim} strokeWidth={1} strokeDasharray="5 3"/>
+        {[0,1,2,3].map(i=><line key={i} x1={pivotX-12+i*7} y1={pivotY+6} x2={pivotX-6+i*7} y2={pivotY} stroke={T.dim} strokeWidth={0.8}/>)}
+        {angleDeg>0 && <path d={"M "+(pivotX+34)+" "+pivotY+" A 34 34 0 0 0 "+(pivotX+34*Math.cos(ra))+" "+(pivotY+34*Math.sin(ra))} fill="none" stroke={T.accent} strokeWidth={1}/>}
+        <text x={pivotX+42} y={pivotY-10} fill={T.accent} fontSize={8*sc} fontFamily="monospace">{angleDeg}&deg;</text>
+        <circle cx={pivotX} cy={pivotY} r={3} fill={T.muted}/>
+      </g>)}
+
+      {/* FORCE VECTORS at the load (free-body) */}
+      {isCyl && showVectors && calc && (<g>
+        {(()=>{
+          const th=angleDeg*Math.PI/180, W=inp.load, Fax=calc.forceExtend;
+          const Fv=Fax*Math.sin(th), Fh=Fax*Math.cos(th), mx=Math.max(W,Fax,1), s2=56/mx;
+          const lp=rotPt(loadX,cylY), lx=lp[0], ly=lp[1];
+          return (<g>
+            {fvArrow(lx,ly,0,W*s2,T.danger,"W "+W.toFixed(0),false,false)}
+            {fvArrow(lx,ly,Fh*s2,0,T.muted,"Fh "+Fh.toFixed(0),true,false)}
+            {fvArrow(lx,ly,0,-Fv*s2,T.muted,"Fv "+Fv.toFixed(0),true,false)}
+            {fvArrow(lx,ly,Math.cos(th)*Fax*s2,-Math.sin(th)*Fax*s2,T.ok,"F "+Fax.toFixed(0),false,true)}
+            <circle cx={lx} cy={ly} r={2.5} fill={T.text}/>
+          </g>);
+        })()}
+        <g transform="translate(688,486)">
+          <rect x={0} y={0} width={176} height={58} rx={3} fill={T.panel} stroke={T.border}/>
+          <text x={7} y={13} fill={T.accent} fontSize={7.5*sc} fontFamily="monospace">FORCE VECTORS (at load)</text>
+          <text x={7} y={24} fill={T.danger} fontSize={7*sc} fontFamily="monospace">W : weight, acts vertically</text>
+          <text x={7} y={34} fill={T.muted} fontSize={7*sc} fontFamily="monospace">Fh, Fv : horizontal / vertical</text>
+          <text x={7} y={44} fill={T.ok} fontSize={7*sc} fontFamily="monospace">F : axial force = SIZED FOR</text>
+          <text x={7} y={53} fill={T.muted} fontSize={6.5*sc} fontFamily="monospace">F = W sin0 + u W cos0 (along rod)</text>
+        </g>
+      </g>)}
+
+      <circle cx={teeX} cy={teeY} r={3} fill={running?T.hp:T.dim}/>
+      <circle cx={retX} cy={mergeY} r={3} fill={(tReturn||reliefBlowing)?T.ret:T.dim}/>
+      <line x1={motorX+24} y1={motorY} x2={pumpX-24} y2={pumpY} stroke={T.symStroke} strokeWidth={2} strokeDasharray="5 3"/>
+
+      {/* line ID/velocity labels */}
+      {calc && (<g>
+        <rect x={118} y={398} width={92} height={26} rx={2} fill="#00cc6615" stroke="#00cc6640"/>
+        <text x={164} y={409} textAnchor="middle" fill={T.suction} fontSize={8*sc} fontFamily="monospace">SUCTION</text>
+        <text x={164} y={419} textAnchor="middle" fill={T.suction} fontSize={7*sc} fontFamily="monospace">{fmtU(calc.suctionLine.id_in,"in",du,2)+" "+fmtU(calc.suctionLine.velocity,"ft/s",du,1)}</text>
+        <rect x={teeX+14} y={teeY-32} width={96} height={26} rx={2} fill="#ff553315" stroke="#ff553340"/>
+        <text x={teeX+62} y={teeY-21} textAnchor="middle" fill={T.hp} fontSize={8*sc} fontFamily="monospace">PRESSURE</text>
+        <text x={teeX+62} y={teeY-11} textAnchor="middle" fill={T.hp} fontSize={7*sc} fontFamily="monospace">{fmtU(calc.sysPress,"psi",du,0)+" "+fmtU(calc.pressureLine.velocity,"ft/s",du,1)}</text>
+        <rect x={588} y={404} width={92} height={26} rx={2} fill="#3388ff15" stroke="#3388ff40"/>
+        <text x={634} y={415} textAnchor="middle" fill={T.ret} fontSize={8*sc} fontFamily="monospace">RETURN</text>
+        <text x={634} y={425} textAnchor="middle" fill={T.ret} fontSize={7*sc} fontFamily="monospace">{fmtU(calc.returnLine.id_in,"in",du,2)+" "+fmtU(calc.returnLine.velocity,"ft/s",du,1)}</text>
+      </g>)}
+
+      <ElecMotor cx={motorX} cy={motorY} on={motorOn} clock={clock} sc={sc}/>
+      <Pump cx={pumpX} cy={pumpY} flow={calc&&calc.maxFlow} disp={calc&&calc.pumpDisp} running={running} clock={clock} sc={sc} du={du}/>
+      <Reservoir cx={resX} cy={resY} sc={sc}/>
+      <ReliefValve cx={rvX} cy={rvY} setting={calc&&calc.rvSetting} blowing={reliefBlowing} clock={clock} sc={sc} du={du}/>
+      <DCV cx={dcvX} cy={dcvY} pos={pos} dcvType={dcvType} sc={sc}/>
+      {isCyl
+        ? <g transform={rotXf}><Cylinder cx={cylX} cy={cylY} boreDia={calc&&calc.boreDia} rodDia={calc&&calc.rodDia} pistonPos={pistonPos} pos={pos} moving={moving} sc={sc}/></g>
+        : <HydMotor cx={cylX} cy={cylY} spin={spin} clock={clock} sc={sc} torque={calc&&calc.torqueOut} speed={calc&&calc.motorSpeed} du={du}/>}
+      {calc && isCyl && (<g>
+        <rect x={cylX-78} y={cylY+96} width={156} height={32} rx={3} fill={T.panel} stroke={moving?T.ok:T.border}/>
+        <text x={cylX} y={cylY+109} textAnchor="middle" fill={moving?T.ok:T.muted} fontSize={8.5*sc} fontFamily="monospace">
+          {moving?((isExt?"EXTEND ":"RETRACT ")+fmtU((isExt?calc.velExt:calc.velRet),"in/s",du,2)):("ext "+fmtU(calc.velExt,"in/s",du,2)+" / ret "+fmtU(calc.velRet,"in/s",du,2))}
+        </text>
+        <text x={cylX} y={cylY+121} textAnchor="middle" fill={T.muted} fontSize={7.5*sc} fontFamily="monospace">{"load "+fmtU(inp.load,"lbf",du,0)+" -> cyl force "+fmtU((isRet?calc.forceRetract:calc.forceExtend),"lbf",du,0)}</text>
+      </g>)}
+      {calc && !isCyl && (<g>
+        <rect x={cylX-78} y={cylY+96} width={156} height={20} rx={3} fill={T.panel} stroke={moving?T.ok:T.border}/>
+        <text x={cylX} y={cylY+109} textAnchor="middle" fill={moving?T.ok:T.muted} fontSize={8.5*sc} fontFamily="monospace">{Math.abs(calc.motorSpeed).toFixed(0)+" rpm"+(moving?"":" (at flow)")}</text>
+      </g>)}
+      {calc && <Gauge cx={pumpX+10} cy={pumpY-78} value={gv} max={calc.rvSetting*1.1} label="PUMP psi" sc={sc}/>}
+      {calc && <text x={pumpX+10} y={pumpY-108} textAnchor="middle" fill={T.warn} fontSize={7.5*sc} fontFamily="monospace">{(running?calc.pumpFlow:0).toFixed(2)} gal/min</text>}
+
+      {/* per-section gauges */}
+      {showGauges && calc && (<g>
+        <NodeChip x={250} y={250} p={Ppump} q={Qpump} color={T.hp} label="PUMP OUT" sc={sc} du={du}/>
+        <NodeChip x={Ax-44} y={portAy-26} p={isExt?supplyP:retP} q={aActive?supplyQ:0} color={isExt?T.hp:T.ret} label="PORT A" sc={sc} du={du}/>
+        <NodeChip x={Bx+44} y={portAy-26} p={isRet?supplyP:retP} q={bActive?supplyQ:0} color={isRet?T.hp:T.ret} label="PORT B" sc={sc} du={du}/>
+        <NodeChip x={retX} y={mergeY+30} p={0} q={tReturn?supplyQ:0} color={T.ret} label="TANK RET" sc={sc} du={du}/>
+        <NodeChip x={rvX-46} y={rvY} p={calc.rvSetting} q={reliefBlowing?Qpump:0} color={T.danger} label="RELIEF" sc={sc} du={du}/>
+      </g>)}
+
+      {/* legend */}
+      <g transform="translate(10,10)">
+        <rect x={0} y={0} width={176} height={92} rx={3} fill={T.panel} stroke={T.border}/>
+        <text x={8} y={14} fill={T.muted} fontSize={8*sc} fontFamily="monospace">LEGEND</text>
+        {[[T.hp,"Pressure"],[T.ret,"Return / Tank"],[T.suction,"Suction"],[T.danger,"Relief"],[T.elec,"Electrical"]].map((row,i)=>(
+          <g key={i} transform={"translate(8,"+(24+i*13)+")"}>
+            <line x1={0} y1={0} x2={20} y2={0} stroke={row[0]} strokeWidth={2.5}/>
+            <text x={26} y={4} fill={T.muted} fontSize={8*sc} fontFamily="monospace">{row[1]}</text>
+          </g>
+        ))}
+      </g>
+
+      {/* status */}
+      <g transform={"translate("+(dcvX-58)+",55)"}>
+        <rect x={0} y={0} width={116} height={18} rx={3} fill={isExt?"#ff553320":isRet?"#3388ff20":"#ffffff08"} stroke={isExt?T.hp:isRet?T.ret:T.dim}/>
+        <text x={58} y={12} textAnchor="middle" fontFamily="monospace" fontSize={9*sc} fill={!motorOn?T.muted:isExt?T.hp:isRet?T.ret:T.muted}>
+          {!motorOn?"MOTOR OFF":stalled?"STALLED - RELIEF":reliefBlowing&&neutral?"NEUTRAL-RELIEF":centerUnload?"NEUTRAL-UNLOAD":isExt?(isCyl?"EXTENDING":"CW"):isRet?(isCyl?"RETRACTING":"CCW"):"NEUTRAL"}
+        </text>
+      </g>
+
+      {alarms.length>0 && (<g>
+        <rect x={200} y={6} width={640} height={16+alarms.length*13} rx={4} fill="#1a0000ee" stroke={T.danger} strokeWidth={1.5}/>
+        <text x={520} y={20} textAnchor="middle" fill={T.danger} fontSize={10*sc} fontFamily="monospace" fontWeight="bold">SAFETY ALERTS</text>
+        {alarms.map((a,i)=>(<text key={i} x={520} y={34+i*13} textAnchor="middle" fill={T.warn} fontSize={8*sc} fontFamily="monospace">{"\u26a0 "+a}</text>))}
+      </g>)}
+
+      {!calc && <text x={520} y={585} textAnchor="middle" fill={T.muted} fontSize={10*sc} fontFamily="monospace">Enter parameters to populate the schematic</text>}
+    </svg>
+  );
+}
+
+// ---- LEARN content ----
+const COMP_INFO=[
+  {id:"tank",name:"Reservoir / Tank",modes:["beginner","intermediate","advanced"],
+   purpose:"Stores fluid, separates air and contaminants, dissipates heat.",
+   func:"Vented volume; suction draws from near the bottom, returns discharge below fluid level to limit foaming.",
+   eqn:"Volume rule of thumb ~ 2 to 3 x pump GPM.",
+   app:"Every hydraulic power unit.",
+   mistakes:"Undersized tank overheats; return above fluid level foams; missing strainer starves the pump."},
+  {id:"pump",name:"Pump + Electric Motor",modes:["beginner","intermediate","advanced"],
+   purpose:"Convert electrical/mechanical input into fluid flow.",
+   func:"Displaces a fixed volume per revolution. Pressure is set by the load, NOT the pump.",
+   eqn:"Q = D*N*eff/231 ;  input HP = P*Q/(1714*eff)",
+   app:"Power source for all circuits.",
+   mistakes:"'Pump makes pressure' myth; starving the inlet causes cavitation; wrong rotation gives no flow."},
+  {id:"relief",name:"Pressure Relief Valve",modes:["beginner","intermediate","advanced"],
+   purpose:"Limit maximum pressure and protect components.",
+   func:"Normally closed; opens to tank when inlet pressure overcomes the spring.",
+   eqn:"Set ~ 1.1 to 1.25 x working pressure.",
+   app:"Safety on every pressure line; pump unloading.",
+   mistakes:"Set too low (no force) or too high (no protection); chatter from poor sizing."},
+  {id:"dcv",name:"Directional Control Valve",modes:["intermediate","advanced"],
+   purpose:"Route flow to extend, hold, or retract the actuator.",
+   func:"Spool slides between envelopes; the center condition defines neutral behavior.",
+   eqn:"Flow capacity from valve dP vs flow curve.",
+   app:"Direction control of any actuator.",
+   mistakes:"Wrong center (e.g. closed center with no unload path overheats); undersized valve."},
+  {id:"cyl",name:"Double-Acting Cylinder",modes:["beginner","intermediate","advanced"],
+   purpose:"Produce linear force in both directions.",
+   func:"Pressure on cap or rod side moves the sealed piston. Areas differ, so extend and retract differ.",
+   eqn:"F = P*A ;  v = Q/A ;  A_rodside = A_bore - A_rod",
+   app:"Presses, lifts, clamps.",
+   mistakes:"Ignoring rod-side area (wrong retract force/speed); buckling on long strokes."},
+  {id:"mot",name:"Hydraulic Motor",modes:["intermediate","advanced"],
+   purpose:"Produce continuous rotary torque.",
+   func:"Flow turns the displacement element. Torque comes from pressure, speed from flow.",
+   eqn:"T = dP*D/(2*pi) ;  N = Q*231/D",
+   app:"Winches, conveyors, wheel drives.",
+   mistakes:"Confusing torque (pressure) with speed (flow); ignoring case-drain leakage."},
+];
+
+// ---- UI helpers (em-based, scale with container font) ----
+const inputCSS={width:"100%",background:"#05080c",border:"1px solid "+T.border,color:T.text,padding:"5px 8px",fontSize:"0.85em",borderRadius:3};
+function InputRow({label,unit,value,onChange,min,max,step,hint}){
+  const id=useId(), hintId=hint?id+"-hint":undefined;
+  return (<div style={{marginBottom:9}}>
+    <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+      <label htmlFor={id} style={{color:T.text,fontSize:"0.8em"}}>{label}</label><span aria-hidden="true" style={{color:T.muted,fontSize:"0.72em"}}>{unit}</span>
+    </div>
+    <input id={id} type="number" value={value} min={min} max={max} step={step}
+      aria-label={unit?label+" ("+unit+")":label} aria-describedby={hintId}
+      onChange={e=>onChange(Number(e.target.value))} style={inputCSS}/>
+    {hint&&<div id={hintId} style={{color:T.muted,fontSize:"0.62em",marginTop:1}}>{hint}</div>}
+  </div>);
+}
+function Sec({title,children}){
+  return (<div style={{marginBottom:14}}>
+    <div style={{color:T.muted,fontSize:"0.62em",letterSpacing:2,marginBottom:6,borderBottom:"1px solid "+T.border,paddingBottom:3}}>{title}</div>
+    {children}
+  </div>);
+}
+function RR({label,value,unit,hi,warn,ok,du,digits=0}){
+  const col=warn?T.danger:ok?T.ok:hi?T.warn:T.text;
+  // Display-only conversion: numeric values convert via convU; non-numeric pass through unchanged.
+  const isNum = typeof value==="number" && isFinite(value);
+  const p = isNum ? convU(value, unit, du) : { value, unit };
+  const shown = isNum && typeof p.value==="number" ? p.value.toFixed(digits) : p.value;
+  return (<div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",padding:"2px 0",borderBottom:"1px solid "+T.line}}>
+    <span style={{color:T.muted,fontSize:"0.74em"}}>{label}</span>
+    <span style={{color:col,fontSize:"0.8em",fontWeight:"bold"}}>{shown} <span style={{color:T.muted,fontSize:"0.62em"}}>{p.unit}</span></span>
+  </div>);
+}
+function LineTable({line}){
+  const reC=line.Re<2300?T.ok:line.Re<4000?T.warn:T.danger, vC=line.overVel?T.danger:T.ok;
+  return (<div style={{background:T.bg,borderRadius:3,padding:"6px 8px",marginBottom:8,border:"1px solid "+(line.overVel||line.Re>4000?T.danger:T.border)}}>
+    <div style={{color:T.accent,fontSize:"0.74em",letterSpacing:1,marginBottom:4}}>{line.label.toUpperCase()} LINE</div>
+    {[["Tube OD x wall",line.tube.od+'" x '+line.tube.wall+'"',null],["ID",line.id_in.toFixed(3)+" in",null],
+      ["Velocity",line.velocity.toFixed(2)+" ft/s",vC],["Velocity head",line.velHead_ft.toFixed(3)+" ft",null],
+      ["Dynamic P 1/2rv2",line.dynP_psi.toFixed(2)+" psi",null],["Reynolds",line.Re.toFixed(0),reC],
+      ["Regime",line.regime,reC],["Friction f",line.f.toFixed(5),null],["dP friction",line.dp_psi.toFixed(2)+" psi",null],
+      ["Tube rating (Barlow)",line.pWork.toFixed(0)+" psi",null]
+    ].map(row=>(<div key={row[0]} style={{display:"flex",justifyContent:"space-between",padding:"1px 0",borderBottom:"1px solid "+T.line}}>
+      <span style={{color:T.muted,fontSize:"0.66em"}}>{row[0]}</span><span style={{color:row[2]||T.text,fontSize:"0.74em",fontWeight:"bold"}}>{row[1]}</span>
+    </div>))}
+  </div>);
+}
+
+// ---- STORAGE + EXPORT (browser; degrade gracefully on failure; zero dependencies) ----
+function storageGet(){ try{ return window.localStorage.getItem(PERSIST.KEY); }catch(e){ return null; } }
+function storageSet(t){ try{ window.localStorage.setItem(PERSIST.KEY,t); return true; }catch(e){ return false; } }
+function storageClear(){ try{ window.localStorage.removeItem(PERSIST.KEY); }catch(e){} }
+// Returns {inputs, prefs, status}. status: "restored" (valid saved data) | "recovered" (data was
+// corrupt -> defaults) | "none" (nothing saved). Corrupt storage never blocks startup.
+function loadSession(){
+  const t=storageGet();
+  if(t==null) return { inputs:coerceInputs(null), prefs:coercePrefs(null), status:"none" };
+  const parsed=parseEnvelope(t);
+  return parsed ? { inputs:parsed.inputs, prefs:parsed.prefs, status:"restored" }
+                : { inputs:coerceInputs(null), prefs:coercePrefs(null), status:"recovered" };
+}
+function saveSession(inputs, prefs){ return storageSet(JSON.stringify(makeEnvelope(inputs, prefs))); }
+function downloadFile(name,mime,text){
+  try{
+    const blob=new Blob([text],{type:mime}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },0); return true;
+  }catch(e){ return false; }
+}
+function exportJSON(inputs, prefs){ return downloadFile("hydraulic-design.json","application/json",JSON.stringify(makeEnvelope(inputs, prefs),null,2)); }
+function exportSVG(){
+  const svg=document.getElementById("schematic-svg"); if(!svg) return false;
+  const clone=svg.cloneNode(true);
+  clone.setAttribute("xmlns","http://www.w3.org/2000/svg"); clone.setAttribute("xmlns:xlink","http://www.w3.org/1999/xlink");
+  return downloadFile("hydraulic-schematic.svg","image/svg+xml",'<?xml version="1.0" encoding="UTF-8"?>\n'+new XMLSerializer().serializeToString(clone));
+}
+function buildReportHTML(inp,calc,inputs){
+  const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const row=(k,v,u)=>"<tr><td>"+esc(k)+"</td><td class='v'>"+esc(v)+"</td><td class='u'>"+esc(u||"")+"</td></tr>";
+  const when=new Date().toLocaleString(); const isCyl=inputs.actuator==="cylinder";
+  let summary="", results="";
+  if(calc){
+    if(isCyl){
+      summary="Move a "+inputs.load+" lbf load at "+inputs.angle+"\u00b0"+(inputs.sizeMode==="design"?(" at "+inputs.targetSpeedCyl+" in/s"):"")+". Under a "+inputs.maxPressure+" psi ceiling: "+calc.boreDia+"\" bore, "+calc.pumpFlow.toFixed(1)+" GPM, "+calc.motorPwrHP+" HP drive. Extend pressure "+calc.pressExtend.toFixed(0)+" psi.";
+      results=[row("Selected bore",calc.boreDia,"in"),row("Rod diameter",calc.rodDia,"in"),row("Bore area",calc.boreArea.toFixed(3),"in2"),row("Extend pressure",calc.pressExtend.toFixed(0),"psi"),row("Retract pressure",calc.pressRetract.toFixed(0),"psi"),row("Pump flow",calc.pumpFlow.toFixed(2),"gal/min"),row("Extend / retract speed",calc.velExt.toFixed(2)+" / "+calc.velRet.toFixed(2),"in/s"),row("Cycle time",calc.cycleTime.toFixed(2),"s"),row("Hydraulic power",calc.hydHP.toFixed(2),"HP"),row("Drive motor",calc.motorPwrHP.toFixed(2),"HP"),row("Rod buckling SF",calc.buckSF.toFixed(1),"x")].join("");
+    } else {
+      summary="Drive "+inputs.loadTorque+" lb-in with a "+inputs.motorDisp+" in3/rev motor. Needs "+calc.reqPress.toFixed(0)+" psi, spins "+calc.motorSpeed.toFixed(0)+" rpm on "+calc.pumpFlow.toFixed(1)+" GPM.";
+      results=[row("Pressure needed",calc.reqPress.toFixed(0),"psi"),row("Operating pressure",calc.sysPress.toFixed(0),"psi"),row("Motor speed",calc.motorSpeed.toFixed(0),"rpm"),row("Output torque",calc.torqueOut.toFixed(0),"lb-in"),row("Pump flow",calc.pumpFlow.toFixed(2),"gal/min"),row("Shaft power",calc.shaftHP.toFixed(2),"HP"),row("Drive motor",calc.motorPwrHP.toFixed(2),"HP")].join("");
+    }
+  } else { summary="Inputs are incomplete for a full computation; recorded inputs only."; }
+  const inputsTable=Object.keys(INPUT_DEFAULTS).map(k=>row(k,inputs[k],"")).join("");
+  const warns=(calc&&calc.warnings&&calc.warnings.length)?calc.warnings.map(w=>"<li class='"+w.t+"'>"+esc(w.m)+"</li>").join(""):"<li class='ok'>No issues detected</li>";
+  return "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Hydraulic Design Report</title><style>"+
+    "body{font-family:Arial,Helvetica,sans-serif;color:#111;max-width:820px;margin:24px auto;padding:0 16px;line-height:1.5}"+
+    "h1{font-size:20px;margin:0 0 2px}.sub{color:#666;font-size:12px;margin-bottom:16px}"+
+    "h2{font-size:14px;border-bottom:1px solid #ccc;padding-bottom:3px;margin-top:22px}"+
+    "table{border-collapse:collapse;width:100%;font-size:13px}td{padding:3px 6px;border-bottom:1px solid #eee}"+
+    "td.v{text-align:right;font-variant-numeric:tabular-nums}td.u{color:#888;width:80px}"+
+    ".summary{background:#f4f7fa;border:1px solid #dde6ee;border-radius:5px;padding:10px 12px;font-size:14px}"+
+    "ul{font-size:13px;padding-left:18px}li.danger{color:#b00}li.warn{color:#a60}li.ok{color:#070}"+
+    ".foot{color:#999;font-size:11px;margin-top:24px;border-top:1px solid #eee;padding-top:8px}"+
+    "@media print{body{margin:0}.noprint{display:none}}</style></head><body>"+
+    "<h1>Hydraulic Design Report</h1><div class='sub'>Generated "+esc(when)+" \u00b7 Hydraulic Trainer &amp; Designer</div>"+
+    "<div class='summary'>"+summary+"</div>"+
+    "<h2>Results</h2><table>"+(results||"<tr><td>(no computed results)</td></tr>")+"</table>"+
+    "<h2>Design inputs</h2><table>"+inputsTable+"</table>"+
+    "<h2>Checks &amp; warnings</h2><ul>"+warns+"</ul>"+
+    "<div class='foot'>Educational estimate. Verify against component datasheets and your power unit's ratings before building.</div>"+
+    "<div class='noprint' style='margin-top:16px'><button onclick='window.print()'>Print / Save as PDF</button></div></body></html>";
+}
+function exportReport(inp,calc,inputs){
+  const html=buildReportHTML(inp,calc,inputs);
+  let w=null; try{ w=window.open("","_blank"); }catch(e){ w=null; }
+  if(w&&w.document){ w.document.open(); w.document.write(html); w.document.close();
+    try{ w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },300); }catch(e){} return true; }
+  return downloadFile("hydraulic-report.html","text/html",html); // popup blocked -> file fallback
+}
+// ---- end storage + export ----
+
+function App(){
+  // Phase 3: restore persisted inputs once on first render (inputs-only; UI prefs not stored).
+  const bootRef=useRef(null);
+  if(bootRef.current===null) bootRef.current=loadSession();
+  const INIT=bootRef.current.inputs;
+  const INITPREFS=bootRef.current.prefs;
+  const [bootStatus]=useState(bootRef.current.status);
+  const [saved,setSaved]=useState("idle");   // "idle" | "saving" | "saved"
+  const fileInputRef=useRef(null);
+  // Phase 4: accessibility preferences. animation pref "auto" follows the OS reduced-motion setting.
+  const [animPref,setAnimPref]=useState(INITPREFS.animation);
+  const [displayMode,setDisplayMode]=useState(INITPREFS.display_mode||"customary");
+  // Display-only conversion in App scope; delegates to the module-level formatter.
+  const disp=(val,unit,d=2)=>fmtU(val,unit,displayMode,d);
+  const [reducedMotion,setReducedMotion]=useState(()=>{ try{ return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } });
+  useEffect(()=>{
+    let mq; try{ mq=window.matchMedia("(prefers-reduced-motion: reduce)"); }catch(e){ return; }
+    const on=()=>setReducedMotion(mq.matches);
+    if(mq.addEventListener) mq.addEventListener("change",on); else if(mq.addListener) mq.addListener(on);
+    return ()=>{ if(mq.removeEventListener) mq.removeEventListener("change",on); else if(mq.removeListener) mq.removeListener(on); };
+  },[]);
+  const animate = animPref==="on" || (animPref==="auto" && !reducedMotion);
+
+  const [mode,setMode]=useState("beginner");
+  const [motorOn,setMotorOn]=useState(false);
+  const [dcvType,setDcvType]=useState("closed");
+  const [actuator,setActuator]=useState(INIT.actuator);
+  const [fontIdx,setFontIdx]=useState(1);
+  const [showGauges,setShowGauges]=useState(true);
+  const [showVectors,setShowVectors]=useState(true);
+  const [tab,setTab]=useState("guide");
+  const [learnSel,setLearnSel]=useState("pump");
+  const [powerSrcIdx,setPowerSrcIdx]=useState(INIT.powerSrcIdx);
+  // cylinder inputs
+  const [load,setLoad]=useState(INIT.load);
+  const [angle,setAngle]=useState(INIT.angle);
+  const [stroke,setStroke]=useState(INIT.stroke);
+  const [safetyFactor,setSafetyFactor]=useState(INIT.safetyFactor);
+  const [frictionPre,setFrictionPre]=useState(INIT.frictionPre);
+  const [customMu,setCustomMu]=useState(INIT.customMu);
+  // motor inputs
+  const [loadTorque,setLoadTorque]=useState(INIT.loadTorque);
+  const [motorDisp,setMotorDisp]=useState(INIT.motorDisp);
+  // system / pump inputs (forward model)
+  const [sizeMode,setSizeMode]=useState(INIT.sizeMode);   // design = task sizes it; analyze = pump is input
+  const [targetSpeedCyl,setTargetSpeedCyl]=useState(INIT.targetSpeedCyl);   // in/s
+  const [targetSpeedMot,setTargetSpeedMot]=useState(INIT.targetSpeedMot); // rpm
+  const [maxPressure,setMaxPressure]=useState(INIT.maxPressure);
+  const [pumpDisp,setPumpDisp]=useState(INIT.pumpDisp);
+  const [pumpRPM,setPumpRPM]=useState(INIT.pumpRPM);
+  // Phase A inputs
+  const [fluidIdx,setFluidIdx]=useState(INIT.fluidIdx);        // VG46
+  const [mountIdx,setMountIdx]=useState(INIT.mountIdx);        // pinned/pinned
+  const [ambientTemp,setAmbientTemp]=useState(INIT.ambientTemp);
+  const [targetOilTemp,setTargetOilTemp]=useState(INIT.targetOilTemp);
+  const [dutyCyclePct,setDutyCyclePct]=useState(INIT.dutyCyclePct);
+  const [pumpElevIn,setPumpElevIn]=useState(INIT.pumpElevIn);
+  const [valveDP,setValveDP]=useState(INIT.valveDP);
+  const [filterIdx,setFilterIdx]=useState(INIT.filterIdx);      // pressure filter
+  // lines
+  const [suctionLen,setSuctionLen]=useState(INIT.suctionLen);
+  const [pressureLen,setPressureLen]=useState(INIT.pressureLen);
+  const [returnLen,setReturnLen]=useState(INIT.returnLen);
+  const [pos,setPos]=useState("neutral");
+  const [auto,setAuto]=useState(false);
+  const [,setTick]=useState(0);
+
+  const SC=[1,1.16,1.34][fontIdx];
+  const baseFont=12.5*SC;
+  const mu=FRICTION[frictionPre].mu!=null?FRICTION[frictionPre].mu:customMu;
+  const fluidCSt=FLUIDS[fluidIdx].cSt, mountK=MOUNTS[mountIdx].K, filterDP=FILTERS[filterIdx].dp;
+  const targetSpeed=actuator==="cylinder"?targetSpeedCyl:targetSpeedMot;
+  const inp={actuator,load,angleDeg:angle,stroke,frictionMu:mu,maxPressure,pumpDisp,pumpRPM,
+    loadTorque,motorDisp,suctionLen,pressureLen,returnLen,safetyFactor,sizeMode,targetSpeed,
+    fluidCSt,mountK,ambientTemp,targetOilTemp,dutyCyclePct,pumpElevIn,valveDP,filterDP};
+  const calc=useMemo(()=>calculate(inp),[actuator,load,angle,stroke,mu,maxPressure,pumpDisp,pumpRPM,loadTorque,motorDisp,suctionLen,pressureLen,returnLen,safetyFactor,sizeMode,targetSpeed,fluidCSt,mountK,ambientTemp,targetOilTemp,dutyCyclePct,pumpElevIn,valveDP,filterDP]);
+
+  // Phase 3: the full persisted input set (keys must match INPUT_DEFAULTS exactly).
+  const curInputs={actuator,sizeMode,load,angle,stroke,safetyFactor,frictionPre,customMu,
+    loadTorque,motorDisp,targetSpeedCyl,targetSpeedMot,maxPressure,pumpDisp,pumpRPM,
+    fluidIdx,mountIdx,filterIdx,ambientTemp,targetOilTemp,dutyCyclePct,pumpElevIn,valveDP,
+    suctionLen,pressureLen,returnLen,powerSrcIdx};
+  // Debounced autosave. Storage failure (private mode, file://, disabled) degrades silently.
+  useEffect(()=>{
+    setSaved("saving");
+    const id=setTimeout(()=>{ setSaved(saveSession(curInputs, {animation:animPref,display_mode:displayMode})?"saved":"idle"); },500);
+    return ()=>clearTimeout(id);
+  },[actuator,sizeMode,load,angle,stroke,safetyFactor,frictionPre,customMu,loadTorque,motorDisp,
+     targetSpeedCyl,targetSpeedMot,maxPressure,pumpDisp,pumpRPM,fluidIdx,mountIdx,filterIdx,
+     ambientTemp,targetOilTemp,dutyCyclePct,pumpElevIn,valveDP,suctionLen,pressureLen,returnLen,powerSrcIdx,animPref,displayMode]);
+
+  const applyInputs=(ci)=>{
+    setActuator(ci.actuator); setSizeMode(ci.sizeMode);
+    setLoad(ci.load); setAngle(ci.angle); setStroke(ci.stroke); setSafetyFactor(ci.safetyFactor);
+    setFrictionPre(ci.frictionPre); setCustomMu(ci.customMu);
+    setLoadTorque(ci.loadTorque); setMotorDisp(ci.motorDisp);
+    setTargetSpeedCyl(ci.targetSpeedCyl); setTargetSpeedMot(ci.targetSpeedMot);
+    setMaxPressure(ci.maxPressure); setPumpDisp(ci.pumpDisp); setPumpRPM(ci.pumpRPM);
+    setFluidIdx(ci.fluidIdx); setMountIdx(ci.mountIdx); setFilterIdx(ci.filterIdx);
+    setAmbientTemp(ci.ambientTemp); setTargetOilTemp(ci.targetOilTemp); setDutyCyclePct(ci.dutyCyclePct);
+    setPumpElevIn(ci.pumpElevIn); setValveDP(ci.valveDP);
+    setSuctionLen(ci.suctionLen); setPressureLen(ci.pressureLen); setReturnLen(ci.returnLen);
+    setPowerSrcIdx(ci.powerSrcIdx);
+  };
+  const onReset=()=>{
+    try{ if(window.confirm && !window.confirm("Reset all inputs to defaults? This clears your saved session in this browser.")) return; }catch(e){}
+    storageClear(); applyInputs(coerceInputs(null)); setAnimPref(PREF_DEFAULTS.animation); setDisplayMode(PREF_DEFAULTS.display_mode);
+  };
+  const onImportFile=(ev)=>{
+    const f=ev.target.files && ev.target.files[0]; if(!f) return;
+    const reader=new FileReader();
+    reader.onload=()=>{ const parsed=parseEnvelope(String(reader.result));
+      if(parsed){ applyInputs(parsed.inputs); if(parsed.prefs&&parsed.prefs.animation) setAnimPref(parsed.prefs.animation); if(parsed.prefs&&parsed.prefs.display_mode) setDisplayMode(parsed.prefs.display_mode); }
+      else { try{ window.alert && window.alert("That file could not be read as a saved hydraulic design."); }catch(e){} }
+      try{ ev.target.value=""; }catch(e){}
+    };
+    reader.readAsText(f);
+  };
+
+  const applyPowerSource=(i)=>{
+    setPowerSrcIdx(i);
+    const ps=POWER_SOURCES[i];
+    if(ps && ps.psi!=null){
+      setSizeMode("analyze");
+      setMaxPressure(ps.psi);
+      setPumpDisp(Number(((ps.gpm*231)/(pumpRPM*0.9)).toFixed(3)));
+    }
+  };
+
+  const pistonRef=useRef(0),posRef=useRef("neutral"),autoRef=useRef(false),dwellRef=useRef(0),clockRef=useRef(0),calcRef=useRef(calc),motorRef=useRef(false),actRef=useRef("cylinder");
+  useEffect(()=>{posRef.current=pos;},[pos]);
+  useEffect(()=>{autoRef.current=auto;},[auto]);
+  useEffect(()=>{calcRef.current=calc;},[calc]);
+  useEffect(()=>{motorRef.current=motorOn;},[motorOn]);
+  useEffect(()=>{actRef.current=actuator;},[actuator]);
+
+  useEffect(()=>{
+    if(!animate) return;            // Phase 4: reduced-motion / "off" pref -> no loop, static schematic, saves battery
+    let raf,last=null;
+    const loop=(ts)=>{
+      if(last==null) last=ts;
+      const dt=Math.min((ts-last)/1000,0.05); last=ts; clockRef.current=ts;
+      const c=calcRef.current, mOn=motorRef.current, isCyl=actRef.current==="cylinder";
+      const extTime=c?Math.max(c.extTime,0.3):2, retTime=c?Math.max(c.retTime,0.3):1.6;
+      let p=pistonRef.current, cur=posRef.current;
+      if(mOn && isCyl){
+        const stall=c && ((cur==="extend"&&c.stallExtend)||(cur==="retract"&&c.stallRetract));
+        if(autoRef.current && !stall){
+          if(dwellRef.current>0) dwellRef.current-=dt;
+          else if(cur==="extend"){ if(p>=1){dwellRef.current=0.6; posRef.current="retract"; setPos("retract");} }
+          else if(cur==="retract"){ if(p<=0){dwellRef.current=0.6; posRef.current="extend"; setPos("extend");} }
+          else { posRef.current="extend"; setPos("extend"); }
+          cur=posRef.current;
+        }
+        if(dwellRef.current<=0 && !stall){
+          if(cur==="extend") p=Math.min(1,p+dt/extTime);
+          else if(cur==="retract") p=Math.max(0,p-dt/retTime);
+        }
+        pistonRef.current=p;
+      }
+      setTick(ts);
+      raf=requestAnimationFrame(loop);
+    };
+    raf=requestAnimationFrame(loop);
+    return ()=>cancelAnimationFrame(raf);
+  },[animate]);
+
+  const tabs = mode==="beginner" ? [["guide","GUIDE"],["results","READOUT"],["coach","COACH"],["learn","LEARN"],["physics","PHYSICS"]]
+    : mode==="intermediate" ? [["guide","GUIDE"],["results","RESULTS"],["coach","COACH"],["lines","LINES"],["learn","LEARN"],["physics","PHYSICS"]]
+    : [["guide","GUIDE"],["results","RESULTS"],["coach","COACH"],["lines","LINES"],["physics","PHYSICS"],["learn","LEARN"],["warn","WARN"]];
+  useEffect(()=>{ if(!tabs.find(t=>t[0]===tab)) setTab("results"); },[mode]);
+
+  const tabStyle=t=>({padding:"5px 8px",fontSize:"0.72em",letterSpacing:1,cursor:"pointer",
+    background:tab===t?T.card:"transparent",color:tab===t?T.accent:T.muted,
+    border:"1px solid "+(tab===t?T.borderHi:T.border),borderRadius:3});
+  const segBtn=(active,col)=>({padding:"5px 9px",fontSize:"0.78em",cursor:"pointer",borderRadius:3,
+    background:active?col+"22":T.card,border:"1.5px solid "+(active?col:T.border),color:active?col:T.muted,fontWeight:active?"bold":"normal"});
+  const showDcv=true, showAct=true;
+  const isCyl=actuator==="cylinder";
+  const li=COMP_INFO.find(c=>c.id===learnSel)||COMP_INFO[0];
+  const learnList=COMP_INFO.filter(c=>c.modes.includes(mode));
+
+  return (
+    <div style={{background:T.bg,height:"100vh",display:"flex",flexDirection:"column",fontFamily:"'Courier New',monospace",color:T.text,overflow:"hidden",fontSize:baseFont+"px"}}>
+      {/* header */}
+      <header role="banner" style={{background:T.panel,borderBottom:"1px solid "+T.border,padding:"8px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,flexWrap:"wrap"}}>
+        <div>
+          <div style={{color:T.accent,fontSize:"1.15em",letterSpacing:3,fontWeight:"bold"}}>HYDRAULIC TRAINER & DESIGNER</div>
+          <div style={{color:T.muted,fontSize:"0.6em",letterSpacing:2,marginTop:1}}>SELF-PACED FLUID POWER LEARNING - ISO SYMBOLS - BERNOULLI/DARCY SIZING</div>
+        </div>
+        <div style={{marginLeft:"auto",display:"flex",gap:8,alignItems:"center"}}>
+          <span style={{color:T.muted,fontSize:"0.62em"}}>MODE</span>
+          {[["beginner","BEGINNER"],["intermediate","INTERMED."],["advanced","ADVANCED"]].map(m=>(
+            <button key={m[0]} onClick={()=>setMode(m[0])} style={segBtn(mode===m[0],T.accent)}>{m[1]}</button>
+          ))}
+          <span style={{color:T.muted,fontSize:"0.62em",marginLeft:8}}>FONT</span>
+          {["A-","A","A+"].map((a,i)=>(
+            <button key={i} onClick={()=>setFontIdx(i)} style={segBtn(fontIdx===i,T.ok)}>{a}</button>
+          ))}
+        </div>
+      </header>
+
+      <div style={{display:"flex",flex:1,overflow:"hidden",minHeight:0}}>
+        {/* LEFT PANEL */}
+        <div role="region" aria-label="Design inputs and controls" style={{width:212,background:T.panel,borderRight:"1px solid "+T.border,padding:12,overflowY:"auto",flexShrink:0}}>
+          <Sec title="SETUP">
+            <div style={{color:T.muted,fontSize:"0.7em",marginBottom:4}}>Workflow</div>
+            <div style={{display:"flex",gap:4,marginBottom:8}}>
+              <button onClick={()=>setSizeMode("design")} style={{...segBtn(sizeMode==="design",T.accent),flex:1}}>DESIGN</button>
+              <button onClick={()=>setSizeMode("analyze")} style={{...segBtn(sizeMode==="analyze",T.accent),flex:1}}>ANALYZE</button>
+            </div>
+            <div style={{color:T.muted,fontSize:"0.62em",marginBottom:8,lineHeight:1.4}}>{sizeMode==="design"?"Enter the task; the tool sizes the cylinder, pump and motor.":"Enter the pump; the tool computes the resulting speed/behavior."}</div>
+            <div style={{color:T.muted,fontSize:"0.7em",marginBottom:4}}>Electric motor</div>
+            <button onClick={()=>setMotorOn(o=>!o)} style={{...segBtn(motorOn,motorOn?T.ok:T.danger),width:"100%",marginBottom:8}}>{motorOn?"MOTOR ON (pump running)":"MOTOR OFF"}</button>
+            {showAct && (<div style={{marginBottom:8}}>
+              <div style={{color:T.muted,fontSize:"0.7em",marginBottom:4}}>Actuator</div>
+              <div style={{display:"flex",gap:4}}>
+                <button onClick={()=>setActuator("cylinder")} style={{...segBtn(isCyl,T.accent),flex:1}}>CYLINDER</button>
+                <button onClick={()=>setActuator("motor")} style={{...segBtn(!isCyl,T.accent),flex:1}}>MOTOR</button>
+              </div>
+            </div>)}
+            {showDcv && (<div>
+              <div style={{color:T.muted,fontSize:"0.7em",marginBottom:4}}>DCV center type</div>
+              <select aria-label="Directional valve center type" value={dcvType} onChange={e=>setDcvType(e.target.value)} style={{...inputCSS}}>
+                {Object.keys(DCV_TYPES).map(k=><option key={k} value={k}>{DCV_TYPES[k].name}</option>)}
+              </select>
+              <div style={{color:T.muted,fontSize:"0.62em",marginTop:3,lineHeight:1.4}}>{DCV_TYPES[dcvType].neutral}</div>
+            </div>)}
+          </Sec>
+
+          {isCyl ? (<Sec title="TASK / LOAD">
+            <InputRow label="Max Load" unit="lbf" value={load} onChange={setLoad} min={100} max={500000} step={100} hint="weight the system carries"/>
+            <InputRow label="Lift Angle" unit="deg" value={angle} onChange={setAngle} min={0} max={90} step={1} hint="0=push 90=vertical lift"/>
+            {sizeMode==="design" && <InputRow label="Target Speed" unit="in/s" value={targetSpeedCyl} onChange={setTargetSpeedCyl} min={0.1} max={60} step={0.1} hint="how fast it must move"/>}
+            <InputRow label="Stroke" unit="in" value={stroke} onChange={setStroke} min={1} max={240} step={0.5}/>
+          </Sec>) : (<Sec title="TASK / MOTOR LOAD">
+            <InputRow label="Load Torque" unit="lb-in" value={loadTorque} onChange={setLoadTorque} min={10} max={100000} step={10} hint="torque the motor must drive"/>
+            <InputRow label="Motor Disp." unit="in3/rev" value={motorDisp} onChange={setMotorDisp} min={0.1} max={50} step={0.1} hint="motor size"/>
+            {sizeMode==="design" && <InputRow label="Target Speed" unit="rpm" value={targetSpeedMot} onChange={setTargetSpeedMot} min={10} max={5000} step={10} hint="desired shaft rpm"/>}
+          </Sec>)}
+
+          {isCyl && (<Sec title="FRICTION">
+            <select aria-label="Seal/guide friction preset" value={frictionPre} onChange={e=>setFrictionPre(Number(e.target.value))} style={{...inputCSS,marginBottom:6}}>
+              {FRICTION.map((p,i)=><option key={i} value={i}>{p.label}</option>)}
+            </select>
+            {FRICTION[frictionPre].mu==null && <InputRow label="Custom mu" unit="" value={customMu} onChange={setCustomMu} min={0.01} max={1} step={0.01}/>}
+            <div style={{color:T.muted,fontSize:"0.62em",marginTop:2}}>mu = {mu.toFixed(3)}</div>
+          </Sec>)}
+
+          <Sec title="SYSTEM & PUMP">
+            <div style={{color:T.muted,fontSize:"0.7em",marginBottom:4}}>Power source (if you have one)</div>
+            <select aria-label="Power source preset" value={powerSrcIdx} onChange={e=>applyPowerSource(Number(e.target.value))} style={{...inputCSS,marginBottom:3}}>
+              {POWER_SOURCES.map((p,i)=><option key={i} value={i}>{p.label}</option>)}
+            </select>
+            {powerSrcIdx>0 && <div style={{color:T.muted,fontSize:"0.6em",marginBottom:6,lineHeight:1.4}}>Sets relief + flow from a typical unit (switches to ANALYZE). Verify against your unit's NTTL / OEM report.</div>}
+            <InputRow label="Max Sys Pressure" unit="psi" value={maxPressure} onChange={setMaxPressure} min={250} max={6000} step={50} hint="relief ceiling / sizing limit"/>
+            {sizeMode==="analyze"
+              ? <InputRow label="Pump Displacement" unit="in3/rev" value={pumpDisp} onChange={setPumpDisp} min={0.05} max={20} step={0.05} hint="sets the flow rate"/>
+              : (calc && <div style={{background:T.bg,border:"1px solid "+T.border,borderRadius:3,padding:"5px 7px",marginBottom:9,color:T.ok,fontSize:"0.68em",lineHeight:1.4}}>Sized pump: {calc.pumpDisp.toFixed(2)} in3/rev<br/>Motor frame: {calc.motorPwrHP} HP</div>)}
+            <InputRow label="Pump Speed" unit="rpm" value={pumpRPM} onChange={setPumpRPM} min={300} max={3600} step={50}/>
+            <InputRow label="Safety Factor" unit="x" value={safetyFactor} onChange={setSafetyFactor} min={1.0} max={2.5} step={0.05}/>
+            {calc && <div style={{color:T.ok,fontSize:"0.66em",marginTop:3}}>Pump flow = {calc.pumpFlow.toFixed(2)} gal/min</div>}
+          </Sec>
+
+          {mode!=="beginner" && (<Sec title="LINE LENGTHS">
+            <InputRow label="Suction" unit="in" value={suctionLen} onChange={setSuctionLen} min={6} max={600} step={6} hint={"max "+VEL_SUCTION_MAX+" ft/s"}/>
+            <InputRow label="Pressure" unit="in" value={pressureLen} onChange={setPressureLen} min={6} max={1200} step={6} hint={"max "+VEL_PRESSURE_MAX+" ft/s"}/>
+            <InputRow label="Return" unit="in" value={returnLen} onChange={setReturnLen} min={6} max={1200} step={6} hint={"max "+VEL_RETURN_MAX+" ft/s"}/>
+          </Sec>)}
+
+          {mode!=="beginner" && (<Sec title="FLUID & FILTER">
+            <div style={{color:T.muted,fontSize:"0.7em",marginBottom:4}}>Hydraulic fluid</div>
+            <select aria-label="Hydraulic fluid grade" value={fluidIdx} onChange={e=>setFluidIdx(Number(e.target.value))} style={{...inputCSS,marginBottom:6}}>
+              {FLUIDS.map((f,i)=><option key={i} value={i}>{f.label} ({f.cSt} cSt)</option>)}
+            </select>
+            <div style={{color:T.muted,fontSize:"0.7em",marginBottom:4}}>Filter</div>
+            <select aria-label="Filter type" value={filterIdx} onChange={e=>setFilterIdx(Number(e.target.value))} style={{...inputCSS}}>
+              {FILTERS.map((f,i)=><option key={i} value={i}>{f.label}</option>)}
+            </select>
+            <InputRow label="DCV / valve dP" unit="psi" value={valveDP} onChange={setValveDP} min={0} max={500} step={5} hint="estimated drop across valves"/>
+          </Sec>)}
+
+          {mode==="advanced" && (<Sec title="THERMAL & INSTALL">
+            <InputRow label="Ambient temp" unit="F" value={ambientTemp} onChange={setAmbientTemp} min={20} max={120} step={5}/>
+            <InputRow label="Target oil temp" unit="F" value={targetOilTemp} onChange={setTargetOilTemp} min={100} max={180} step={5} hint="keep <= 140 F"/>
+            <InputRow label="Duty cycle" unit="%" value={dutyCyclePct} onChange={setDutyCyclePct} min={5} max={100} step={5} hint="fraction of time loaded"/>
+            <InputRow label="Pump elevation" unit="in" value={pumpElevIn} onChange={setPumpElevIn} min={-60} max={120} step={1} hint="+above / -below fluid level"/>
+            {isCyl && (<div>
+              <div style={{color:T.muted,fontSize:"0.7em",margin:"4px 0"}}>Cylinder mounting (buckling)</div>
+              <select aria-label="Cylinder mounting style" value={mountIdx} onChange={e=>setMountIdx(Number(e.target.value))} style={{...inputCSS}}>
+                {MOUNTS.map((m,i)=><option key={i} value={i}>{m.label}</option>)}
+              </select>
+            </div>)}
+          </Sec>)}
+
+          <Sec title="DISPLAY">
+            <label style={{display:"flex",alignItems:"center",gap:6,color:T.text,fontSize:"0.74em",cursor:"pointer"}}>
+              <input type="checkbox" checked={showGauges} onChange={e=>setShowGauges(e.target.checked)}/> Show section gauges
+            </label>
+            <label style={{display:"flex",alignItems:"center",gap:6,color:T.text,fontSize:"0.74em",cursor:"pointer",marginTop:5}}>
+              <input type="checkbox" checked={showVectors} onChange={e=>setShowVectors(e.target.checked)}/> Show force vectors
+            </label>
+          </Sec>
+
+          <Sec title="MOTION">
+            <div style={{color:T.muted,fontSize:"0.62em",marginBottom:6,lineHeight:1.4}}>
+              Flow animation. Auto follows your device's reduced-motion setting{reducedMotion?" (currently reduced)":""}.
+            </div>
+            <div role="group" aria-label="Animation preference" style={{display:"flex",gap:4}}>
+              {[["auto","Auto"],["on","On"],["off","Off"]].map(o=>(
+                <button key={o[0]} onClick={()=>setAnimPref(o[0])} aria-pressed={animPref===o[0]}
+                  style={{...segBtn(animPref===o[0],T.accent),flex:1}}>{o[1]}</button>
+              ))}
+            </div>
+            <div style={{color:T.muted,fontSize:"0.6em",marginTop:4}}>{animate?"Animation on.":"Animation off — static schematic, state colors preserved."}</div>
+          </Sec>
+
+          <Sec title="UNITS">
+            <div style={{color:T.muted,fontSize:"0.62em",marginBottom:6,lineHeight:1.4}}>
+              Display units. Customary (psi, in, gpm) or SI (bar, mm, L/min). Display only — calculations, stored data, and exports are unchanged.
+            </div>
+            <div role="group" aria-label="Display unit system" style={{display:"flex",gap:4}}>
+              {[["customary","Customary"],["SI","SI"]].map(o=>(
+                <button key={o[0]} onClick={()=>setDisplayMode(o[0])} aria-pressed={displayMode===o[0]}
+                  style={{...segBtn(displayMode===o[0],T.accent),flex:1}}>{o[1]}</button>
+              ))}
+            </div>
+            <div style={{color:T.muted,fontSize:"0.6em",marginTop:4}}>Active: {displayMode==="SI"?"SI (metric)":"US customary"}.</div>
+          </Sec>
+
+          <Sec title="SAVE / EXPORT">
+            <div style={{color:T.muted,fontSize:"0.62em",marginBottom:6,lineHeight:1.4}}>
+              {bootStatus==="restored"?"Session restored in this browser.":bootStatus==="recovered"?"Saved data was unreadable - restored defaults.":"Your work autosaves to this browser."}
+            </div>
+            <div style={{fontSize:"0.66em",marginBottom:8,color:saved==="saved"?T.ok:T.muted}}>
+              {saved==="saving"?"Saving\u2026":saved==="saved"?"\u2713 Saved":"Autosave on"}
+            </div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+              <button onClick={()=>exportJSON(curInputs,{animation:animPref,display_mode:displayMode})} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Export JSON</button>
+              <button onClick={()=>fileInputRef.current&&fileInputRef.current.click()} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Import JSON</button>
+              <button onClick={()=>exportReport(inp,calc,curInputs)} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Save report</button>
+              <button onClick={()=>exportSVG()} style={{...segBtn(false,T.accent),flex:"1 0 46%"}}>Save SVG</button>
+            </div>
+            <button onClick={onReset} style={{...segBtn(false,T.danger),width:"100%",marginTop:6}}>Reset to defaults</button>
+            <input ref={fileInputRef} type="file" accept="application/json,.json" onChange={onImportFile} style={{display:"none"}}/>
+          </Sec>
+        </div>
+
+        {/* CENTER */}
+        <main id="main" aria-label="System schematic" style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
+          <div style={{background:T.panel,borderBottom:"1px solid "+T.border,padding:"8px 14px",display:"flex",gap:8,alignItems:"center",flexShrink:0,flexWrap:"wrap"}}>
+            <span style={{color:T.muted,fontSize:"0.72em",letterSpacing:1}}>{isCyl?"ACTUATE:":"DRIVE:"}</span>
+            {[["retract",isCyl?"RETRACT":"CCW",T.ret],["neutral","NEUTRAL",T.muted],["extend",isCyl?"EXTEND":"CW",T.hp]].map(b=>(
+              <button key={b[0]} onClick={()=>{setAuto(false);autoRef.current=false;setPos(b[0]);posRef.current=b[0];}} disabled={!motorOn}
+                style={{padding:"6px 14px",fontSize:"0.85em",letterSpacing:1,cursor:motorOn?"pointer":"not-allowed",opacity:motorOn?1:0.4,
+                background:pos===b[0]&&!auto?b[2]+"18":T.card,border:"1.5px solid "+(pos===b[0]&&!auto?b[2]:T.border),borderRadius:3,
+                color:pos===b[0]&&!auto?b[2]:T.muted,fontWeight:pos===b[0]&&!auto?"bold":"normal"}}>{b[1]}</button>
+            ))}
+            {isCyl && <button onClick={()=>{const n=!auto;setAuto(n);autoRef.current=n;if(n){setPos("extend");posRef.current="extend";}}} disabled={!motorOn}
+              style={{padding:"6px 14px",fontSize:"0.85em",letterSpacing:1,cursor:motorOn?"pointer":"not-allowed",opacity:motorOn?1:0.4,marginLeft:6,
+              background:auto?T.ok+"18":T.card,border:"1.5px solid "+(auto?T.ok:T.border),borderRadius:3,color:auto?T.ok:T.muted,fontWeight:auto?"bold":"normal"}}>{auto?"STOP":"AUTO CYCLE"}</button>}
+            <span style={{color:T.muted,fontSize:"0.62em",marginLeft:6}}>{!motorOn?"Turn the motor ON to run the pump":DCV_TYPES[dcvType].neutral}</span>
+          </div>
+          <div style={{flex:1,overflow:"auto"}}>
+            <Schematic du={displayMode} calc={calc} inp={inp} pos={posRef.current} pistonPos={pistonRef.current} clock={clockRef.current}
+              motorOn={motorOn} dcvType={dcvType} actuator={actuator} showGauges={showGauges} showVectors={showVectors} sc={SC}/>
+          </div>
+        </main>
+
+        {/* RIGHT */}
+        <aside role="complementary" aria-label="Readouts and learning panels" style={{width:262,background:T.panel,borderLeft:"1px solid "+T.border,display:"flex",flexDirection:"column",flexShrink:0}}>
+          <div role="tablist" aria-label="Information panels" style={{display:"flex",gap:4,padding:"8px 8px 0",borderBottom:"1px solid "+T.border,flexShrink:0,flexWrap:"wrap"}}>
+            {tabs.map(t=>(
+              <button key={t[0]} role="tab" id={"tab-"+t[0]} aria-selected={tab===t[0]} aria-controls="tabpanel-info" style={tabStyle(t[0])} onClick={()=>setTab(t[0])}>{t[1]}
+                {t[0]==="warn"&&calc&&calc.warnings.filter(w=>w.t!=="ok").length>0 &&
+                  <span style={{marginLeft:4,background:T.danger,color:"#fff",borderRadius:8,padding:"0 4px",fontSize:"0.7em"}}>{calc.warnings.filter(w=>w.t!=="ok").length}</span>}
+              </button>
+            ))}
+          </div>
+          <div id="tabpanel-info" role="tabpanel" tabIndex={0} aria-labelledby={"tab-"+tab} style={{flex:1,overflowY:"auto",padding:10}}>
+            {tab==="guide" ? (<div style={{fontSize:"0.78em",lineHeight:1.55}}>
+              <div style={{color:T.accent,fontSize:"0.98em",fontWeight:"bold",marginBottom:4}}>HOW TO DESIGN THIS SYSTEM</div>
+              <div style={{color:T.muted,fontSize:"0.7em",marginBottom:10,lineHeight:1.5}}>The hard part of hydraulics is not the formulas - it is knowing which numbers to assume and why. Start here.</div>
+
+              <Sec title="STEP 0 - WHERE DO YOU START?">
+                <div style={{marginBottom:6}}><span style={{color:T.accent,fontWeight:"bold"}}>Path A - you have a TASK, no hardware yet.</span> Use <b>DESIGN</b> mode. You give the job (load, angle, speed) and a pressure ceiling; the tool sizes the cylinder, pump and motor for you.</div>
+                <div><span style={{color:T.accent,fontWeight:"bold"}}>Path B - you already have a power source</span> (a tractor, a power pack). Pick it under "Power source" on the left - that fixes the relief pressure and the available flow. Then in <b>ANALYZE</b> mode your load decides the bore that fits under that relief, and the available flow decides the speed.</div>
+              </Sec>
+
+              <Sec title="STEP 1 - THE TASK (what you must know)">
+                <div style={{marginBottom:4}}>{isCyl?"Load (lbf), mount angle, travel speed, stroke.":"Load torque (lb-in), motor displacement, target rpm."}</div>
+                <div style={{color:T.muted}}>These come from the application - the thing you are actually trying to move. Everything else is derived or assumed.</div>
+              </Sec>
+
+              <Sec title="STEP 2 - THE ASSUMPTIONS (this is the skill)">
+                <div style={{color:T.muted,marginBottom:8}}>Each value below is an assumption a designer makes from experience. The tool's current choice and the reason:</div>
+                {[
+                  ["Max / relief pressure",maxPressure+" psi","The ceiling you design under. Mobile gear is ~2000-2500 psi, industrial 3000+; a power source fixes this for you. Higher pressure = smaller, cheaper cylinder but higher-rated plumbing. Relief is set here to protect everything."],
+                  ["Safety factor",safetyFactor+"x","Covers seal drag, friction you did not model, pressure spikes and load you under-estimated. 1.25 is a common starting point."],
+                  ["Friction",isCyl?mu.toFixed(2):"n/a","From the sliding surfaces. It adds to the force the cylinder must push - guessing it too low undersizes the cylinder."],
+                  ["Velocity limits","4 / 25 / 10 ft/s","Suction low to avoid cavitation, pressure moderate to limit heat, return low to limit backpressure. They size your hoses."],
+                  ["Fluid",FLUIDS[fluidIdx].label,"Viscosity sets the friction loss and the cavitation margin. VG 46 is a typical all-round grade."],
+                  ["Rod ratio","~0.55 x bore","A standard proportion so the rod will not buckle and retract speed/force are reasonable."],
+                  ["Efficiencies","~90% vol / 85% overall","Real pumps and motors lose some flow and power - assumed typical values."],
+                  ["Reservoir","2-3 x pump GPM","Lets air and heat escape. Smaller tanks need a cooler."],
+                ].map(r=>(<div key={r[0]} style={{marginBottom:7}}>
+                  <div><span style={{color:T.accent,fontWeight:"bold"}}>{r[0]}</span> <span style={{color:T.warn}}>= {r[1]}</span></div>
+                  <div style={{color:T.muted,fontSize:"0.92em"}}>{r[2]}</div>
+                </div>))}
+              </Sec>
+
+              <Sec title="STEP 3 - THE CASCADE (what the tool computes)">
+                <div style={{color:T.muted}}>Force (F = P x A) sizes the bore -&gt; bore + speed sets the flow (Q = A x v) -&gt; flow + rpm sizes the pump -&gt; pressure x flow sizes the motor -&gt; flow sets the hose sizes. Open the RESULTS tab and read the "WHY IT SIZED THIS WAY" notes.</div>
+              </Sec>
+
+              {calc && (<Sec title="YOUR DESIGN, IN PLAIN ENGLISH">
+                <div style={{color:T.text}}>
+                  {sizeMode==="design"?"You asked to ":"You are analysing a fixed power source. You "}
+                  {isCyl
+                    ? <span>move a <b>{inp.load} lbf</b> load at <b>{angle}&deg;</b>{sizeMode==="design"?<span> at <b>{targetSpeedCyl} in/s</b></span>:null}. Under a <b>{maxPressure} psi</b> ceiling the tool picked a <b>{calc.boreDia}" bore</b>, needing <b>{calc.pumpFlow.toFixed(1)} GPM</b> (pump <b>{calc.pumpDisp.toFixed(2)} in3/rev</b>) and a <b>{calc.motorPwrHP} HP</b> motor. Extend pressure is <b>{calc.pressExtend.toFixed(0)} psi</b>.</span>
+                    : <span>drive <b>{inp.loadTorque} lb-in</b> with a <b>{inp.motorDisp} in3/rev</b> motor. It needs <b>{calc.reqPress.toFixed(0)} psi</b> and spins at <b>{calc.motorSpeed.toFixed(0)} rpm</b> on <b>{calc.pumpFlow.toFixed(1)} GPM</b>.</span>}
+                </div>
+                {calc.warnings.filter(w=>w.t==="danger").length>0 && <div style={{color:T.danger,marginTop:6}}>Heads up: {calc.warnings.filter(w=>w.t==="danger")[0].m}</div>}
+                <div style={{color:T.muted,marginTop:6,fontSize:"0.92em"}}>Next: open <b>COACH</b> for a review, or change one assumption and watch what moves.</div>
+              </Sec>)}
+            </div>)
+            : tab==="learn" ? (<div>
+              <div style={{color:T.muted,fontSize:"0.7em",marginBottom:6}}>Pick a component to study:</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
+                {learnList.map(c=>(<button key={c.id} onClick={()=>setLearnSel(c.id)} style={segBtn(learnSel===c.id,T.accent)}>{c.name.split(" ")[0]}</button>))}
+              </div>
+              <div style={{color:T.accent,fontSize:"0.95em",fontWeight:"bold",marginBottom:6}}>{li.name}</div>
+              {[["PURPOSE",li.purpose],["FUNCTION",li.func],["EQUATIONS",li.eqn],["APPLICATIONS",li.app],["COMMON MISTAKES",li.mistakes]].map(s=>(
+                <div key={s[0]} style={{marginBottom:8}}>
+                  <div style={{color:T.accentDim,fontSize:"0.62em",letterSpacing:1,marginBottom:2}}>{s[0]}</div>
+                  <div style={{color:s[0]==="EQUATIONS"?T.accent:T.text,fontSize:"0.76em",lineHeight:1.5,fontFamily:s[0]==="EQUATIONS"?"monospace":"inherit"}}>{s[1]}</div>
+                </div>
+              ))}
+              <div style={{marginTop:10,padding:"6px 8px",background:T.bg,border:"1px solid "+T.border,borderRadius:3,color:T.muted,fontSize:"0.68em",lineHeight:1.5}}>
+                Try it: change inputs on the left and watch this component's behavior in the schematic. Full lecture plan is in the curriculum document.
+              </div>
+            </div>)
+            : !calc ? <div style={{color:T.muted,fontSize:"0.74em",marginTop:20,textAlign:"center"}}>Enter parameters</div>
+            : tab==="coach" ? (<div>
+              <div style={{color:T.accent,fontSize:"0.95em",fontWeight:"bold",marginBottom:4}}>DESIGN COACH</div>
+              <div style={{color:T.muted,fontSize:"0.66em",marginBottom:10,lineHeight:1.5}}>Rule-based review of your current design (deterministic checks - it never invents numbers). It points at issues and asks the question a senior engineer would, instead of handing you the answer.</div>
+              {calc.coach.map((c,i)=>(
+                <div key={i} style={{marginBottom:9,padding:"7px 9px",borderRadius:4,lineHeight:1.5,fontSize:"0.76em",
+                  background:c.t==="warn"?"#ff444412":c.t==="ok"?"#00cc8812":"#00aaff12",
+                  border:"1px solid "+(c.t==="warn"?T.danger:c.t==="ok"?T.ok:T.accentDim),
+                  color:c.t==="warn"?T.danger:c.t==="ok"?T.ok:T.text}}>
+                  {c.t==="warn"?"\u26a0 ":c.t==="ok"?"\u2713 ":"\u2192 "}{c.m}
+                </div>
+              ))}
+              <div style={{marginTop:12,padding:"6px 8px",background:T.bg,border:"1px dashed "+T.border,borderRadius:3,color:T.muted,fontSize:"0.66em",lineHeight:1.5}}>
+                The coach checks physics + design rules only. Engineering judgment (which valve, which mounting, real duty cycles) is where a human instructor still matters.
+              </div>
+            </div>)
+            : tab==="results" ? (<div>
+              {calc.designMode && calc.reasons && (<Sec title="WHY IT SIZED THIS WAY">
+                {calc.reasons.map((r,i)=>(<div key={i} style={{marginBottom:6,lineHeight:1.5}}>
+                  <span style={{color:T.accent,fontSize:"0.66em",letterSpacing:1}}>{r[0].toUpperCase()}</span>
+                  <div style={{color:T.muted,fontSize:"0.72em"}}>{r[1]}</div>
+                </div>))}
+              </Sec>)}
+              {isCyl ? (<div>
+                {mode!=="beginner" && (<Sec title="FORCE ANALYSIS">
+                  <RR label="Max load (input)" value={inp.load} digits={0} unit="lbf" du={displayMode}/>
+                  <RR label="Gravity component" value={calc.gravForce} digits={0} unit="lbf" du={displayMode}/>
+                  <RR label="Friction force" value={calc.frictionForce} digits={0} unit="lbf" du={displayMode}/>
+                  <RR label="Cyl force extend" value={calc.forceExtend} digits={0} unit="lbf" hi du={displayMode}/>
+                  <RR label="Cyl force retract" value={calc.forceRetract} digits={0} unit="lbf" du={displayMode}/>
+                </Sec>)}
+                <Sec title="CYLINDER (sized)">
+                  <RR label="Selected bore" value={calc.boreDia} digits={2} unit="in" hi du={displayMode}/>
+                  <RR label="Rod diameter" value={calc.rodDia} digits={2} unit="in" du={displayMode}/>
+                  <RR label="Bore area" value={calc.boreArea} digits={3} unit="in2" du={displayMode}/>
+                  {mode!=="beginner" && <RR label="Annulus area" value={calc.annArea} digits={3} unit="in2" du={displayMode}/>}
+                  {mode==="advanced" && <RR label="Buckling Pcr" value={calc.Pcr} digits={0} unit="lbf" du={displayMode}/>}
+                  {mode==="advanced" && <RR label="Buckling SF" value={calc.buckSF} digits={1} unit="x" warn={calc.buckSF<2} ok={calc.buckSF>=2} du={displayMode}/>}
+                </Sec>
+                <Sec title="PRESSURE (computed)">
+                  <RR label="Extend pressure" value={calc.pressExtend} digits={0} unit="psi" warn={calc.stallExtend} du={displayMode}/>
+                  <RR label="Retract pressure" value={calc.pressRetract} digits={0} unit="psi" warn={calc.stallRetract} du={displayMode}/>
+                  <RR label="Max sys (input)" value={calc.maxPressure} digits={0} unit="psi" hi du={displayMode}/>
+                  <RR label="Relief setting" value={calc.rvSetting} digits={0} unit="psi" du={displayMode}/>
+                  <div style={{color:T.muted,fontSize:"0.6em",marginTop:3,lineHeight:1.4}}>Extend pushes on the full bore area; retract pushes on the annulus (bore - rod). The same force on the smaller area needs different pressure, so the two differ.</div>
+                </Sec>
+                <Sec title="SPEED & TIME (computed)">
+                  <RR label="Pump flow" value={calc.pumpFlow} digits={2} unit="gal/min" hi du={displayMode}/>
+                  <RR label="Extend speed" value={calc.velExt} digits={2} unit="in/s" du={displayMode}/>
+                  <RR label="Retract speed" value={calc.velRet} digits={2} unit="in/s" du={displayMode}/>
+                  <RR label="Extend time" value={calc.extTime} digits={2} unit="s" du={displayMode}/>
+                  <RR label="Retract time" value={calc.retTime} digits={2} unit="s" du={displayMode}/>
+                  <RR label="Cycle time" value={calc.cycleTime} digits={2} unit="s" hi du={displayMode}/>
+                  <div style={{color:T.muted,fontSize:"0.6em",marginTop:3,lineHeight:1.4}}>Retract is faster: the same flow fills the smaller annulus, so v_ret = v_ext x bore_area / annulus_area.</div>
+                </Sec>
+              </div>) : (<div>
+                <Sec title="MOTOR PRESSURE">
+                  <RR label="Load torque (input)" value={calc.loadTorque} digits={0} unit="lb-in" du={displayMode}/>
+                  <RR label="Pressure needed" value={calc.reqPress} digits={0} unit="psi" warn={calc.stalled} du={displayMode}/>
+                  <RR label="Max sys (input)" value={calc.maxPressure} digits={0} unit="psi" hi du={displayMode}/>
+                  <RR label="Operating pressure" value={calc.sysPress} digits={0} unit="psi" du={displayMode}/>
+                </Sec>
+                <Sec title="MOTOR OUTPUT (computed)">
+                  <RR label="Pump flow" value={calc.pumpFlow} digits={2} unit="gal/min" hi du={displayMode}/>
+                  <RR label="Motor speed" value={calc.motorSpeed} digits={0} unit="rpm" hi warn={calc.stalled} du={displayMode}/>
+                  <RR label="Output torque" value={calc.torqueOut} digits={0} unit="lb-in" du={displayMode}/>
+                  <RR label="Displacement" value={calc.motorDisp} digits={2} unit="in3/rev" du={displayMode}/>
+                  <RR label="Shaft power" value={calc.shaftHP} digits={2} unit="HP" du={displayMode}/>
+                  {calc.stalled && <div style={{color:T.danger,fontSize:"0.7em",marginTop:4}}>Stalled: torque needs more than max pressure.</div>}
+                </Sec>
+              </div>)}
+              <Sec title="PUMP & DRIVE">
+                <RR label="Pump displacement" value={calc.pumpDisp} digits={3} unit="in3/rev" du={displayMode}/>
+                <RR label="Pump speed" value={calc.pumpRPM} unit="RPM" du={displayMode}/>
+                <RR label="Hydraulic power" value={calc.hydHP} digits={2} unit="HP" du={displayMode}/>
+                <RR label="Drive motor" value={calc.motorPwrHP} digits={2} unit="HP" hi warn={calc.motorPwrHP>25} du={displayMode}/>
+              </Sec>
+              {mode!=="beginner" && (<Sec title="LOSSES">
+                <RR label="Total line loss" value={calc.totalLineLoss} digits={1} unit="psi" warn={calc.totalLineLoss>calc.sysPress*0.15} du={displayMode}/>
+                <RR label="Pump inlet" value={calc.suctionInletAbs} digits={1} unit="psia" warn={calc.suctionInletAbs<NPSH_MIN_ABS} du={displayMode}/>
+                <RR label="Return backpressure" value={calc.returnBackP} digits={1} unit="psi" warn={calc.returnBackP>50} du={displayMode}/>
+                <RR label="Loss as heat" value={calc.lineHeatHP} digits={2} unit="HP" du={displayMode}/>
+              </Sec>)}
+              {mode==="advanced" && (<Sec title="THERMAL / COOLING">
+                <RR label="Heat load" value={calc.heatHP} digits={2} unit="HP" du={displayMode}/>
+                <RR label="Heat load" value={calc.heatBTU} digits={0} unit="BTU/hr" du={displayMode}/>
+                <RR label="Reservoir" value={calc.tankGal} digits={0} unit="gal" du={displayMode}/>
+                <RR label="Tank rejects" value={calc.resDissipHP} digits={2} unit="HP" du={displayMode}/>
+                <RR label="Steady oil temp" value={calc.steadyOilTemp} digits={0} unit="F" warn={calc.steadyOilTemp>calc.targetOil} du={displayMode}/>
+                <RR label="Cooler needed" value={calc.coolerBTU} digits={0} unit="BTU/hr" warn={calc.coolerHP>0} ok={calc.coolerHP<=0} du={displayMode}/>
+                <div style={{color:T.muted,fontSize:"0.6em",marginTop:3,lineHeight:1.4}}>Toil = ambient + heat / (tank dissipation). Heat = drive HP - useful HP, times duty cycle. Tank rejects ~0.001 x area x (Toil-ambient) HP. Simplified steady-state estimate - real coolers/temps need a thermal datasheet.</div>
+              </Sec>)}
+              {mode==="advanced" && (<Sec title="RATINGS">
+                <RR label="Pressure-line rating" value={calc.minTubeRating} digits={0} unit="psi" warn={!calc.ratingOK} ok={calc.ratingOK} du={displayMode}/>
+                <RR label="Vs max pressure" value={calc.maxPressure} digits={0} unit="psi" du={displayMode}/>
+                <div style={{color:T.muted,fontSize:"0.62em",marginTop:2}}>Barlow: P = 2 S t / OD. Hose burst should be 4x working.</div>
+              </Sec>)}
+            </div>)
+            : tab==="lines" ? (<div>
+              <div style={{color:T.muted,fontSize:"0.66em",marginBottom:8,lineHeight:1.6}}>Tubes sized to keep velocity under the limits. Re and dP from Darcy-Weisbach using {FLUIDS[fluidIdx].label} ({calc.nu?(calc.nu/CST_TO_FT2S).toFixed(0):"46"} cSt).</div>
+              <LineTable line={calc.suctionLine}/>
+              <LineTable line={calc.pressureLine}/>
+              <LineTable line={calc.returnLine}/>
+              <div style={{background:T.bg,borderRadius:3,padding:"6px 8px",border:"1px solid "+T.border,marginBottom:8}}>
+                <div style={{color:T.accent,fontSize:"0.74em",marginBottom:4,letterSpacing:1}}>PRESSURE-DROP BUDGET</div>
+                {calc.budget.map(b=>(<RR key={b.k} label={b.k} value={b.v} digits={1} unit="psi" du={displayMode}/>))}
+                <RR label="TOTAL dP" value={calc.totalDP} digits={1} unit="psi" hi warn={calc.totalDP>calc.sysPress*0.15} du={displayMode}/>
+                <RR label="% of sys P" value={(100*calc.totalDP/calc.sysPress)} digits={1} unit="%" warn={calc.totalDP>calc.sysPress*0.15} du={displayMode}/>
+                <RR label="Loss as heat" value={calc.lineHeatHP} digits={2} unit="HP" du={displayMode}/>
+              </div>
+            </div>)
+            : tab==="physics" ? (<div style={{fontSize:"0.78em",lineHeight:1.7}}>
+              <Sec title="GOVERNING EQUATIONS">
+                <div style={{color:T.muted,marginBottom:4}}>Force / Pascal:</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>F = P x A</div>
+                <div style={{color:T.muted,marginBottom:4}}>Continuity / speed:</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>Q = A x v</div>
+                <div style={{color:T.muted,marginBottom:4}}>Hydraulic power:</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>HP = P x Q / 1714</div>
+                <div style={{color:T.muted,marginBottom:4}}>Energy (Bernoulli):</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>P + 1/2 rv2 + rgz = const</div>
+                <div style={{color:T.muted,marginBottom:4}}>Friction (Darcy-Weisbach):</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>dP = f (L/D)(r v2 / 2)</div>
+                <div style={{color:T.muted,marginBottom:4}}>Reynolds:</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>Re = v D / nu</div>
+                <div style={{color:T.muted,marginBottom:4}}>Pump flow / motor torque:</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>Q = D N / 231   T = dP D / 2pi</div>
+                <div style={{color:T.muted,marginBottom:4}}>Rod buckling (Euler):</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>Pcr = pi^2 E I /(K L)^2</div>
+                <div style={{color:T.muted,marginBottom:4}}>Pump inlet (NPSH):</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>Pin = Patm - 1/2rv2 - dPf - rgz</div>
+                <div style={{color:T.muted,marginBottom:4}}>Heat load:</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>Qheat = (HPin - HPout) x duty ; BTU/hr = HP x 2545</div>
+                <div style={{color:T.muted,marginBottom:4}}>Reservoir cooling (tank area A ft2):</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>HPreject = 0.001 x A x (Toil - Tamb)</div>
+                <div style={{color:T.muted,marginBottom:4}}>Steady oil temp (no cooler):</div>
+                <div style={{color:T.accent,fontFamily:"monospace",marginBottom:8}}>Toil = Tamb + Qheat / (0.001 x A)</div>
+                <div style={{color:T.muted,marginBottom:4}}>Tube rating (Barlow):</div>
+                <div style={{color:T.accent,fontFamily:"monospace"}}>P = 2 S t / OD</div>
+              </Sec>
+              <Sec title="WHY VELOCITY LIMITS">
+                <div style={{marginBottom:8}}>Loss grows with v squared - doubling velocity quadruples friction loss.</div>
+                <div style={{color:T.suction,fontWeight:"bold"}}>Suction &le; 4 ft/s</div>
+                <div style={{color:T.muted,marginBottom:6}}>keeps pump inlet above oil vapor pressure (no cavitation).</div>
+                <div style={{color:T.ret,fontWeight:"bold"}}>Return &le; 10 ft/s</div>
+                <div style={{color:T.muted,marginBottom:6}}>keeps backpressure low (force, seals, heat).</div>
+                <div style={{color:T.hp,fontWeight:"bold"}}>Pressure &le; 25 ft/s</div>
+                <div style={{color:T.muted}}>balances friction heat against plumbing cost.</div>
+              </Sec>
+              {calc && (<Sec title="THIS SYSTEM">
+                <RR label="Pump inlet" value={calc.suctionInletAbs} digits={1} unit="psia" warn={calc.suctionInletAbs<NPSH_MIN_ABS} du={displayMode}/>
+                <RR label="Return backpressure" value={calc.returnBackP} digits={1} unit="psi" warn={calc.returnBackP>50} du={displayMode}/>
+                <RR label="Loss as heat" value={calc.lineHeatHP} digits={2} unit="HP" du={displayMode}/>
+              </Sec>)}
+            </div>)
+            : (<div>
+              {calc.warnings.length===0 ? <div style={{color:T.ok,fontSize:"0.74em",marginTop:10}}>No issues detected</div>
+              : calc.warnings.map((w,i)=>(
+                <div key={i} style={{color:w.t==="danger"?T.danger:w.t==="warn"?T.warn:T.ok,fontSize:"0.74em",marginBottom:8,paddingLeft:8,lineHeight:1.5,borderLeft:"2px solid "+(w.t==="danger"?T.danger:w.t==="warn"?T.warn:T.ok)}}>
+                  {w.t==="danger"?"[!] ":w.t==="warn"?"[~] ":"[ok] "}{w.m}
+                </div>
+              ))}
+            </div>)}
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
+const __root = ReactDOM.createRoot(document.getElementById("root"));
+__root.render(<App/>);
+window.__hydReady = true;   // signal success so the fail-loud guard stands down

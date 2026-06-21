@@ -1,0 +1,72 @@
+site_name: Fluid Power Systems Engineering
+site_description: A hands-on fluid power course built around one real machine — a precision hydraulic lift platform.
+site_author: Ali Bulent Koc
+# Update site_url to match the GitHub Pages target before deploying:
+site_url: https://alibulentkoc.github.io/fluid-powered-physical-ai-curriculum/
+
+# Authored relative links (assets/, demos/, quizzes/) resolve correctly with flat URLs.
+use_directory_urls: false
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - content.code.copy
+    - toc.follow
+  font:
+    text: IBM Plex Sans
+    code: IBM Plex Mono
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - The Course Machine: course-machine.md
+  - "Module 01 — Introduction to Fluid Power":
+      - Overview: module01/index.md
+      - "01 · Why fluid power exists": module01/01_why_fluid_power_exists.md
+      - "02 · How energy is transmitted": module01/02_how_energy_is_transmitted.md
+      - "03 · Force multiplication": module01/03_force_multiplication.md
+      - "04 · Real industrial machines": module01/04_real_industrial_machines.md
+  - "Module 02 — Fluid Power Components":
+      - Overview: module02/index.md
+      - "01 · The hydraulic cylinder": module02/01_the_hydraulic_cylinder.md
+      - "02 · The power unit": module02/02_the_power_unit.md

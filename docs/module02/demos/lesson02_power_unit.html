@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Pump flow and lift speed</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--amber:#DD841A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .lifter{transition:transform 7s linear}
+  .toggle{display:flex;gap:8px;margin-top:16px}
+  .toggle button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:13.5px;font-weight:600;padding:10px;border-radius:10px;cursor:pointer}
+  .toggle button:hover{border-color:var(--teal)}
+  .toggle button.run{background:#0C6A74;border-color:#0C6A74;color:#fff}
+  .ctl{margin-top:16px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;margin-bottom:8px}
+  .ctl .val{font-family:var(--mono);font-size:15px;color:var(--teal);font-weight:700}
+  input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:6px;background:#E3EAF0;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer;box-shadow:0 1px 4px rgba(12,34,53,.25)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:18px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg)}
+  .tile .k{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:20px;font-weight:700;margin-top:3px}
+  .tile.speed .v{color:var(--teal)}.tile.time .v{color:var(--ink)}.tile.power .v{color:var(--amber)}
+  .note{font-size:12.5px;color:var(--slate);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Pump flow and lift speed</h1>
+  <p class="sub">The pump's flow rate sets how fast the platform rises; the motor must supply the power. Set the flow, then run a lift and watch the speed change.</p>
+
+  <div class="card">
+    <svg id="rig" viewBox="0 0 620 400" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <!-- reservoir -->
+      <rect x="24" y="250" width="150" height="110" rx="9" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <rect x="30" y="292" width="138" height="62" rx="4" fill="#1FB6AE" opacity="0.85"/>
+      <text x="99" y="328" font-size="10.5" font-weight="700" letter-spacing="1" fill="#fff" text-anchor="middle">RESERVOIR</text>
+      <!-- motor + pump -->
+      <circle cx="74" cy="212" r="24" fill="#1B3A55"/><text x="74" y="218" font-size="15" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',monospace">M</text>
+      <rect x="98" y="206" width="22" height="12" fill="#586876"/>
+      <circle cx="140" cy="212" r="20" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/><polygon points="133,202 133,222 152,212" fill="#0E7E8C"/>
+      <!-- suction line into tank -->
+      <path d="M140,232 V300" fill="none" stroke="#9BB0BC" stroke-width="8" stroke-linecap="round"/>
+      <rect x="131" y="226" width="18" height="10" rx="2" fill="#1B3A55"/>
+      <!-- pressure line: pump -> down -> under -> up to cap port -->
+      <path id="pline" d="M160,212 H300 V378 H447 V360" fill="none" stroke="#0E7E8C" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- gauge -->
+      <line x1="240" y1="212" x2="240" y2="172" stroke="#0E7E8C" stroke-width="6"/>
+      <circle cx="240" cy="150" r="22" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <line x1="240" y1="150" x2="254" y2="139" stroke="#C2463B" stroke-width="2.5" stroke-linecap="round"/><circle cx="240" cy="150" r="3" fill="#1B3A55"/>
+      <text x="240" y="120" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">100 bar</text>
+      <!-- cylinder -->
+      <rect x="402" y="150" width="90" height="210" rx="9" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <rect id="capFluid" x="408" y="336" width="78" height="18" rx="3" fill="#1FB6AE" opacity="0.9"/>
+      <rect x="437" y="360" width="20" height="10" rx="2" fill="#1B3A55"/>
+      <text x="500" y="376" font-size="10.5" font-weight="700" fill="#586876" text-anchor="start">cap port</text>
+      <g id="lifter" class="lifter">
+        <rect id="piston" x="408" y="320" width="78" height="16" rx="3" fill="#1B3A55"/>
+        <rect x="437" y="244" width="20" height="76" fill="#5B6B79"/>
+        <rect x="372" y="230" width="150" height="14" rx="4" fill="#1B3A55"/>
+        <rect x="412" y="196" width="70" height="34" rx="5" fill="#DD841A"/>
+        <text x="447" y="218" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+      </g>
+    </svg>
+
+    <div class="ctl"><label>Pump flow <span class="val"><span id="qVal">10</span> L/min</span></label>
+      <input id="q" type="range" min="2" max="20" step="1" value="10"/></div>
+
+    <div class="toggle">
+      <button id="bRun" class="run">▶ Run lift</button>
+      <button id="bReset">Reset</button>
+    </div>
+
+    <div class="out">
+      <div class="tile speed"><div class="k">Lift speed</div><div class="v"><span id="vOut">84.9</span> <span style="font-size:12px;color:var(--slate)">mm/s</span></div></div>
+      <div class="tile time"><div class="k">Lift time (600 mm)</div><div class="v"><span id="tOut">7.1</span> <span style="font-size:12px;color:var(--slate)">s</span></div></div>
+      <div class="tile power"><div class="k">Motor power</div><div class="v"><span id="pOut">1.67</span> <span style="font-size:12px;color:var(--slate)">kW</span></div></div>
+    </div>
+    <p class="note" id="note"></p>
+  </div>
+</div>
+
+<script>
+  const Q=document.getElementById('q'),qVal=document.getElementById('qVal'),vOut=document.getElementById('vOut'),tOut=document.getElementById('tOut'),pOut=document.getElementById('pOut'),note=document.getElementById('note');
+  const lifter=document.getElementById('lifter'),capFluid=document.getElementById('capFluid');
+  const bRun=document.getElementById('bRun'),bReset=document.getElementById('bReset');
+  const BORE=0.050, A=Math.PI/4*BORE*BORE, PRES=1e7, STROKE_MM=600, LIFT_PX=134;
+  let lastTime=7.07;
+
+  function metrics(){
+    const Q_Lmin=+Q.value, Qm3s=Q_Lmin/60000;
+    const v=Qm3s/A*1000;            // mm/s
+    const t=STROKE_MM/v;            // s
+    const P=PRES*Qm3s/1000;         // kW
+    return {Q_Lmin,v,t,P};
+  }
+  function update(){
+    const m=metrics(); lastTime=m.t;
+    qVal.textContent=m.Q_Lmin; vOut.textContent=m.v.toFixed(1); tOut.textContent=m.t.toFixed(1); pOut.textContent=m.P.toFixed(2);
+    note.textContent='At '+m.Q_Lmin+' L/min the piston travels '+m.v.toFixed(1)+' mm/s, so a 600 mm lift takes '+m.t.toFixed(1)+' s. The motor must supply pressure × flow = '+m.P.toFixed(2)+' kW. More flow lifts faster but needs a bigger motor.';
+  }
+  function run(){
+    lifter.style.transitionDuration=lastTime+'s';
+    lifter.style.transform='translateY(-'+LIFT_PX+'px)';
+    capFluid.style.transition='y '+lastTime+'s linear, height '+lastTime+'s linear';
+    capFluid.setAttribute('y', 336-LIFT_PX); capFluid.setAttribute('height', 18+LIFT_PX);
+  }
+  function reset(){
+    lifter.style.transitionDuration='0.4s';
+    lifter.style.transform='translateY(0px)';
+    capFluid.style.transition='none';
+    capFluid.setAttribute('y', 336); capFluid.setAttribute('height', 18);
+  }
+  Q.addEventListener('input',update);
+  bRun.onclick=run; bReset.onclick=reset;
+  update();
+</script>
+</body>
+</html>

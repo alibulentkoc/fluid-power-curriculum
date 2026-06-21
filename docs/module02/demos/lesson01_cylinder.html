@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Stroke and acting type</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--amber:#DD841A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .lifter{transition:transform .4s ease}
+  .toggle{display:flex;gap:8px;margin-top:16px}
+  .toggle button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:13.5px;font-weight:600;padding:10px;border-radius:10px;cursor:pointer}
+  .toggle button.on{background:#0C2235;border-color:#0C2235;color:#fff}
+  .ctl{margin-top:16px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;margin-bottom:8px}
+  .ctl .val{font-family:var(--mono);font-size:15px;color:var(--teal);font-weight:700}
+  input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:6px;background:#E3EAF0;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer;box-shadow:0 1px 4px rgba(12,34,53,.25)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--teal);cursor:pointer}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:18px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg)}
+  .tile .k{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:20px;font-weight:700;margin-top:3px}
+  .tile.stroke .v{color:var(--teal)}.tile.vol .v{color:var(--amber)}.tile.state .v{font-family:var(--sans);font-size:15px;color:var(--ink)}
+  .note{font-size:12.5px;color:var(--slate);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Stroke and acting type</h1>
+  <p class="sub">The cylinder lifts the platform. Its stroke sets how high; its acting type sets how it comes back down. Set both and watch which port carries the fluid.</p>
+
+  <div class="card">
+    <svg id="rig" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <rect x="24" y="172" width="84" height="72" rx="10" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <text x="66" y="198" font-size="11" font-weight="700" letter-spacing="1" fill="#0E7E8C" text-anchor="middle">SUPPLY</text>
+      <circle cx="52" cy="220" r="13" fill="#1B3A55"/><text x="52" y="225" font-size="11" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',monospace">M</text>
+      <rect x="108" y="222" width="10" height="12" rx="2" fill="#1B3A55"/>
+      <rect x="108" y="182" width="10" height="12" rx="2" fill="#1B3A55"/>
+
+      <rect x="360" y="150" width="110" height="210" rx="10" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <rect id="capFluid" x="366" y="336" width="98" height="24" rx="3" fill="#1FB6AE" opacity="0.9"/>
+      <rect id="rodFluid" x="366" y="156" width="98" height="0" rx="3" fill="#9FD9D3" opacity="0"/>
+
+      <rect x="405" y="360" width="20" height="10" rx="2" fill="#1B3A55"/>
+      <rect x="350" y="170" width="10" height="18" rx="2" fill="#1B3A55"/>
+      <text x="478" y="368" font-size="11" font-weight="700" fill="#586876" text-anchor="start">cap port</text>
+      <text x="348" y="160" font-size="11" font-weight="700" fill="#586876" text-anchor="end" id="rodPortLbl">rod port</text>
+
+      <path id="capHose" d="M118,228 V382 H415 V360" fill="none" stroke="#9BB0BC" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <path id="rodHose" d="M118,188 V179 H350" fill="none" stroke="#9BB0BC" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <g id="lifter" class="lifter">
+        <rect id="piston" x="366" y="320" width="98" height="16" rx="3" fill="#1B3A55"/>
+        <rect x="405" y="240" width="20" height="80" fill="#5B6B79"/>
+        <rect x="330" y="226" width="170" height="14" rx="4" fill="#1B3A55"/>
+        <rect x="378" y="192" width="74" height="34" rx="5" fill="#DD841A"/>
+        <text x="415" y="214" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+      </g>
+
+      <g id="gravity" style="display:none">
+        <line x1="528" y1="150" x2="528" y2="220" stroke="#586876" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="528,232 521,218 535,218" fill="#586876"/>
+        <text x="528" y="146" font-size="11" fill="#586876" text-anchor="middle">gravity</text>
+      </g>
+    </svg>
+
+    <div class="toggle">
+      <button id="bExt" class="on">Extend (lift)</button>
+      <button id="bRet">Retract (lower)</button>
+    </div>
+    <div class="toggle">
+      <button id="bDouble" class="on">Double-acting</button>
+      <button id="bSingle">Single-acting</button>
+    </div>
+
+    <div class="ctl"><label>Cylinder stroke (lift height) <span class="val"><span id="sVal">600</span> mm</span></label>
+      <input id="s" type="range" min="200" max="700" step="20" value="600"/></div>
+
+    <div class="out">
+      <div class="tile stroke"><div class="k">Stroke</div><div class="v"><span id="sOut">600</span> <span style="font-size:12px;color:var(--slate)">mm</span></div></div>
+      <div class="tile vol"><div class="k">Swept volume</div><div class="v"><span id="vOut">1.18</span> <span style="font-size:12px;color:var(--slate)">L</span></div></div>
+      <div class="tile state"><div class="k">Return</div><div class="v" id="stOut">powered</div></div>
+    </div>
+    <p class="note" id="note"></p>
+  </div>
+</div>
+
+<script>
+  const S=document.getElementById('s'),sVal=document.getElementById('sVal'),sOut=document.getElementById('sOut'),vOut=document.getElementById('vOut'),stOut=document.getElementById('stOut'),note=document.getElementById('note');
+  const lifter=document.getElementById('lifter'),capFluid=document.getElementById('capFluid'),rodFluid=document.getElementById('rodFluid');
+  const capHose=document.getElementById('capHose'),rodHose=document.getElementById('rodHose'),rodPortLbl=document.getElementById('rodPortLbl'),gravity=document.getElementById('gravity');
+  const bExt=document.getElementById('bExt'),bRet=document.getElementById('bRet'),bDouble=document.getElementById('bDouble'),bSingle=document.getElementById('bSingle');
+  const BORE=0.050, MAXPX=150, MAXMM=700;
+  let extended=true, dbl=true;
+
+  function update(){
+    const stroke=+S.value; sVal.textContent=stroke; sOut.textContent=stroke;
+    const A=Math.PI/4*BORE*BORE, vol=A*(stroke/1000)*1000;
+    vOut.textContent=vol.toFixed(2);
+    const liftPx = extended ? (stroke/MAXMM)*MAXPX : 0;
+    lifter.style.transform = 'translateY(' + (-liftPx) + 'px)';
+    capFluid.setAttribute('y', 336-liftPx); capFluid.setAttribute('height', 24+liftPx);
+    const retractingPowered = !extended && dbl;
+    rodFluid.setAttribute('opacity', retractingPowered? 0.9 : 0);
+    rodFluid.setAttribute('height', retractingPowered? 70 : 0);
+    capHose.setAttribute('stroke', extended? '#0E7E8C' : '#9BB0BC');
+    rodHose.setAttribute('stroke', retractingPowered? '#0E7E8C' : '#9BB0BC');
+    rodHose.style.display = dbl? '' : 'none';
+    rodPortLbl.style.opacity = dbl? 1 : 0.25;
+    gravity.style.display = (!extended && !dbl)? '' : 'none';
+    stOut.textContent = dbl? 'powered' : 'gravity';
+    note.textContent = extended
+      ? 'Fluid enters the cap port and fills the cap side; the rod extends ' + stroke + ' mm and lifts the load. The swept volume is ' + vol.toFixed(2) + ' L \u2014 the fluid the pump must deliver for a full lift.'
+      : (dbl
+         ? 'Retracting: fluid enters the rod port and drives the rod back down. A double-acting cylinder is powered both ways \u2014 needed to lower under control or hold position.'
+         : 'Retracting: a single-acting cylinder has no rod-side line, so the load\u2019s own weight returns it. Simpler and cheaper, but the descent is not powered.');
+  }
+  function setExt(e){ extended=e; bExt.classList.toggle('on',e); bRet.classList.toggle('on',!e); update(); }
+  function setDbl(d){ dbl=d; bDouble.classList.toggle('on',d); bSingle.classList.toggle('on',!d); update(); }
+  S.addEventListener('input',update);
+  bExt.onclick=function(){setExt(true)}; bRet.onclick=function(){setExt(false)};
+  bDouble.onclick=function(){setDbl(true)}; bSingle.onclick=function(){setDbl(false)};
+  update();
+</script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Lesson 01 — Why the machine needs power (rendered preview)</title>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<script type="module">import m from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';m.initialize({startOnLoad:true,theme:'neutral'});</script>
+<style>
+:root{--ink:#0C2235;--slate:#5B6B79;--teal:#0E7E8C;--line:#E2E8EE;--bg:#FCFDFE}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;line-height:1.65}
+.page{max-width:860px;margin:0 auto;padding:40px 28px 80px}
+.crumb{font-size:12px;color:var(--slate);border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:8px}
+h1{font-size:30px;line-height:1.2;margin:18px 0 10px}
+h2{font-size:21px;margin:38px 0 12px;padding-top:14px;border-top:1px solid var(--line);color:#13314A}
+blockquote{background:#F1F8F8;border-left:4px solid var(--teal);margin:18px 0;padding:14px 18px;border-radius:0 10px 10px 0;color:#234}
+code{background:#EEF3F7;padding:1px 6px;border-radius:5px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.88em}
+pre{background:#0C2235;color:#E7EEF4;padding:16px 18px;border-radius:12px;overflow:auto;font-size:13.5px}
+pre code{background:none;color:inherit;padding:0}
+a{color:var(--teal);font-weight:600}
+.figure{margin:18px 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.figure svg{display:block;width:100%;height:auto}
+.mermaid{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center}
+.widget{width:100%;border:1px solid var(--line);border-radius:16px;margin:10px 0 6px;background:#fff}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+th{background:#F2F6F9}
+.preview-tag{position:fixed;top:10px;right:10px;background:#0C2235;color:#fff;font-size:11px;
+ padding:6px 12px;border-radius:20px;font-family:'IBM Plex Mono',monospace;opacity:.85}
+</style></head>
+<body><div class="preview-tag">rendered preview · one file</div><div class="page"><p>You are here</p>
+<p><strong>Module 05 — Hydraulic Pumps and Power Generation</strong> · <strong>Unit 1 — Sizing the Power Source</strong> · <strong>Lesson 01 — Why the Machine Needs Power</strong></p>
+<h1>Lesson 01 — Why the machine needs power</h1>
+<blockquote>
+<p><strong>Module 05 · Lesson 01</strong> · <em>The machine gains a power source.</em>
+By the end of Module 04 the machine could <em>predict</em> its own motion. This lesson is where it starts to <em>demand</em> the flow and pressure that make the prediction real — and where you learn to read that demand straight from the twin.</p>
+<p><strong>Learning outcome (LO1):</strong> Explain why the workcell needs a dedicated power source, and read the flow and pressure demand the cylinder imposes from the twin's prediction.</p>
+</blockquote>
+<hr />
+<h2>1. Why This Matters</h2>
+<p>By the end of Module 04 your machine could <em>predict its own motion</em>. The digital twin told you the cylinder would extend at a steady <strong>84.53 mm/s</strong> and that the cap-side pressure would settle near its working value. That prediction is real — but nothing in the machine yet <em>makes</em> it happen. A simulation that says "the tool will move at 84.53 mm/s" is a promise the machine cannot keep until something pushes fluid into the cylinder, at pressure, at the right rate.</p>
+<p>That something is the <strong>Hydraulic Power Unit (HPU)</strong> — the motor, pump, relief valve, and reservoir you design across this module. Lesson 01 is where the machine stops being a description and starts demanding a power source. Before you can <em>choose</em> a pump (Lesson 02) or <em>size</em> a motor (Lesson 03), you must answer one question precisely: <strong>how much flow, at how much pressure, does this machine actually need?</strong> The twin already contains the answer. This lesson teaches you to read it.</p>
+<h2>2. Physical Intuition</h2>
+<p>Hold two quantities apart in your head, because they are different things:</p>
+<ul>
+<li><strong>Pressure</strong> is <em>how hard</em> the fluid pushes. It is set by the load the cylinder must overcome. Lift a heavier object and the pressure rises. Pressure is a "how strong" quantity.</li>
+<li><strong>Flow</strong> is <em>how fast</em> fluid is delivered. It sets how quickly the cylinder extends. Want the tool to move faster, and you must deliver more flow. Flow is a "how fast" quantity.</li>
+</ul>
+<p>A power source must supply <strong>both at once</strong>. A pump that delivers enormous flow at trivial pressure is a fan; a pump that delivers crushing pressure at no flow is a dead-ended brick. The machine needs the <em>combination</em>: enough pressure to move the load, delivered fast enough to hit the target velocity. The product of the two — pressure × flow — is <strong>hydraulic power</strong>, and that is what the prime mover must actually pay for.</p>
+<h2>3. Mathematical Foundations</h2>
+<p>Two relationships carry this entire lesson.</p>
+<p><strong>Flow demand from velocity.</strong> A cylinder is a moving piston of bore area (A_\text{bore}). To extend the rod at velocity (v), you must fill the volume it vacates at exactly that rate:</p>
+<p>[ Q = A_\text{bore}\, v, \qquad A_\text{bore} = \frac{\pi}{4} d_\text{bore}^2 ]</p>
+<p>Flow is volume per unit time ((\text{m}^3/\text{s})) — just geometry: bore area times speed.</p>
+<p><strong>Hydraulic power from pressure and flow.</strong> The power carried by the fluid is the pressure it works against times the rate it is delivered:</p>
+<p>[ P_\text{hyd} = p_\text{supply}\, Q ]</p>
+<p>With (p) in pascals and (Q) in (\text{m}^3/\text{s}), (P_\text{hyd}) is in watts. That is the power the HPU must put <em>into</em> the fluid; because no pump or motor is perfect, the prime mover supplies somewhat more (Lesson 03).</p>
+<h2>4. Visual Explanation</h2>
+<p><div class="figure"><svg viewBox="0 0 1000 440" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="The M04 twin predicts a velocity and works against a supply pressure; that flow-and-pressure demand sizes the M05 hydraulic power unit.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7F9FB"/>
+      <stop offset="1" stop-color="#EEF2F6"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#13314A"/>
+      <stop offset="1" stop-color="#0C2235"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#16A6A0"/>
+      <stop offset="1" stop-color="#0E7E8C"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4A93C"/>
+      <stop offset="1" stop-color="#E08A1E"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#0C2235" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0E7E8C"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="440" rx="18" fill="url(#bg)"/>
+
+  <!-- title -->
+  <text x="40" y="52" font-size="22" font-weight="700" fill="#0C2235">From prediction to power</text>
+  <text x="40" y="76" font-size="14" fill="#5B6B79">The twin says how fast and how hard. M05 sizes the source that delivers it.</text>
+
+  <!-- ===== LEFT: the twin's prediction ===== -->
+  <g filter="url(#soft)">
+    <rect x="40" y="104" width="300" height="248" rx="14" fill="#FFFFFF" stroke="#DCE4EC"/>
+  </g>
+  <text x="60" y="134" font-size="12" font-weight="700" letter-spacing="1.5" fill="#0E7E8C">THE TWIN'S PREDICTION · M04</text>
+
+  <!-- cylinder glyph -->
+  <g transform="translate(60,150)">
+    <rect x="0" y="20" width="150" height="44" rx="6" fill="url(#steel)"/>
+    <rect x="150" y="34" width="84" height="16" rx="4" fill="#5B6B79"/>
+    <rect x="234" y="28" width="14" height="28" rx="3" fill="#0C2235"/>
+    <path d="M14,42 L40,42" stroke="#16A6A0" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="40,36 52,42 40,48" fill="#16A6A0"/>
+  </g>
+
+  <!-- data chips -->
+  <g transform="translate(60,232)">
+    <rect x="0" y="0" width="260" height="46" rx="9" fill="#ECFAF8" stroke="#9FE0DA"/>
+    <text x="14" y="20" font-size="11" font-weight="600" letter-spacing="0.5" fill="#0E7E8C">STEADY EXTEND VELOCITY</text>
+    <text x="14" y="38" font-size="17" font-weight="700" fill="#0C2235" font-family="'IBM Plex Mono',ui-monospace,monospace">84.53 mm/s</text>
+  </g>
+  <g transform="translate(60,286)">
+    <rect x="0" y="0" width="260" height="46" rx="9" fill="#FEF4E6" stroke="#F4C98A"/>
+    <text x="14" y="20" font-size="11" font-weight="600" letter-spacing="0.5" fill="#B9710F">SUPPLY PRESSURE</text>
+    <text x="14" y="38" font-size="17" font-weight="700" fill="#0C2235" font-family="'IBM Plex Mono',ui-monospace,monospace">100 bar</text>
+  </g>
+
+  <!-- ===== CENTER: demand ribbon ===== -->
+  <g transform="translate(360,210)">
+    <path d="M0,18 H214" stroke="url(#ribbon)" stroke-width="10" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <rect x="34" y="-24" width="150" height="28" rx="14" fill="url(#ribbon)"/>
+    <text x="109" y="-5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">the demand</text>
+    <text x="6" y="52" font-size="12" fill="#5B6B79">flow</text>
+    <text x="6" y="70" font-size="12" fill="#5B6B79">+ pressure</text>
+  </g>
+
+  <!-- ===== RIGHT: the HPU it sizes ===== -->
+  <g filter="url(#soft)">
+    <rect x="612" y="104" width="348" height="248" rx="14" fill="#FFFFFF" stroke="#DCE4EC"/>
+  </g>
+  <text x="632" y="134" font-size="12" font-weight="700" letter-spacing="1.5" fill="#B9710F">HYDRAULIC POWER UNIT · M05</text>
+
+  <!-- four component glyphs -->
+  <g transform="translate(632,150)" font-size="10" fill="#5B6B79" text-anchor="middle">
+    <g>
+      <rect x="0" y="0" width="70" height="52" rx="8" fill="#F2F6F9" stroke="#D3DDE6"/>
+      <circle cx="35" cy="22" r="13" fill="none" stroke="#13314A" stroke-width="2.5"/>
+      <path d="M35,12 V32 M25,22 H45" stroke="#13314A" stroke-width="2.5"/>
+      <text x="35" y="47" font-weight="600">motor</text>
+    </g>
+    <g transform="translate(80,0)">
+      <rect x="0" y="0" width="70" height="52" rx="8" fill="#F2F6F9" stroke="#D3DDE6"/>
+      <circle cx="35" cy="22" r="13" fill="none" stroke="#13314A" stroke-width="2.5"/>
+      <path d="M35,9 L35,35 M22,22 L48,22 M27,13 L43,31 M43,13 L27,31" stroke="#13314A" stroke-width="1.6"/>
+      <text x="35" y="47" font-weight="600">pump</text>
+    </g>
+    <g transform="translate(160,0)">
+      <rect x="0" y="0" width="70" height="52" rx="8" fill="#F2F6F9" stroke="#D3DDE6"/>
+      <path d="M35,8 L35,36 M28,30 L42,16" stroke="#13314A" stroke-width="2.5"/>
+      <path d="M22,36 h26" stroke="#13314A" stroke-width="2.5"/>
+      <text x="35" y="47" font-weight="600">relief</text>
+    </g>
+    <g transform="translate(240,0)">
+      <rect x="0" y="0" width="76" height="52" rx="8" fill="#F2F6F9" stroke="#D3DDE6"/>
+      <path d="M14,14 h48 v24 h-48 z" fill="none" stroke="#13314A" stroke-width="2"/>
+      <path d="M14,28 h48" stroke="#16A6A0" stroke-width="2.5"/>
+      <text x="38" y="47" font-weight="600">reservoir</text>
+    </g>
+  </g>
+
+  <!-- sized outputs -->
+  <g transform="translate(632,232)">
+    <rect x="0" y="0" width="156" height="100" rx="10" fill="#0C2235"/>
+    <text x="16" y="24" font-size="10" font-weight="600" letter-spacing="0.8" fill="#7FD7D0">PUMP FLOW</text>
+    <text x="16" y="48" font-size="20" font-weight="700" fill="#FFFFFF" font-family="'IBM Plex Mono',ui-monospace,monospace">9.96</text>
+    <text x="74" y="48" font-size="12" fill="#9FB2C0">L/min</text>
+    <text x="16" y="72" font-size="10" font-weight="600" letter-spacing="0.8" fill="#F4C98A">HYDRAULIC POWER</text>
+    <text x="16" y="92" font-size="18" font-weight="700" fill="#FFFFFF" font-family="'IBM Plex Mono',ui-monospace,monospace">1.66</text>
+    <text x="66" y="92" font-size="12" fill="#9FB2C0">kW</text>
+  </g>
+  <g transform="translate(804,232)">
+    <rect x="0" y="0" width="136" height="100" rx="10" fill="#F2F6F9" stroke="#D3DDE6"/>
+    <text x="16" y="24" font-size="10" font-weight="600" letter-spacing="0.8" fill="#5B6B79">RELIEF SET</text>
+    <text x="16" y="46" font-size="17" font-weight="700" fill="#0C2235" font-family="'IBM Plex Mono',ui-monospace,monospace">110 bar</text>
+    <text x="16" y="72" font-size="10" font-weight="600" letter-spacing="0.8" fill="#5B6B79">RESERVOIR</text>
+    <text x="16" y="92" font-size="17" font-weight="700" fill="#0C2235" font-family="'IBM Plex Mono',ui-monospace,monospace">29.9 L</text>
+  </g>
+
+  <!-- equation strip -->
+  <g transform="translate(40,372)">
+    <rect x="0" y="0" width="920" height="44" rx="10" fill="#13314A"/>
+    <text x="28" y="28" font-size="15" fill="#FFFFFF" font-family="'IBM Plex Mono',ui-monospace,monospace">Q = A<tspan font-size="11" dy="3">bore</tspan><tspan dy="-3"> · v</tspan></text>
+    <text x="210" y="28" font-size="12" fill="#9FB2C0">flow follows velocity</text>
+    <line x1="430" y1="10" x2="430" y2="34" stroke="#2C4A63"/>
+    <text x="470" y="28" font-size="15" fill="#FFFFFF" font-family="'IBM Plex Mono',ui-monospace,monospace">P = p · Q</text>
+    <text x="600" y="28" font-size="12" fill="#9FB2C0">power is pressure times flow</text>
+  </g>
+</svg>
+</div></p>
+<p>The twin sits on the left as a prediction — a velocity and a pressure. M05 sits on the right as the means — a sized motor, pump, relief, and reservoir. The single hand-off between them carries two numbers, and reading them correctly is the whole job of this lesson.</p>
+<p><div class="mermaid">flowchart LR
+    T[&quot;TWIN · M04&lt;br/&gt;v_steady = 84.53 mm/s&lt;br/&gt;p_supply = 100 bar&quot;] --&gt;|&quot;Q = A·v&quot;| F[&quot;FLOW DEMAND&lt;br/&gt;9.96 L/min&quot;]
+    F --&gt;|&quot;P = p·Q&quot;| H[&quot;HYDRAULIC POWER&lt;br/&gt;1.66 kW&quot;]
+    H --&gt; U[&quot;HPU · M05&lt;br/&gt;motor · pump · relief · reservoir&quot;]
+</div></p>
+<p>The chain is one-directional and tight: a velocity becomes a flow, a flow at pressure becomes power, and that power is what the HPU is sized to deliver.</p>
+<h2>5. Engineering Example</h2>
+<p>Take the Smart Agricultural Workcell cylinder from the canonical parameters (<code>wp-1.1.0</code>): a <strong>50 mm bore</strong>, operating against a <strong>100 bar</strong> supply. In Module 04 the twin predicted a steady extend velocity of <strong>84.53 mm/s</strong> for the positioning task.</p>
+<p>An engineer who skips this lesson reaches for a pump catalogue and picks something that "looks about right." An engineer who does this lesson first computes the demand, then selects against it — and finds the machine needs a surprisingly modest pump (about 10 L/min) but at high pressure. That combination — low flow, high pressure — is exactly what tells you <em>which kind</em> of pump to choose in Lesson 02. The demand drives the selection, not the other way around.</p>
+<h2>6. Worked Example</h2>
+<p><strong>Given</strong> (from the twin and canonical <code>wp-1.1.0</code>): (d_\text{bore} = 0.050\ \text{m}), (v = 0.08453\ \text{m/s}), (p_\text{supply} = 10{,}000{,}000\ \text{Pa}) (100 bar).</p>
+<p><strong>Step 1 — bore area.</strong>
+[ A_\text{bore} = \frac{\pi}{4}(0.050)^2 = 1.9635\times10^{-3}\ \text{m}^2 ]</p>
+<p><strong>Step 2 — flow demand.</strong>
+[ Q = A_\text{bore}\, v = 1.9635\times10^{-3}\times 0.08453 = 1.6598\times10^{-4}\ \text{m}^3/\text{s} ]
+Converting: (1.6598\times10^{-4}\ \text{m}^3/\text{s} \times 1000 \times 60 = \mathbf{9.96\ L/min}).</p>
+<p><strong>Step 3 — hydraulic power.</strong>
+[ P_\text{hyd} = p_\text{supply}\, Q = 10^{7}\times 1.6598\times10^{-4} = 1659.8\ \text{W} \approx \mathbf{1.66\ kW} ]</p>
+<p>So the machine demands roughly <strong>10 L/min at 100 bar</strong>, costing <strong>1.66 kW</strong> of fluid power. These are the exact figures the <code>power_unit</code> artifact carries; this lesson establishes where the first two come from. (Prime-mover power, ≈ 1.95 kW once efficiency is included, is Lesson 03.)</p>
+<h2>7. Interactive Demonstration</h2>
+<p><a href="demos/lesson01_flow_and_power_demand.html">Open the demo in a new tab ↗</a></p><iframe class="widget" style="height:760px" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;/&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;/&gt;
+&lt;title&gt;Demo · Reading the demand from the twin&lt;/title&gt;
+&lt;style&gt;
+  :root{
+    --ink:#0C2235; --steel:#13314A; --slate:#5B6B79; --line:#D3DDE6;
+    --teal:#0E7E8C; --teal-soft:#ECFAF8; --amber:#E08A1E; --amber-soft:#FEF4E6;
+    --bg:#F7F9FB; --card:#FFFFFF;
+    --mono:&#x27;IBM Plex Mono&#x27;,ui-monospace,&#x27;SFMono-Regular&#x27;,Menlo,monospace;
+    --sans:&#x27;IBM Plex Sans&#x27;,&#x27;Segoe UI&#x27;,system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+       padding:24px;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}
+  .sub{color:var(--slate);font-size:14px;margin:0 0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+        padding:22px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  .controls{display:grid;gap:20px;margin-bottom:6px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;
+             font-size:13px;font-weight:600;margin-bottom:8px}
+  .ctl .val{font-family:var(--mono);font-size:15px;color:var(--teal);font-weight:700}
+  input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:6px;
+    background:linear-gradient(90deg,var(--teal) 0%,var(--teal) 50%,#E3EAF0 50%,#E3EAF0 100%);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:var(--card);border:3px solid var(--teal);cursor:pointer;box-shadow:0 1px 4px rgba(12,34,53,.25)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;
+    background:var(--card);border:3px solid var(--teal);cursor:pointer}
+  .ctl.amber input[type=range]{background:linear-gradient(90deg,var(--amber) 0%,var(--amber) 50%,#E3EAF0 50%,#E3EAF0 100%)}
+  .ctl.amber input[type=range]::-webkit-slider-thumb{border-color:var(--amber)}
+  .ctl.amber input[type=range]::-moz-range-thumb{border-color:var(--amber)}
+  .ctl.amber .val{color:var(--amber)}
+  .chain{display:grid;grid-template-columns:1fr;gap:12px;margin-top:22px}
+  .step{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;
+        background:var(--bg);border:1px solid var(--line)}
+  .step .eq{font-family:var(--mono);font-size:13px;color:var(--slate);flex:1}
+  .step .out{font-family:var(--mono);font-size:22px;font-weight:700}
+  .step .unit{font-size:13px;color:var(--slate);margin-left:4px}
+  .step.flow{border-left:4px solid var(--teal)}
+  .step.flow .out{color:var(--teal)}
+  .step.power{border-left:4px solid var(--amber);background:#0C2235;border-color:#0C2235}
+  .step.power .eq{color:#9FB2C0}
+  .step.power .out{color:#fff}
+  .step.power .unit{color:#9FB2C0}
+  .step .tag{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+             color:var(--slate);width:74px}
+  .step.power .tag{color:#F4C98A}
+  .note{font-size:12.5px;color:var(--slate);margin-top:18px}
+  .reset{margin-top:16px;background:none;border:1px solid var(--line);color:var(--slate);
+         font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .reset:hover{border-color:var(--teal);color:var(--teal)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--teal-soft);
+        color:var(--teal);border:1px solid #9FE0DA;border-radius:20px;padding:2px 10px;margin-left:6px}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;wrap&quot;&gt;
+  &lt;h1&gt;Reading the demand from the twin&lt;/h1&gt;
+  &lt;p class=&quot;sub&quot;&gt;Move the velocity and bore. Watch the flow the pump must deliver — and the hydraulic power it costs — follow directly. Nothing here is invented; both numbers are read from the cylinder and the twin&#x27;s prediction.&lt;/p&gt;
+
+  &lt;div class=&quot;card&quot;&gt;
+    &lt;div class=&quot;controls&quot;&gt;
+      &lt;div class=&quot;ctl&quot;&gt;
+        &lt;label&gt;Extend velocity &lt;span class=&quot;val&quot;&gt;&lt;span id=&quot;vVal&quot;&gt;84.53&lt;/span&gt; mm/s&lt;/span&gt;&lt;/label&gt;
+        &lt;input id=&quot;v&quot; type=&quot;range&quot; min=&quot;20&quot; max=&quot;200&quot; step=&quot;0.01&quot; value=&quot;84.53&quot;/&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;ctl&quot;&gt;
+        &lt;label&gt;Bore diameter &lt;span class=&quot;val&quot;&gt;&lt;span id=&quot;dVal&quot;&gt;50.0&lt;/span&gt; mm&lt;/span&gt;&lt;/label&gt;
+        &lt;input id=&quot;d&quot; type=&quot;range&quot; min=&quot;25&quot; max=&quot;100&quot; step=&quot;0.5&quot; value=&quot;50&quot;/&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;ctl amber&quot;&gt;
+        &lt;label&gt;Supply pressure &lt;span class=&quot;val&quot;&gt;&lt;span id=&quot;pVal&quot;&gt;100&lt;/span&gt; bar&lt;/span&gt;&lt;/label&gt;
+        &lt;input id=&quot;p&quot; type=&quot;range&quot; min=&quot;40&quot; max=&quot;250&quot; step=&quot;1&quot; value=&quot;100&quot;/&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;chain&quot;&gt;
+      &lt;div class=&quot;step&quot;&gt;
+        &lt;span class=&quot;tag&quot;&gt;Area&lt;/span&gt;
+        &lt;span class=&quot;eq&quot;&gt;A = (&amp;pi;/4) &amp;middot; d&amp;sup2;&lt;/span&gt;
+        &lt;span class=&quot;out&quot; id=&quot;aOut&quot;&gt;19.63&lt;/span&gt;&lt;span class=&quot;unit&quot;&gt;cm&amp;sup2;&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;step flow&quot;&gt;
+        &lt;span class=&quot;tag&quot;&gt;Flow&lt;/span&gt;
+        &lt;span class=&quot;eq&quot;&gt;Q = A &amp;middot; v&lt;/span&gt;
+        &lt;span class=&quot;out&quot; id=&quot;qOut&quot;&gt;9.96&lt;/span&gt;&lt;span class=&quot;unit&quot;&gt;L/min&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;step power&quot;&gt;
+        &lt;span class=&quot;tag&quot;&gt;Power&lt;/span&gt;
+        &lt;span class=&quot;eq&quot;&gt;P = p &amp;middot; Q&lt;/span&gt;
+        &lt;span class=&quot;out&quot; id=&quot;pwrOut&quot;&gt;1.66&lt;/span&gt;&lt;span class=&quot;unit&quot;&gt;kW&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;button class=&quot;reset&quot; id=&quot;reset&quot;&gt;Reset to the canonical workcell&lt;/button&gt;
+    &lt;p class=&quot;note&quot; id=&quot;note&quot;&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const V=document.getElementById(&#x27;v&#x27;), D=document.getElementById(&#x27;d&#x27;), P=document.getElementById(&#x27;p&#x27;);
+  const vVal=document.getElementById(&#x27;vVal&#x27;), dVal=document.getElementById(&#x27;dVal&#x27;), pVal=document.getElementById(&#x27;pVal&#x27;);
+  const aOut=document.getElementById(&#x27;aOut&#x27;), qOut=document.getElementById(&#x27;qOut&#x27;), pwrOut=document.getElementById(&#x27;pwrOut&#x27;);
+  const note=document.getElementById(&#x27;note&#x27;);
+  const DEF={v:84.53,d:50,p:100};
+
+  function fillTrack(el){
+    const min=+el.min,max=+el.max,val=+el.value, pct=(val-min)/(max-min)*100;
+    const active = el.parentElement.parentElement.classList.contains(&#x27;amber&#x27;) ? &#x27;var(--amber)&#x27; : &#x27;var(--teal)&#x27;;
+    el.style.background=`linear-gradient(90deg, ${active} 0%, ${active} ${pct}%, #E3EAF0 ${pct}%, #E3EAF0 100%)`;
+  }
+
+  function update(){
+    const v_mms=+V.value, d_mm=+D.value, p_bar=+P.value;
+    vVal.textContent=v_mms.toFixed(2); dVal.textContent=d_mm.toFixed(1); pVal.textContent=p_bar.toFixed(0);
+    [V,D,P].forEach(fillTrack);
+
+    // SI base units, identical math to the power_unit contract
+    const d_m=d_mm/1000, v_ms=v_mms/1000, p_pa=p_bar*1e5;
+    const A=Math.PI/4*d_m*d_m;            // m^2
+    const Q=A*v_ms;                        // m^3/s
+    const Q_Lmin=Q*1000*60;               // L/min
+    const P_kW=p_pa*Q/1000;               // kW
+
+    aOut.textContent=(A*1e4).toFixed(2);   // cm^2
+    qOut.textContent=Q_Lmin.toFixed(2);
+    pwrOut.textContent=P_kW.toFixed(2);
+
+    const atDefault = v_mms===DEF.v &amp;&amp; d_mm===DEF.d &amp;&amp; p_bar===DEF.p;
+    note.textContent = atDefault
+      ? &quot;These are the canonical workcell figures (wp-1.1.0): 9.96 L/min at 100 bar = 1.66 kW — exactly what the power_unit artifact carries.&quot;
+      : &quot;Flow scales linearly with velocity and with bore area; hydraulic power scales with flow and pressure. Reset to compare against the canonical 9.96 L/min, 1.66 kW.&quot;;
+  }
+
+  [V,D,P].forEach(el=&gt;el.addEventListener(&#x27;input&#x27;,update));
+  document.getElementById(&#x27;reset&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
+    V.value=DEF.v; D.value=DEF.d; P.value=DEF.p; update();
+  });
+  update();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+<p>Drag the <strong>extend velocity</strong> and <strong>bore</strong> and watch the flow the pump must deliver — and the hydraulic power it costs — update live through (Q = A v) and (P = pQ). Confirm the canonical workcell figures (9.96 L/min at 100 bar = 1.66 kW), then predict before you drag: if you double the velocity, what happens to flow, and to power? The demo is the worked example made movable.</p>
+<h2>8. Coding Exercise</h2>
+<p><em>A first taste; the full tested module ships as this lesson's <code>code/</code> artifact.</em></p>
+<pre><code class="language-python">import math
+
+def flow_and_power_demand(bore_d_m, v_steady_ms, p_supply_pa):
+    &quot;&quot;&quot;Return (Q_m3s, Q_Lmin, P_hyd_W) the cylinder imposes on the power source.&quot;&quot;&quot;
+    A_bore = math.pi / 4 * bore_d_m**2      # m^2
+    Q = A_bore * v_steady_ms                 # m^3/s
+    Q_Lmin = Q * 1000 * 60                   # L/min
+    P_hyd = p_supply_pa * Q                  # W
+    return Q, Q_Lmin, P_hyd
+
+# canonical wp-1.1.0 + twin prediction
+Q, Q_Lmin, P_hyd = flow_and_power_demand(0.050, 0.08453, 10_000_000)
+print(f&quot;{Q_Lmin:.2f} L/min, {P_hyd/1000:.2f} kW&quot;)   # expect: 9.96 L/min, 1.66 kW
+</code></pre>
+<p><strong>Your task:</strong> confirm the printed values match the worked example, then find the extend velocity at which the demand <em>doubles</em>. Because flow is linear in velocity, the answer should be exactly twice 84.53 mm/s — verify it.</p>
+<h2>9. Knowledge Check</h2>
+<p><a href="quizzes/lesson01_quiz.html">Open the knowledge check in a new tab ↗</a></p><iframe class="widget" style="height:900px" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;/&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;/&gt;
+&lt;title&gt;Knowledge check · Why the machine needs power&lt;/title&gt;
+&lt;style&gt;
+  :root{
+    --ink:#0C2235; --slate:#5B6B79; --line:#D3DDE6; --bg:#F7F9FB; --card:#FFFFFF;
+    --teal:#0E7E8C; --teal-soft:#ECFAF8; --green:#1B8A5A; --green-soft:#E7F6EE;
+    --red:#C2463B; --red-soft:#FBECEA;
+    --sans:&#x27;IBM Plex Sans&#x27;,&#x27;Segoe UI&#x27;,system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.55}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}
+  .sub{color:var(--slate);font-size:13.5px;margin:0 0 8px}
+  .banner{font-size:12.5px;background:var(--teal-soft);color:var(--teal);border:1px solid #9FE0DA;
+          border-radius:10px;padding:10px 14px;margin:0 0 22px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;
+     box-shadow:0 2px 8px rgba(12,34,53,.05)}
+  .q .num{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+  .q .stem{font-size:15px;font-weight:600;margin:6px 0 14px}
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);
+       border-radius:10px;padding:12px 14px;margin-bottom:9px;font-family:var(--sans);font-size:14px;
+       color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:600}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .fb{font-size:13px;margin-top:8px;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}
+  .fb.ok{background:var(--green-soft);color:var(--green)}
+  .fb.no{background:var(--red-soft);color:var(--red)}
+  .score{position:sticky;bottom:14px;background:#0C2235;color:#fff;border-radius:12px;padding:14px 18px;
+         display:flex;justify-content:space-between;align-items:center;margin-top:8px;
+         box-shadow:0 4px 16px rgba(12,34,53,.25)}
+  .score b{font-size:18px}
+  .retry{background:none;border:1px solid #3a5670;color:#cfe0ec;font-family:var(--sans);font-size:13px;
+         font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .retry:hover{border-color:#7FD7D0;color:#7FD7D0}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;wrap&quot;&gt;
+  &lt;h1&gt;Knowledge check — Why the machine needs power&lt;/h1&gt;
+  &lt;p class=&quot;sub&quot;&gt;Module 05 · Lesson 01&lt;/p&gt;
+  &lt;p class=&quot;banner&quot;&gt;Formative — unlimited attempts, immediate feedback. Not graded. Check your understanding, not your score.&lt;/p&gt;
+  &lt;div id=&quot;quiz&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;score&quot;&gt;&lt;span&gt;Answered &lt;b id=&quot;done&quot;&gt;0&lt;/b&gt; / 5 &amp;nbsp;·&amp;nbsp; Correct &lt;b id=&quot;right&quot;&gt;0&lt;/b&gt;&lt;/span&gt;
+    &lt;button class=&quot;retry&quot; id=&quot;retry&quot;&gt;Start over&lt;/button&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const QUESTIONS=[
+  {stem:&quot;The machine must move &lt;b&gt;faster&lt;/b&gt; (higher extend velocity), same load. Which part of the demand rises?&quot;,
+   opts:[&quot;Flow&quot;,&quot;Pressure&quot;,&quot;Neither — power is fixed&quot;,&quot;Both equally&quot;], correct:0,
+   why:&quot;Flow follows velocity: Q = A·v. Faster motion needs more flow; pressure is set by the load, which hasn&#x27;t changed.&quot;},
+  {stem:&quot;The machine must lift a &lt;b&gt;heavier&lt;/b&gt; load at the same speed. Which part of the demand rises?&quot;,
+   opts:[&quot;Flow&quot;,&quot;Pressure&quot;,&quot;Reservoir size&quot;,&quot;Neither&quot;], correct:1,
+   why:&quot;Pressure is the &#x27;how hard&#x27; quantity, set by the load. A heavier load raises pressure; the speed (and so the flow) is unchanged.&quot;},
+  {stem:&quot;A pump delivers high flow but almost &lt;b&gt;no pressure&lt;/b&gt;. Why can&#x27;t it power the workcell?&quot;,
+   opts:[&quot;It moves too fast&quot;,&quot;Reservoir overflows&quot;,&quot;It can&#x27;t overcome the load, so hydraulic power ≈ 0&quot;,&quot;It uses too much electricity&quot;], correct:2,
+   why:&quot;Hydraulic power is the product p·Q. With pressure near zero the cylinder can&#x27;t push the load — the product collapses regardless of flow.&quot;},
+  {stem:&quot;In this lesson, where does the &lt;b&gt;velocity&lt;/b&gt; used to size the flow come from?&quot;,
+   opts:[&quot;A pump catalogue&quot;,&quot;An assumed round number&quot;,&quot;The M04 digital twin&#x27;s predicted v_steady&quot;,&quot;The motor nameplate&quot;], correct:2,
+   why:&quot;The demand is read from the twin&#x27;s prediction (v_steady), not invented — which is what makes the curriculum a build rather than a guess.&quot;},
+  {stem:&quot;True or false: switching the Trainer display to SI &lt;b&gt;changes&lt;/b&gt; the hydraulic power the machine needs.&quot;,
+   opts:[&quot;True&quot;,&quot;False&quot;], correct:1,
+   why:&quot;False. The unit toggle is display-only. 9.96 L/min and 2.63 gpm are the same demand; units are a lens, not a quantity.&quot;}
+];
+
+const quiz=document.getElementById(&#x27;quiz&#x27;);
+const doneEl=document.getElementById(&#x27;done&#x27;), rightEl=document.getElementById(&#x27;right&#x27;);
+let answered, correctCount;
+
+function render(){
+  answered=new Array(QUESTIONS.length).fill(false); correctCount=0;
+  doneEl.textContent=&#x27;0&#x27;; rightEl.textContent=&#x27;0&#x27;;
+  quiz.innerHTML=&#x27;&#x27;;
+  QUESTIONS.forEach((q,qi)=&gt;{
+    const card=document.createElement(&#x27;div&#x27;); card.className=&#x27;q&#x27;;
+    card.innerHTML=`&lt;div class=&quot;num&quot;&gt;Question ${qi+1}&lt;/div&gt;&lt;div class=&quot;stem&quot;&gt;${q.stem}&lt;/div&gt;`;
+    q.opts.forEach((o,oi)=&gt;{
+      const b=document.createElement(&#x27;button&#x27;); b.className=&#x27;opt&#x27;; b.innerHTML=o;
+      b.onclick=()=&gt;choose(qi,oi,card,q);
+      card.appendChild(b);
+    });
+    const fb=document.createElement(&#x27;div&#x27;); fb.className=&#x27;fb&#x27;; card.appendChild(fb);
+    quiz.appendChild(card);
+  });
+}
+function choose(qi,oi,card,q){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const btns=card.querySelectorAll(&#x27;.opt&#x27;);
+  btns.forEach((b,i)=&gt;{ b.disabled=true; if(i===q.correct) b.classList.add(&#x27;correct&#x27;); });
+  const fb=card.querySelector(&#x27;.fb&#x27;);
+  if(oi===q.correct){ correctCount++; fb.className=&#x27;fb show ok&#x27;; fb.innerHTML=&#x27;Correct. &#x27;+q.why; }
+  else { btns[oi].classList.add(&#x27;wrong&#x27;); fb.className=&#x27;fb show no&#x27;; fb.innerHTML=&#x27;Not quite. &#x27;+q.why; }
+  doneEl.textContent=answered.filter(Boolean).length;
+  rightEl.textContent=correctCount;
+}
+document.getElementById(&#x27;retry&#x27;).onclick=render;
+render();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+<p><em>Formative — unlimited attempts, immediate feedback. Not graded. Check your understanding, not your score.</em></p>
+<ol>
+<li>The machine must move <strong>faster</strong>. Which demand quantity rises — flow, pressure, or both?</li>
+<li>The machine must lift a <strong>heavier</strong> load at the same speed. Which rises?</li>
+<li>A pump delivers high flow but almost no pressure. Why can't it power the workcell?</li>
+<li>Where in the build sequence does the velocity number in this lesson come from?</li>
+<li>True or false: switching the Trainer to SI changes the hydraulic power the machine needs.</li>
+</ol>
+<h2>10. Challenge Problem</h2>
+<p>The positioning benchmark (Task 1) requires the tool to <strong>settle within a defined cycle time</strong>. A stakeholder asks you to halve the cycle time without changing the stroke. Arguing from the two equations alone — no new physics — describe what happens to the required flow, and therefore to the hydraulic power and the pump you must select. State which downstream lesson (02, 03, or 04) your conclusion most affects, and why.</p>
+<h2>11. Common Mistakes</h2>
+<ul>
+<li><strong>Confusing flow with pressure.</strong> "More powerful pump" is ambiguous. Always ask: more flow (faster) or more pressure (stronger)? They come from different demands and lead to different pump choices.</li>
+<li><strong>Sizing from a guess instead of the twin.</strong> The velocity is not a number you invent; it is the twin's prediction. Sizing against a made-up speed produces a machine that is either starved or wastefully oversized.</li>
+<li><strong>Forgetting that power is the <em>product</em>.</strong> A small flow at high pressure and a large flow at low pressure can demand the same kilowatts. Never reason about one number alone.</li>
+<li><strong>Reading units as physics.</strong> 9.96 L/min and 2.63 gpm are the same demand. A unit toggle never changes what the machine needs.</li>
+</ul>
+<h2>12. Key Takeaways</h2>
+<ul>
+<li>A prediction is not a power source. M05 exists to <em>supply</em> the motion M04 predicted.</li>
+<li>The machine's demand is two numbers: a <strong>flow</strong> (set by velocity and bore) and a <strong>pressure</strong> (set by the load). Their product is <strong>hydraulic power</strong>.</li>
+<li>(Q = A_\text{bore}\,v) and (P_\text{hyd} = p_\text{supply}\,Q) carry the whole lesson.</li>
+<li>For the canonical workcell at <code>wp-1.1.0</code>: ≈ <strong>9.96 L/min at 100 bar = 1.66 kW</strong> of fluid-power demand.</li>
+<li>These numbers are <em>read from the twin</em>, not invented — which is what makes the curriculum a build rather than a guess. Lesson 02 uses this demand to choose the pump.</li>
+</ul>
+<h2>AI Learning Companion</h2>
+<p>Copy any prompt below into ChatGPT, Claude, or another AI assistant.</p>
+<p><strong>Tutor prompt</strong> — explain it another way</p>
+<pre><code>Re-explain Module 05 Lesson 01 (Why the machine needs power) without using the greenhouse workcell. Use a different hydraulic machine (e.g. an excavator arm). Focus on why flow comes from velocity and pressure comes from load, and why their product is the power the source must deliver.
+</code></pre>
+<p><strong>Practice prompt</strong> — generate more exercises</p>
+<pre><code>Give me 5 short exercises that test whether I can decide, for a given change to a hydraulic machine, whether the FLOW demand, the PRESSURE demand, or both must rise — and why. Include answers.
+</code></pre>
+<p><strong>Explore prompt</strong> — connect it to the real world</p>
+<pre><code>Show me 3 real fluid-powered machines and, for each, identify what sets its flow demand and what sets its pressure demand, and roughly how much hydraulic power that implies.
+</code></pre>
+<h2>Global Learning Support</h2>
+<p>Need this lesson in another language? Copy a prompt into an AI assistant. English remains the authoritative source.</p>
+<p><strong>Supported languages (initial):</strong> English · Español · 中文 (Simplified) · Türkçe</p>
+<pre><code>I just completed Module 05 Lesson 01 — Why the machine needs power.
+Explain this lesson in [Spanish / Simplified Chinese / Turkish]. Keep hydraulics and mathematical terminology in English where commonly used.
+Then provide: a summary, three practice questions, and one challenge problem.
+</code></pre>
+<hr />
+<p><em>Next lesson: 02 — Choosing the power source (using this demand to select the pump and prime mover).</em></p></div></body></html>

@@ -1,0 +1,55 @@
+<svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Cutaway of a hydraulic cylinder: barrel, piston, rod, cap-side and rod-side chambers, a cap port and a rod port, and the stroke. Fluid into the cap port extends the rod to lift the load.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient>
+    <linearGradient id="fluid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FB6AE"/><stop offset="1" stop-color="#0E7E8C"/></linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B6B79"/><stop offset="1" stop-color="#3D4A56"/></linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="470" rx="20" fill="url(#bg)"/>
+  <text x="40" y="48" font-size="26" font-weight="700" fill="#0C2235">The cylinder, part by part</text>
+  <text x="40" y="76" font-size="15" font-weight="400" fill="#586876">Barrel, piston, rod, and two ports &#8212; fluid into the cap port extends the rod and lifts the load.</text>
+
+  <rect x="170" y="150" width="470" height="150" rx="10" fill="#FFFFFF" stroke="#1B3A55" stroke-width="3"/>
+  <rect x="178" y="158" width="210" height="134" rx="4" fill="url(#fluid)" opacity="0.9"/>
+  <rect x="420" y="158" width="212" height="134" rx="4" fill="#E3F4F2"/>
+  <rect x="388" y="158" width="32" height="134" rx="3" fill="#1B3A55"/>
+  <rect x="388" y="158" width="32" height="8" fill="#0E7E8C"/><rect x="388" y="284" width="32" height="8" fill="#0E7E8C"/>
+  <rect x="420" y="208" width="380" height="34" rx="3" fill="url(#steel)"/>
+  <rect x="628" y="158" width="14" height="134" fill="#1B3A55"/>
+  <rect x="628" y="208" width="14" height="34" fill="#0E7E8C"/>
+
+  <rect x="250" y="300" width="18" height="16" rx="2" fill="#1B3A55"/>
+  <line x1="259" y1="340" x2="259" y2="318" stroke="#0E7E8C" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="259,300 251,314 267,314" fill="#0E7E8C"/>
+  <text x="259" y="362" font-size="14" font-weight="700" letter-spacing="1" fill="#0E7E8C" text-anchor="middle">CAP PORT</text>
+  <text x="259" y="380" font-size="11.5" fill="#586876" text-anchor="middle">fluid in &#8594; extends</text>
+
+  <rect x="540" y="300" width="18" height="16" rx="2" fill="#1B3A55"/>
+  <line x1="549" y1="340" x2="549" y2="318" stroke="#7FA0AE" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="549,300 541,314 557,314" fill="#7FA0AE"/>
+  <text x="549" y="362" font-size="14" font-weight="700" letter-spacing="1" fill="#586876" text-anchor="middle">ROD PORT</text>
+  <text x="549" y="380" font-size="11.5" fill="#586876" text-anchor="middle">fluid in &#8594; retracts</text>
+
+  <text x="405" y="135" font-size="13" font-weight="700" letter-spacing="1" fill="#1B3A55" text-anchor="middle">BARREL</text>
+  <line x1="405" y1="140" x2="405" y2="150" stroke="#586876" stroke-width="1.5"/>
+  <text x="280" y="230" font-size="13" font-weight="700" letter-spacing="1" fill="#FFFFFF" text-anchor="middle">CAP-SIDE</text>
+  <text x="520" y="195" font-size="13" font-weight="700" letter-spacing="1" fill="#0E7E8C" text-anchor="middle">ROD-SIDE</text>
+  <text x="404" y="318" font-size="12" font-weight="600" fill="#1B3A55" text-anchor="middle">piston</text>
+  <line x1="404" y1="304" x2="404" y2="292" stroke="#586876" stroke-width="1.5"/>
+  <text x="730" y="200" font-size="12" font-weight="600" fill="#3D4A56" text-anchor="middle">rod</text>
+  <line x1="730" y1="205" x2="730" y2="214" stroke="#586876" stroke-width="1.5"/>
+
+  <line x1="178" y1="430" x2="628" y2="430" stroke="#DD841A" stroke-width="2"/>
+  <line x1="178" y1="422" x2="178" y2="438" stroke="#DD841A" stroke-width="2"/>
+  <line x1="628" y1="422" x2="628" y2="438" stroke="#DD841A" stroke-width="2"/>
+  <rect x="360" y="418" width="86" height="24" rx="5" fill="#FDEFD9"/>
+  <text x="403" y="435" font-size="13" font-weight="700" letter-spacing="1" fill="#DD841A" text-anchor="middle">STROKE</text>
+
+  <g><rect x="676" y="316" width="188" height="128" rx="12" fill="#13314A"/>
+  <text x="770" y="342" font-size="12" font-weight="700" letter-spacing="1" fill="#7FD7D0" text-anchor="middle">TWO WAYS TO BUILD IT</text>
+  <text x="696" y="370" font-size="12.5" fill="#FFFFFF">Single-acting:</text>
+  <text x="696" y="388" font-size="11.5" fill="#B9C6D2">cap port only; gravity returns.</text>
+  <text x="696" y="416" font-size="12.5" fill="#FFFFFF">Double-acting:</text>
+  <text x="696" y="434" font-size="11.5" fill="#B9C6D2">both ports; powered both ways.</text>
+  </g>
+</svg>
