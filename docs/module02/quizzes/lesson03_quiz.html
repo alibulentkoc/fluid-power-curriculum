@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Knowledge check · Lines, fittings, and ports</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal-soft:#ECFAF8;--green:#1B8A5A;--green-soft:#E7F6EE;--red:#C2463B;--red-soft:#FBECEA;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.55}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:13.5px;margin:0 0 8px}
+  .banner{font-size:12.5px;background:var(--teal-soft);color:var(--teal);border:1px solid #9FE0DA;border-radius:10px;padding:10px 14px;margin:0 0 22px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(12,34,53,.05)}
+  .q .num{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+  .q .stem{font-size:15px;font-weight:600;margin:6px 0 14px}
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:9px;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:600}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .fb{font-size:13px;margin-top:8px;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}.fb.ok{background:var(--green-soft);color:var(--green)}.fb.no{background:var(--red-soft);color:var(--red)}
+  .score{position:sticky;bottom:14px;background:#0C2235;color:#fff;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;box-shadow:0 4px 16px rgba(12,34,53,.25)}
+  .score b{font-size:18px}
+  .retry{background:none;border:1px solid #3a5670;color:#cfe0ec;font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .retry:hover{border-color:#7FD7D0;color:#7FD7D0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Knowledge check — Lines, fittings, and ports</h1>
+  <p class="sub">Module 02 · Lesson 03</p>
+  <p class="banner">Check your understanding — unlimited attempts, immediate feedback, not graded.</p>
+  <div id="quiz"></div>
+  <div class="score"><span>Answered <b id="done">0</b> / 5 &nbsp;·&nbsp; Correct <b id="right">0</b></span>
+    <button class="retry" id="retry">Start over</button></div>
+</div>
+<script>
+const QUESTIONS=[
+  {stem:"The flow through a line is fixed at 10 L/min. What then sets the fluid <b>velocity</b>?",
+   opts:["the bore (inside diameter) of the line","the pump's pressure rating","the colour of the hose","the size of the reservoir"], correct:0,
+   why:"Velocity is flow ÷ bore area (v = Q/A). With the flow fixed, the only thing that changes the velocity is the bore: a narrower line means faster fluid."},
+  {stem:"Why must a <b>pressure line</b> not be sized too small?",
+   opts:["it would cost too much","a narrow bore forces fast flow, and friction bleeds pressure away as heat","the fluid would freeze","the pump would spin backwards"], correct:1,
+   why:"Too small a bore makes the fluid rush. The drag against the walls is friction you pay for in lost pressure — and that lost pressure turns straight into heat."},
+  {stem:"Why must a <b>suction line</b> be sized larger than a pressure line carrying the same flow?",
+   opts:["to store extra fluid","it must run slower, or the pump starves and cavitates","to make the machine heavier","there is no real reason"], correct:1,
+   why:"A suction line must keep the velocity low (around 1 m/s). Pull fluid into the pump too fast and it cannot keep its inlet full — it cavitates. A lower velocity for the same flow means a larger bore."},
+  {stem:"The fluid passes through a hose, a fitting, then a port. Which one sets the <b>real</b> velocity?",
+   opts:["the hose, always","the smallest bore anywhere in the path","the longest section","the fitting, always"], correct:1,
+   why:"The narrowest bore in the path is the choke. A perfect hose is wasted behind a pinched fitting or an undersized port — so every joint must be at least as wide as the line."},
+  {stem:"The pressure lost to friction in a line turns into:",
+   opts:["extra flow","heat","more lifting force","nothing — it is recovered"], correct:1,
+   why:"Friction loss is pressure energy converted to heat. That is why an undersized line runs hot, and why the lost pressure never reaches the load to do useful lifting."}
+];
+const quiz=document.getElementById('quiz'),doneEl=document.getElementById('done'),rightEl=document.getElementById('right');
+let answered,correctCount;
+function render(){
+  answered=new Array(QUESTIONS.length).fill(false);correctCount=0;doneEl.textContent='0';rightEl.textContent='0';quiz.innerHTML='';
+  QUESTIONS.forEach((q,qi)=>{const card=document.createElement('div');card.className='q';
+    card.innerHTML=`<div class="num">Question ${qi+1}</div><div class="stem">${q.stem}</div>`;
+    q.opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
+    const fb=document.createElement('div');fb.className='fb';card.appendChild(fb);quiz.appendChild(card);});
+}
+function choose(qi,oi,card,q){
+  if(answered[qi])return;answered[qi]=true;
+  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});
+  const fb=card.querySelector('.fb');
+  if(oi===q.correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
+  else{btns[oi].classList.add('wrong');fb.className='fb show no';fb.innerHTML='Not quite. '+q.why;}
+  doneEl.textContent=answered.filter(Boolean).length;rightEl.textContent=correctCount;
+}
+document.getElementById('retry').onclick=render;render();
+</script>
+</body>
+</html>

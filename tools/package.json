@@ -3,5 +3,10 @@
   "private": true,
   "type": "module",
   "description": "Build + Definition-of-Done gate tooling for the curriculum",
-  "devDependencies": { "jsdom": "^24.0.0" }
+  "dependencies": {
+    "mathjax-full": "^3.2.1"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
 }

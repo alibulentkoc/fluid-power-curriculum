@@ -1,0 +1,79 @@
+<svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="The same 10 L/min flow travelling from the power unit's pressure port, along a hose, through a fitting, and into the cylinder's cap port. The upper, right-sized 8 mm line carries the flow calmly at about 3.3 metres per second and loses under one bar to friction. The lower, pinched 5 mm line forces the same flow to rush at about 8.5 metres per second and bleeds about six bar away as heat, choked at the narrow fitting.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="900" height="500" rx="20" fill="url(#bg)"/>
+
+  <!-- L1 title + L4 subtitle -->
+  <text x="40" y="46" font-size="26" font-weight="700" fill="#0C2235">Sizing the lines that carry the flow</text>
+  <text x="40" y="72" font-size="15" font-weight="400" fill="#586876">The same 10 L/min: a right-sized line keeps the pressure; a pinched line bleeds it away as heat.</text>
+
+  <!-- ================= UPPER RUN: right-sized 8 mm ================= -->
+  <text x="40" y="120" font-size="15" font-weight="700" letter-spacing="1.5" fill="#0E7E8C">RIGHT&#8211;SIZED LINE</text>
+
+  <!-- pressure port (left) -->
+  <rect x="70" y="150" width="14" height="34" rx="2" fill="#1B3A55"/>
+  <text x="77" y="142" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C" text-anchor="middle">PRESSURE PORT</text>
+  <!-- hose: wide bore, calm (solid teal — renders on horizontal strokes) -->
+  <path d="M84,167 H360" fill="none" stroke="#0E7E8C" stroke-width="16" stroke-linecap="butt"/>
+  <path d="M386,167 H612" fill="none" stroke="#0E7E8C" stroke-width="16" stroke-linecap="butt"/>
+  <!-- fitting (coupling) -->
+  <rect x="358" y="151" width="30" height="32" rx="3" fill="#9FB2C0" stroke="#1B3A55" stroke-width="2"/>
+  <text x="373" y="205" font-size="11" font-weight="600" fill="#586876" text-anchor="middle" font-family="'IBM Plex Mono',monospace">fitting</text>
+  <!-- flow arrows -->
+  <polygon points="232,167 216,158 216,176" fill="#FFFFFF"/>
+  <polygon points="502,167 486,158 486,176" fill="#FFFFFF"/>
+  <!-- cap port (right) -->
+  <rect x="612" y="150" width="14" height="34" rx="2" fill="#1B3A55"/>
+  <text x="606" y="142" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C" text-anchor="end">CAP PORT</text>
+  <!-- cylinder stub -->
+  <rect x="626" y="132" width="74" height="70" rx="8" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+  <rect x="632" y="178" width="62" height="20" rx="3" fill="#1FB6AE" opacity="0.9"/>
+  <rect x="655" y="120" width="16" height="60" fill="#5B6B79"/>
+  <text x="663" y="226" font-size="11" font-weight="600" fill="#586876" text-anchor="middle" font-family="'IBM Plex Mono',monospace">cylinder</text>
+  <!-- params -->
+  <rect x="716" y="134" width="160" height="66" rx="10" fill="#E7F6EE" stroke="#1B8A5A" stroke-width="1.5"/>
+  <text x="796" y="156" font-size="13" font-weight="700" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',monospace">8 mm bore</text>
+  <text x="796" y="174" font-size="12.5" font-weight="600" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',monospace">v &#8776; 3.3 m/s</text>
+  <text x="796" y="192" font-size="12" font-weight="700" fill="#1B8A5A" text-anchor="middle">0.9 bar lost &#183; OK</text>
+
+  <!-- divider -->
+  <line x1="40" y1="252" x2="860" y2="252" stroke="#D3DDE6" stroke-width="1.5"/>
+
+  <!-- ================= LOWER RUN: pinched 5 mm ================= -->
+  <text x="40" y="296" font-size="15" font-weight="700" letter-spacing="1.5" fill="#C2463B">PINCHED LINE</text>
+
+  <!-- pressure port -->
+  <rect x="70" y="326" width="14" height="34" rx="2" fill="#1B3A55"/>
+  <!-- hose: narrow bore, fast (solid red) -->
+  <path d="M84,343 H360" fill="none" stroke="#C2463B" stroke-width="7" stroke-linecap="butt"/>
+  <path d="M388,343 H612" fill="none" stroke="#C2463B" stroke-width="7" stroke-linecap="butt"/>
+  <!-- pinched fitting: the narrowest bore in the path -->
+  <rect x="358" y="327" width="30" height="32" rx="3" fill="#FDEFD9" stroke="#C2463B" stroke-width="2.5"/>
+  <path d="M363,343 H383" fill="none" stroke="#C2463B" stroke-width="3"/>
+  <text x="373" y="381" font-size="11" font-weight="700" fill="#C2463B" text-anchor="middle">choke point</text>
+  <!-- fast flow arrows -->
+  <polygon points="236,343 218,332 218,354" fill="#FFFFFF"/>
+  <polygon points="520,343 502,332 502,354" fill="#FFFFFF"/>
+  <!-- heat marks rising off the hot line -->
+  <path d="M430,332 q4,-9 8,0 q4,9 8,0" fill="none" stroke="#DD841A" stroke-width="2"/>
+  <path d="M470,332 q4,-9 8,0 q4,9 8,0" fill="none" stroke="#DD841A" stroke-width="2"/>
+  <!-- cap port -->
+  <rect x="612" y="326" width="14" height="34" rx="2" fill="#1B3A55"/>
+  <!-- cylinder stub (less fluid arrives) -->
+  <rect x="626" y="308" width="74" height="70" rx="8" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+  <rect x="632" y="362" width="62" height="10" rx="3" fill="#1FB6AE" opacity="0.6"/>
+  <rect x="655" y="320" width="16" height="44" fill="#5B6B79"/>
+  <!-- params -->
+  <rect x="716" y="310" width="160" height="66" rx="10" fill="#FBECEA" stroke="#C2463B" stroke-width="1.5"/>
+  <text x="796" y="332" font-size="13" font-weight="700" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',monospace">5 mm bore</text>
+  <text x="796" y="350" font-size="12.5" font-weight="600" fill="#1B3A55" text-anchor="middle" font-family="'IBM Plex Mono',monospace">v &#8776; 8.5 m/s</text>
+  <text x="796" y="368" font-size="12" font-weight="700" fill="#C2463B" text-anchor="middle">6.0 bar lost &#183; CHOKED</text>
+
+  <!-- ================= velocity-band legend ================= -->
+  <rect x="40" y="416" width="820" height="60" rx="12" fill="#13314A"/>
+  <text x="64" y="440" font-size="12" font-weight="700" letter-spacing="1" fill="#7FD7D0">VELOCITY BANDS</text>
+  <text x="836" y="440" font-size="11.5" font-weight="600" fill="#B9C6D2" text-anchor="end">the narrowest bore in the path sets the velocity</text>
+  <text x="64" y="462" font-size="12.5" fill="#FFFFFF">Pressure line &#8776; 5 m/s &#8212; a small bore is fine.</text>
+  <text x="436" y="462" font-size="12.5" fill="#FFFFFF">Suction line &#8776; 1 m/s &#8212; needs a far larger bore.</text>
+</svg>
