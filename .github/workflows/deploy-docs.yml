@@ -15,6 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Sets the repository's Pages "Source" to GitHub Actions (build_type: workflow)
+      # and enables Pages if it isn't already — this is what a commit alone cannot do
+      # from the Settings UI. Requires the pages: write permission set above.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
