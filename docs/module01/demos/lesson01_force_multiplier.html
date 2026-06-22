@@ -43,10 +43,12 @@
       <!-- output cylinder (large, right) -->
       <rect x="430" y="150" width="150" height="170" rx="8" fill="#fff" stroke="#1B3A55" stroke-width="3"/>
       <rect id="outFluid" x="436" y="250" width="138" height="64" rx="4" fill="#1FB6AE" opacity="0.9"/>
-      <rect id="outPiston" x="436" y="234" width="138" height="18" rx="3" fill="#1B3A55"/>
-      <rect id="outRod" x="495" y="120" width="20" height="120" fill="#5B6B79"/>
-      <g id="outLoad"><rect x="455" y="86" width="100" height="40" rx="6" fill="#DD841A"/>
-        <text x="505" y="112" font-size="18" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">load</text></g>
+      <g id="outAsm" transform="translate(0,0)">
+        <rect id="outPiston" x="436" y="234" width="138" height="18" rx="3" fill="#1B3A55"/>
+        <rect id="outRod" x="495" y="120" width="20" height="120" fill="#5B6B79"/>
+        <g id="outLoad"><rect x="455" y="86" width="100" height="40" rx="6" fill="#DD841A"/>
+          <text x="505" y="112" font-size="18" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">load</text></g>
+      </g>
       <text x="505" y="356" font-size="13" fill="#586876" text-anchor="middle">large piston</text>
 
       <!-- input cylinder (small, left) -->
@@ -102,7 +104,7 @@
   const fVal=document.getElementById('fVal'),doVal=document.getElementById('doVal');
   const pOut=document.getElementById('pOut'),kOut=document.getElementById('kOut'),foOut=document.getElementById('foOut');
   const gaugeTxt=document.getElementById('gaugeTxt'),needle=document.getElementById('needle'),note=document.getElementById('note');
-  const outPiston=document.getElementById('outPiston'),outFluid=document.getElementById('outFluid'),outRod=document.getElementById('outRod'),outLoad=document.getElementById('outLoad');
+  const outPiston=document.getElementById('outPiston'),outFluid=document.getElementById('outFluid'),outRod=document.getElementById('outRod'),outLoad=document.getElementById('outLoad'),outAsm=document.getElementById('outAsm');
   const inPiston=document.getElementById('inPiston'),inFluid=document.getElementById('inFluid'),inRod=document.getElementById('inRod'),inHandle=document.getElementById('inHandle'),pushArrow=document.getElementById('pushArrow'),pushHead=document.getElementById('pushHead');
   const DEF={f:500,do:100}, D_IN=25, PMAX=250;
   let lift=0; // accumulated output rise (px)
@@ -128,17 +130,14 @@
   function doPump(){
     const c=compute();
     // input piston travels down a fixed visual stroke; output rises by area ratio (Ain/Aout)
-    const stroke=26, rise=stroke*(c.Ain/c.Aout);
+    const stroke=26, rise=Math.max(4, stroke*(c.Ain/c.Aout));  // visible floor: the load always rises perceptibly, still far less than the input falls
     // input down
     inPiston.setAttribute('y',+inPiston.getAttribute('y')+0); // visual: animate via transform
     animate(inPiston,'y',234, 234+stroke); animate(inFluid,'y',250,250+stroke); animate(inFluid,'height',64,64-stroke);
     animate(inRod,'y',150,150+stroke); animate(inHandle,'transform-y',0,stroke); 
-    // output up
-    lift=Math.min(70, lift+rise);
-    const oy=234-lift;
-    animate(outPiston,'y',+outPiston.getAttribute('y'),oy);
-    animate(outRod,'y',120,120-lift); animate(outRod,'height',120,120+lift);
-    animate(outLoad,'transform-y',+(outLoad.dataset.ty||0), -lift, ()=>{outLoad.dataset.ty=-lift;});
+    // output up — piston, rod and load rise together as one rigid assembly
+    lift=Math.min(68, lift+rise);
+    animate(outAsm,'transform-y',+(outAsm.dataset.ty||0), -lift, ()=>{outAsm.dataset.ty=-lift;});
     animate(outFluid,'y',250,250-lift); animate(outFluid,'height',64,64+lift);
     setTimeout(()=>{ // return input piston (refill stroke)
       animate(inPiston,'y',234+stroke,234); animate(inFluid,'y',250+stroke,250); animate(inFluid,'height',64-stroke,64);
@@ -155,12 +154,12 @@
   }
   function resetAll(){
     lift=0; F.value=DEF.f; DO.value=DEF.do;
-    outPiston.setAttribute('y',234); outFluid.setAttribute('y',250); outFluid.setAttribute('height',64);
-    outRod.setAttribute('y',120); outRod.setAttribute('height',120); outLoad.setAttribute('transform','translate(0,0)'); outLoad.dataset.ty=0;
+    outAsm.setAttribute('transform','translate(0,0)'); outAsm.dataset.ty=0;
+    outFluid.setAttribute('y',250); outFluid.setAttribute('height',64);
     inPiston.setAttribute('y',234); inFluid.setAttribute('y',250); inFluid.setAttribute('height',64); inRod.setAttribute('y',150); inHandle.setAttribute('transform','translate(0,0)');
     render();
   }
-  [F,DO].forEach(el=>el.addEventListener('input',()=>{lift=0;outPiston.setAttribute('y',234);outFluid.setAttribute('y',250);outFluid.setAttribute('height',64);outRod.setAttribute('y',120);outRod.setAttribute('height',120);outLoad.setAttribute('transform','translate(0,0)');render();}));
+  [F,DO].forEach(el=>el.addEventListener('input',()=>{lift=0;outAsm.setAttribute('transform','translate(0,0)');outAsm.dataset.ty=0;outFluid.setAttribute('y',250);outFluid.setAttribute('height',64);render();}));
   document.getElementById('pump').addEventListener('click',doPump);
   document.getElementById('reset').addEventListener('click',resetAll);
   render();
