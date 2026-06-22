@@ -33,8 +33,9 @@ def inline_iframe(html_body, src_needle, content):
     return re.sub(r'(<iframe\b[^>]*?)\ssrc="' + re.escape(src_needle) + r'"([^>]*?>)',
                   lambda m: m.group(1) + ' srcdoc="' + esc + '"' + m.group(2),
                   html_body)
-body = inline_iframe(body, 'demos/lesson03_lines_ports.html', demo)
-body = inline_iframe(body, 'quizzes/lesson03_quiz.html', quiz)
+import os
+body = inline_iframe(body, 'demos/' + os.path.basename(demo_p), demo)
+body = inline_iframe(body, 'quizzes/' + os.path.basename(quiz_p), quiz)
 
 page = f"""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>

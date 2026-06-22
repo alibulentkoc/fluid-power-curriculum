@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · The complete platform circuit</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .lifter{transition:transform 7s linear}
+  #capFluid{transition:none}
+  .flow{transition:stroke .25s, stroke-width .25s}
+  .toggle{display:flex;gap:8px;margin-top:16px}
+  .toggle button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:14px;font-weight:600;padding:11px;border-radius:10px;cursor:pointer}
+  .toggle button:hover{border-color:var(--teal)} .toggle button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+  .out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg)}
+  .tile .k{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:17px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .note{font-size:12.5px;color:var(--slate);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The complete platform circuit</h1>
+  <p class="sub">Every part you sized, drawn with standard symbols and joined into one loop. Command the directional control valve and watch the flow route through the circuit to raise, hold, or lower the load.</p>
+
+  <div class="card">
+    <svg id="rig" viewBox="0 0 640 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <defs>
+        <marker id="fl" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker>
+        <marker id="flR" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#586876"/></marker>
+        <marker id="va" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#1B3A55"/></marker>
+      </defs>
+
+      <!-- RESERVOIR (wide enough for suction + relief + filter returns) -->
+      <path id="reservoir" d="M40,412 H58 M40,412 V456 H360 V412 H342" fill="none" stroke="#1B3A55" stroke-width="2"/>
+      <rect x="42" y="436" width="316" height="18" fill="#DCE7EE"/>
+      <text x="200" y="450" font-size="9.5" font-weight="700" letter-spacing="1" fill="#1B3A55" text-anchor="middle">RESERVOIR</text>
+
+      <!-- MOTOR (shaft-coupled) + PUMP (suction drawn from the PUMP) -->
+      <circle id="motor" cx="80" cy="330" r="20" fill="#1B3A55"/><text x="80" y="335" font-size="13" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',monospace">M</text>
+      <text x="80" y="302" font-size="8.5" font-weight="700" fill="#586876" text-anchor="middle">motor</text>
+      <line x1="100" y1="326" x2="125" y2="326" stroke="#1B3A55" stroke-width="1.8"/><line x1="100" y1="334" x2="125" y2="334" stroke="#1B3A55" stroke-width="1.8"/>
+      <circle id="pump" cx="145" cy="330" r="20" fill="#fff" stroke="#0E7E8C" stroke-width="2.5"/><path d="M161,330 L143,321 L143,339 Z" fill="#0E7E8C"/>
+      <text x="145" y="302" font-size="8.5" font-weight="700" fill="#586876" text-anchor="middle">pump</text>
+      <polyline points="145,412 145,350" fill="none" stroke="#586876" stroke-width="3" marker-end="url(#flR)"/>
+      <text x="137" y="392" font-size="8" fill="#586876" text-anchor="end">suction</text>
+
+      <!-- PRESSURE LINE: pump outlet -> P (bottom of valve) -->
+      <polyline id="pPath" class="flow" points="165,330 294,330 294,290" fill="none" stroke="#9FB6C2" stroke-width="3" marker-end="url(#fl)"/>
+
+      <!-- RELIEF VALVE (arrow + spring + dashed pilot + outlet to tank) -->
+      <circle cx="230" cy="330" r="3" fill="#9FB6C2"/>
+      <polyline points="230,330 230,360" fill="none" stroke="#DD841A" stroke-width="2.5"/>
+      <rect id="relief" x="208" y="360" width="42" height="40" rx="3" fill="#FDEFD9" stroke="#DD841A" stroke-width="2"/>
+      <line x1="216" y1="392" x2="242" y2="368" stroke="#B5670F" stroke-width="1.8" marker-end="url(#va)"/>
+      <polyline points="250,380 254,374 258,386 262,374 266,380" fill="none" stroke="#B5670F" stroke-width="1.4"/>
+      <polyline points="218,360 218,408 270,408 270,392" fill="none" stroke="#B5670F" stroke-width="1.1" stroke-dasharray="3 2"/>
+      <polyline points="230,400 230,412" fill="none" stroke="#DD841A" stroke-width="2.5" marker-end="url(#flR)"/>
+      <text x="229" y="383" font-size="8" font-weight="700" fill="#B5670F" text-anchor="middle">relief</text>
+
+      <!-- DIRECTIONAL CONTROL VALVE (4/3, closed centre) -->
+      <rect x="251" y="250" width="34" height="40" fill="#fff" stroke="#0E7E8C" stroke-width="1.8"/>
+      <rect id="dcv" x="285" y="250" width="34" height="40" fill="#fff" stroke="#0E7E8C" stroke-width="2.5"/>
+      <rect x="319" y="250" width="34" height="40" fill="#fff" stroke="#0E7E8C" stroke-width="1.8"/>
+      <!-- left box: RAISE (P->A, B->T : crossed) -->
+      <line x1="258" y1="285" x2="278" y2="255" stroke="#1B3A55" stroke-width="1.5" marker-end="url(#va)"/>
+      <line x1="258" y1="255" x2="278" y2="285" stroke="#1B3A55" stroke-width="1.5" marker-end="url(#va)"/>
+      <!-- centre box: closed centre (four blocked ports) -->
+      <line x1="294" y1="290" x2="294" y2="282" stroke="#1B3A55" stroke-width="1.5"/><line x1="289" y1="282" x2="299" y2="282" stroke="#1B3A55" stroke-width="1.5"/>
+      <line x1="310" y1="290" x2="310" y2="282" stroke="#1B3A55" stroke-width="1.5"/><line x1="305" y1="282" x2="315" y2="282" stroke="#1B3A55" stroke-width="1.5"/>
+      <line x1="294" y1="250" x2="294" y2="258" stroke="#1B3A55" stroke-width="1.5"/><line x1="289" y1="258" x2="299" y2="258" stroke="#1B3A55" stroke-width="1.5"/>
+      <line x1="310" y1="250" x2="310" y2="258" stroke="#1B3A55" stroke-width="1.5"/><line x1="305" y1="258" x2="315" y2="258" stroke="#1B3A55" stroke-width="1.5"/>
+      <!-- right box: LOWER (P->B, A->T : parallel) -->
+      <line x1="328" y1="285" x2="328" y2="255" stroke="#1B3A55" stroke-width="1.5" marker-end="url(#va)"/>
+      <line x1="346" y1="255" x2="346" y2="285" stroke="#1B3A55" stroke-width="1.5" marker-end="url(#va)"/>
+      <!-- solenoid + spring ends -->
+      <rect x="233" y="261" width="16" height="18" fill="#fff" stroke="#1B3A55" stroke-width="1.3"/><line x1="233" y1="279" x2="249" y2="261" stroke="#1B3A55" stroke-width="1"/>
+      <rect x="355" y="261" width="16" height="18" fill="#fff" stroke="#1B3A55" stroke-width="1.3"/><line x1="355" y1="261" x2="371" y2="279" stroke="#1B3A55" stroke-width="1"/>
+      <!-- port letters -->
+      <text x="294" y="246" font-size="8.5" font-weight="700" fill="#0B5A63" text-anchor="middle">B</text>
+      <text x="310" y="246" font-size="8.5" font-weight="700" fill="#0B5A63" text-anchor="middle">A</text>
+      <text x="294" y="303" font-size="8.5" font-weight="700" fill="#0B5A63" text-anchor="middle">P</text>
+      <text x="310" y="303" font-size="8.5" font-weight="700" fill="#586876" text-anchor="middle">T</text>
+      <text x="302" y="318" font-size="9" font-weight="700" fill="#0E7E8C" text-anchor="middle">directional valve (4/3)</text>
+
+      <!-- T -> FILTER -> reservoir (outlet returns to the tank) -->
+      <polyline id="rPath" class="flow" points="310,290 310,360" fill="none" stroke="#9FB6C2" stroke-width="3"/>
+      <path d="M310,360 l13,14 l-13,14 l-13,-14 z" fill="#EEF2F5" stroke="#586876" stroke-width="1.8"/>
+      <line x1="299" y1="374" x2="321" y2="374" stroke="#586876" stroke-width="1.2" stroke-dasharray="3 2"/>
+      <polyline points="310,388 310,412" fill="none" stroke="#586876" stroke-width="3" marker-end="url(#flR)"/>
+      <text id="filter" x="328" y="378" font-size="8.5" font-weight="700" fill="#586876" text-anchor="start">filter</text>
+
+      <!-- A -> cap (low) ; B -> rod (high) : no crossings -->
+      <polyline id="aPath" class="flow" points="310,250 310,225 454,225 454,352 464,352" fill="none" stroke="#9FB6C2" stroke-width="3" marker-end="url(#fl)"/>
+      <polyline id="bPath" class="flow" points="294,250 294,206 464,206" fill="none" stroke="#9FB6C2" stroke-width="2.5" marker-end="url(#fl)"/>
+      <text x="372" y="202" font-size="8.5" fill="#586876">B &#8594; rod</text>
+      <text x="372" y="246" font-size="8.5" fill="#586876">A &#8594; cap</text>
+
+      <!-- DOUBLE-ACTING CYLINDER (interactive; piston + oil stay inside; cap port below retracted piston) -->
+      <rect id="cyl" x="470" y="150" width="64" height="210" rx="6" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
+      <rect id="capFluid" x="474" y="344" width="56" height="14" rx="1.5" fill="#1FB6AE" opacity="0.85"/>
+      <rect x="464" y="346" width="12" height="12" rx="1.5" fill="#1B3A55"/>
+      <rect x="464" y="200" width="12" height="12" rx="1.5" fill="#1B3A55"/>
+      <g id="lifter" class="lifter">
+        <rect id="piston" x="474" y="330" width="56" height="14" fill="#1B3A55"/>
+        <rect x="494" y="124" width="16" height="206" fill="#5B6B79"/>
+        <rect x="466" y="100" width="72" height="24" rx="4" fill="#DD841A"/>
+        <text x="502" y="117" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+      </g>
+      <rect x="486" y="146" width="32" height="7" fill="#1B3A55"/>
+      <text x="502" y="376" font-size="9" font-weight="700" fill="#586876" text-anchor="middle">double-acting cylinder</text>
+    </svg>
+
+    <div class="toggle">
+      <button id="bRaise" class="active">&#9650; Raise</button>
+      <button id="bHold">&#9208; Hold</button>
+      <button id="bLower">&#9660; Lower</button>
+    </div>
+    <div class="out">
+      <div class="tile"><div class="k">State</div><div class="v" id="statusOut">Holding</div></div>
+      <div class="tile"><div class="k">Valve routes</div><div class="v" id="valveOut">closed</div></div>
+    </div>
+    <p class="note" id="note">The pump always makes flow. The directional valve decides where it goes — to the cap side to raise, blocked to hold, or to the rod side to lower. The relief valve caps the pressure; the filter cleans the return on its way back to the reservoir.</p>
+  </div>
+</div>
+
+<script>
+  const lifter=document.getElementById('lifter'), capFluid=document.getElementById('capFluid');
+  const statusOut=document.getElementById('statusOut'), valveOut=document.getElementById('valveOut'), note=document.getElementById('note');
+  const bRaise=document.getElementById('bRaise'), bHold=document.getElementById('bHold'), bLower=document.getElementById('bLower');
+  const pPath=document.getElementById('pPath'), aPath=document.getElementById('aPath'), bPath=document.getElementById('bPath'), rPath=document.getElementById('rPath');
+  // barrel inner y 150..360; piston rests bottom=344; cap port at 346..358 sits below the retracted piston, in the cap chamber.
+  const LIFT=80, T=7.07, CAP_Y0=344, CAP_H0=14, IDLE='#9FB6C2', LIVE='#0E7E8C';
+  function setActive(b){ for(const x of [bRaise,bHold,bLower]) x.classList.toggle('active', x===b); }
+  function paint(a){ for(const p of [pPath,aPath,bPath,rPath]) p.setAttribute('stroke',IDLE);
+    if(a==='raise'){ pPath.setAttribute('stroke',LIVE); aPath.setAttribute('stroke',LIVE); rPath.setAttribute('stroke',LIVE); }
+    else if(a==='lower'){ pPath.setAttribute('stroke',LIVE); bPath.setAttribute('stroke',LIVE); rPath.setAttribute('stroke',LIVE); } }
+  function raise(){
+    setActive(bRaise); statusOut.textContent='Raising'; valveOut.textContent='P\u2192A (cap)'; paint('raise');
+    lifter.style.transitionDuration=T+'s'; lifter.style.transform='translateY(-'+LIFT+'px)';
+    capFluid.style.transition='y '+T+'s linear, height '+T+'s linear';
+    capFluid.setAttribute('y', CAP_Y0-LIFT); capFluid.setAttribute('height', CAP_H0+LIFT);
+    note.textContent='Raising: the valve routes the pump\u2019s flow to the cap side. Oil fills the cap chamber below the piston and the rod extends, lifting the load.';
+  }
+  function lower(){
+    setActive(bLower); statusOut.textContent='Lowering'; valveOut.textContent='P\u2192B (rod)'; paint('lower');
+    lifter.style.transitionDuration=T+'s'; lifter.style.transform='translateY(0px)';
+    capFluid.style.transition='y '+T+'s linear, height '+T+'s linear';
+    capFluid.setAttribute('y', CAP_Y0); capFluid.setAttribute('height', CAP_H0);
+    note.textContent='Lowering: the valve routes flow to the rod side, driving the piston back down so the load descends under control.';
+  }
+  function hold(){
+    setActive(bHold); statusOut.textContent='Holding'; valveOut.textContent='closed'; paint('hold');
+    try{ const m=new DOMMatrixReadOnly(getComputedStyle(lifter).transform); lifter.style.transitionDuration='0s'; lifter.style.transform='translateY('+(m.m42||0)+'px)'; }
+    catch(e){ lifter.style.transitionDuration='0s'; }
+    capFluid.style.transition='none';
+    note.textContent='Holding: the valve blocks all four ports (closed centre), trapping the oil so the load stays at a precise height.';
+  }
+  bRaise.onclick=raise; bHold.onclick=hold; bLower.onclick=lower;
+  hold();
+</script>
+</body>
+</html>
