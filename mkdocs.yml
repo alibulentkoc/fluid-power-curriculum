@@ -72,3 +72,6 @@ nav:
       - "03 · Friction and the usable force": module04/03_friction_and_usable_force.md
       - "04 · Cushioning and end-of-stroke": module04/04_cushioning_and_end_of_stroke.md
       - "05 · The cylinder in motion": module04/05_the_cylinder_in_motion.md
+  - "Module 05 — Power Units":
+      - Overview: module05/index.md
+      - "01 · What the power unit must supply": module05/01_what_the_power_unit_must_supply.md

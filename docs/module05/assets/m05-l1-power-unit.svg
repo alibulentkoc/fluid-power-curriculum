@@ -1,0 +1,63 @@
+<svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="The hydraulic power unit as an energy path. About 2 kilowatts of electrical power enters the electric motor on the left; the motor spins the pump, which delivers about 1.67 kilowatts of hydraulic power — 10 litres per minute at 100 bar — along the pressure line to the cylinder on the right. A relief valve branches off the pressure line as a safety cap; a reservoir along the bottom holds the oil, feeds the pump's suction, and receives the return. About 0.4 kilowatts is lost as heat in the conversion. The four parts are tagged with the lesson that sizes each: pump Lesson 02, motor Lesson 03, relief valve Lesson 04, reservoir Lesson 05.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient>
+    <marker id="e" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#586876"/></marker>
+    <marker id="t" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker>
+    <marker id="h" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#DD841A"/></marker>
+  </defs>
+  <rect x="0" y="0" width="900" height="470" rx="20" fill="url(#bg)"/>
+  <text x="40" y="44" font-size="24" font-weight="700" fill="#0C2235">Electrical power in, hydraulic power out</text>
+  <text x="40" y="68" font-size="14" fill="#586876">One demand — 10 L/min at 100 bar — met by four parts, each sized in a lesson of this module.</text>
+
+  <!-- electrical input -->
+  <polyline points="60,210 128,210" fill="none" stroke="#586876" stroke-width="3.5" marker-end="url(#e)"/>
+  <text x="60" y="200" font-size="12" font-weight="700" fill="#586876">&#8776; 2 kW electrical</text>
+
+  <!-- MOTOR -->
+  <circle cx="165" cy="210" r="30" fill="#1B3A55"/><text x="165" y="216" font-size="18" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',monospace">M</text>
+  <text x="165" y="262" font-size="12" font-weight="700" fill="#1B3A55" text-anchor="middle">motor</text>
+  <text x="165" y="278" font-size="10" fill="#0E7E8C" text-anchor="middle">Lesson 03</text>
+  <!-- shaft -->
+  <line x1="195" y1="205" x2="223" y2="205" stroke="#1B3A55" stroke-width="2.2"/><line x1="195" y1="215" x2="223" y2="215" stroke="#1B3A55" stroke-width="2.2"/>
+  <!-- PUMP -->
+  <circle cx="255" cy="210" r="30" fill="#FFFFFF" stroke="#0E7E8C" stroke-width="2.8"/><path d="M275,210 L245,197 L245,223 Z" fill="#0E7E8C"/>
+  <text x="255" y="262" font-size="12" font-weight="700" fill="#1B3A55" text-anchor="middle">pump</text>
+  <text x="255" y="278" font-size="10" fill="#0E7E8C" text-anchor="middle">Lesson 02</text>
+
+  <!-- heat loss -->
+  <polyline points="210,180 210,140" fill="none" stroke="#DD841A" stroke-width="2.4" marker-end="url(#h)"/>
+  <text x="218" y="150" font-size="10.5" font-weight="700" fill="#B5670F">&#8776; 0.4 kW heat</text>
+
+  <!-- PRESSURE LINE (hydraulic power out) -->
+  <polyline points="285,210 285,155 690,155" fill="none" stroke="#0E7E8C" stroke-width="6" marker-end="url(#t)"/>
+  <text x="430" y="145" font-size="12.5" font-weight="700" fill="#0B5A63" text-anchor="middle">1.67 kW hydraulic &#183; 10 L/min &#183; 100 bar</text>
+
+  <!-- RELIEF valve branch -->
+  <circle cx="470" cy="155" r="3.5" fill="#0E7E8C"/>
+  <polyline points="470,155 470,300" fill="none" stroke="#DD841A" stroke-width="2.4"/>
+  <rect x="450" y="300" width="40" height="40" rx="3" fill="#FDEFD9" stroke="#DD841A" stroke-width="2"/>
+  <line x1="458" y1="332" x2="482" y2="308" stroke="#B5670F" stroke-width="1.8"/>
+  <polyline points="490,320 494,314 498,326 502,314 506,320" fill="none" stroke="#B5670F" stroke-width="1.3"/>
+  <polyline points="470,340 470,372" fill="none" stroke="#DD841A" stroke-width="2.4" marker-end="url(#e)"/>
+  <text x="470" y="356" font-size="11" font-weight="700" fill="#B5670F" text-anchor="middle">relief</text>
+  <text x="512" y="322" font-size="10" fill="#0E7E8C">Lesson 04</text>
+
+  <!-- CYLINDER -->
+  <rect x="700" y="120" width="80" height="175" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+  <rect x="704" y="235" width="72" height="56" rx="2" fill="#1FB6AE" opacity="0.85"/>
+  <rect x="704" y="221" width="72" height="14" fill="#1B3A55"/>
+  <rect x="732" y="96" width="16" height="128" fill="#5B6B79"/>
+  <rect x="696" y="120" width="88" height="7" fill="#1B3A55"/>
+  <rect x="700" y="74" width="80" height="24" rx="4" fill="#DD841A"/>
+  <text x="740" y="91" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+  <text x="740" y="312" font-size="11" font-weight="700" fill="#586876" text-anchor="middle">cylinder</text>
+
+  <!-- RESERVOIR -->
+  <path d="M120,372 H140 M120,372 V424 H470 V372 H450" fill="none" stroke="#1B3A55" stroke-width="2.5"/>
+  <rect x="122" y="398" width="346" height="24" fill="#BFE6E2"/>
+  <text x="230" y="416" font-size="11" font-weight="700" letter-spacing="1" fill="#1B3A55" text-anchor="middle">RESERVOIR</text>
+  <text x="405" y="390" font-size="10" fill="#0E7E8C">Lesson 05</text>
+  <!-- suction from reservoir to pump -->
+  <polyline points="255,372 255,240" fill="none" stroke="#7FB3AE" stroke-width="4" marker-end="url(#e)"/>
+  <text x="248" y="330" font-size="9.5" fill="#4E9A93" text-anchor="end">suction</text>
+</svg>
