@@ -1,0 +1,36 @@
+<svg viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Left: a schematic of a hydraulic cushion. The piston moves right toward the end cap; a cushion plunger on its face enters a pocket in the cap, sealing the main outflow so the trapped oil must escape through a small throttling restriction, building a back-pressure that decelerates the piston over the cushion length. Right: a bar comparison of the end-of-stroke force for the 2-tonne load at 85 millimetres per second. A hard stop in 1 millimetre gives about 7.2 kilonewtons; a 25 millimetre cushion gives only about 290 newtons at about 1.5 bar, twenty-five times less.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="am" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0C2235"/></marker><marker id="rp" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#C2463B"/></marker></defs>
+<rect x="0" y="0" width="900" height="460" rx="20" fill="url(#bg)"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#0C2235">A soft landing at the end of the stroke</text>
+<text x="40" y="68" font-size="14" fill="#586876">The cushion spreads the stop over distance — turning a hammer blow into a gentle push.</text>
+<text x="60" y="118" font-size="12" font-weight="700" letter-spacing="1" fill="#0E7E8C">HOW A CUSHION STOPS THE PISTON</text>
+<rect x="50" y="150" width="400" height="150" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+<rect x="430" y="150" width="20" height="150" fill="#1B3A55"/>
+<rect x="330" y="156" width="100" height="138" fill="#C2463B" opacity="0.13"/>
+<rect x="300" y="156" width="30" height="138" fill="#1B3A55"/>
+<line x1="150" y1="140" x2="300" y2="140" stroke="#0C2235" stroke-width="2" marker-end="url(#am)"/>
+<text x="150" y="134" font-size="11" font-weight="700" fill="#0C2235">piston moving →</text>
+<rect x="330" y="212" width="70" height="26" fill="#5B6B79"/>
+<rect x="400" y="207" width="30" height="36" fill="#EEF2F5" stroke="#1B3A55" stroke-width="1.2"/>
+<text x="365" y="205" font-size="10" font-weight="700" fill="#3A4A57" text-anchor="middle">cushion plunger</text>
+<rect x="430" y="163" width="20" height="14" fill="#EEF2F5"/>
+<path d="M430,170 l14,-6 l0,12 z" fill="#1B3A55"/>
+<polyline points="410,170 432,170" fill="none" stroke="#C2463B" stroke-width="2.5" marker-end="url(#rp)"/>
+<text x="455" y="167" font-size="10" font-weight="700" fill="#9A2f27">throttled outflow</text>
+<polyline points="420,185 345,185" fill="none" stroke="#C2463B" stroke-width="1.6" marker-end="url(#rp)"/>
+<polyline points="420,215 345,215" fill="none" stroke="#C2463B" stroke-width="1.6" marker-end="url(#rp)"/>
+<polyline points="420,265 345,265" fill="none" stroke="#C2463B" stroke-width="1.6" marker-end="url(#rp)"/>
+<text x="388" y="286" font-size="10" font-weight="700" fill="#9A2f27" text-anchor="middle">back-pressure slows the piston</text>
+<text x="640" y="118" font-size="12" font-weight="700" letter-spacing="1" fill="#0E7E8C" text-anchor="middle">END-OF-STROKE FORCE</text>
+<text x="640" y="136" font-size="10.5" fill="#586876" text-anchor="middle">2-tonne load · 85 mm/s · 7.2 J</text>
+<line x1="530" y1="380" x2="760" y2="380" stroke="#1B3A55" stroke-width="1.6"/>
+<rect x="560" y="130" width="64" height="250" rx="4" fill="#C2463B"/>
+<text x="592" y="122" font-size="14" font-weight="700" fill="#9A2f27" text-anchor="middle">7.2 kN</text>
+<text x="592" y="396" font-size="10.5" fill="#586876" text-anchor="middle">hard stop</text>
+<text x="592" y="410" font-size="9.5" fill="#8AA0AE" text-anchor="middle">1 mm give</text>
+<rect x="700" y="370" width="64" height="10" rx="3" fill="#1FB6AE"/>
+<text x="732" y="362" font-size="14" font-weight="700" fill="#0B5A63" text-anchor="middle">289 N</text>
+<text x="732" y="396" font-size="10.5" fill="#586876" text-anchor="middle">25 mm cushion</text>
+<text x="732" y="410" font-size="9.5" fill="#8AA0AE" text-anchor="middle">~1.5 bar</text>
+<text x="640" y="160" font-size="15" font-weight="700" fill="#DD841A" text-anchor="middle">25× less</text>
+</svg>

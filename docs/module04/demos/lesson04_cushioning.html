@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Cushioning</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--red:#C2463B;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .toggle{display:flex;gap:8px;margin-top:16px}
+  .toggle button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:14px;font-weight:600;padding:10px;border-radius:10px;cursor:pointer}
+  .toggle button:hover{border-color:var(--teal)} .toggle button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+  .ctl{margin:14px 0 6px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .tile.force .v{color:var(--amber)}
+  .note{margin-top:14px;font-size:13px;padding:10px 12px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cushioning — stopping force vs cushion length</h1>
+  <p class="sub">The stopping force is <b>F = ½ m v² / L<sub>c</sub></b> — inversely proportional to the cushion length. Stretch the cushion and the stop turns gentle; shrink it toward a hard stop and the force rockets up.</p>
+
+  <div class="card">
+    <svg id="chart" viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <line x1="60" y1="215" x2="610" y2="215" stroke="#1B3A55" stroke-width="1.6"/>
+      <line x1="60" y1="215" x2="60" y2="25" stroke="#1B3A55" stroke-width="1.6"/>
+      <g id="xt" font-size="9" fill="#586876"></g>
+      <text x="335" y="248" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">cushion length (mm)</text>
+      <text x="18" y="120" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle" transform="rotate(-90 18 120)">stopping force (N)</text>
+      <polyline id="curve" fill="none" stroke="#0E7E8C" stroke-width="3"/>
+      <line id="vline" stroke="#B5670F" stroke-width="1.3" stroke-dasharray="3 3"/>
+      <circle id="dot" r="6" fill="#DD841A" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+
+    <div class="toggle">
+      <button id="bExt" class="active">▲ Extend (85 mm/s)</button>
+      <button id="bRet">▼ Retract (124 mm/s)</button>
+    </div>
+    <div class="ctl">
+      <label>Cushion length <span class="v"><span id="lcOut">25</span> mm</span></label>
+      <input id="lcRange" type="range" min="2" max="50" step="1" value="25"/>
+    </div>
+    <div class="out">
+      <div class="tile force"><div class="k">Stopping force</div><div class="v"><span id="forceOut">289</span> N</div></div>
+      <div class="tile"><div class="k">Cushion pressure</div><div class="v"><span id="pcOut">1.5</span> bar</div></div>
+      <div class="tile"><div class="k">vs hard stop (1 mm)</div><div class="v"><span id="hardOut">7.2</span> kN</div></div>
+    </div>
+    <div class="note" id="note"></div>
+  </div>
+</div>
+
+<script>
+  const m=2000, Ab=1963.5e-6, vext=0.085, vret=0.124;
+  const PX0=60,PX1=610,PY0=215,PY1=25, LMAX=50, FMAX=1600;
+  const $=id=>document.getElementById(id);
+  const xp=L=>PX0+(L/LMAX)*(PX1-PX0), yp=F=>PY0-(Math.min(F,FMAX)/FMAX)*(PY0-PY1);
+  let v=vext;
+  const force=(vv,Lc)=>0.5*m*vv*vv/(Lc/1000);   // Lc in mm
+  let xt=''; [2,10,25,40,50].forEach(L=>{xt+=`<line x1="${xp(L)}" y1="215" x2="${xp(L)}" y2="219" stroke="#1B3A55"/><text x="${xp(L)}" y="231" text-anchor="middle">${L}</text>`;}); $('xt').innerHTML=xt;
+  function curve(){ let p=[]; for(let L=2;L<=LMAX;L++) p.push(xp(L).toFixed(1)+','+yp(force(v,L)).toFixed(1)); $('curve').setAttribute('points',p.join(' ')); }
+  function render(){
+    const Lc=+$('lcRange').value, F=force(v,Lc), pc=F/Ab/1e5, hard=force(v,1)/1000, dec=v*v/(2*Lc/1000);
+    $('lcOut').textContent=Lc; $('forceOut').textContent=Math.round(F); $('pcOut').textContent=pc.toFixed(1); $('hardOut').textContent=hard.toFixed(1);
+    $('dot').setAttribute('cx',xp(Lc)); $('dot').setAttribute('cy',yp(F));
+    $('vline').setAttribute('x1',xp(Lc)); $('vline').setAttribute('x2',xp(Lc)); $('vline').setAttribute('y1',yp(F)); $('vline').setAttribute('y2',PY0);
+    const ratio=Math.round(hard*1000/F);
+    $('note').innerHTML=`A ${Lc} mm cushion stops the load in ${F<1000?Math.round(F)+' N':(F/1000).toFixed(1)+' kN'} at ${pc.toFixed(1)} bar \u2014 <b>${ratio}\u00d7</b> gentler than the ${hard.toFixed(1)} kN hard stop. ${Lc<8?'Too short: the force is climbing the 1/L curve.':'A soft landing, well under 100 bar.'}`;
+  }
+  function pick(vv,btn){ v=vv; for(const b of [$('bExt'),$('bRet')]) b.classList.toggle('active',b===btn); curve(); render(); }
+  $('bExt').onclick=()=>pick(vext,$('bExt')); $('bRet').onclick=()=>pick(vret,$('bRet'));
+  $('lcRange').addEventListener('input',render);
+  curve(); render();
+</script>
+</body>
+</html>
