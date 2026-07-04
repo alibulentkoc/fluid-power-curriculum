@@ -1,0 +1,66 @@
+<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="The platform's closed loop seen as the fluid sees it. The fluid leaves the pump under pressure p at flow Q, carrying power p times Q along the working line to the cylinder, where it lifts the two-tonne load; it returns to the reservoir to be cooled. Four numbered callouts mark the fluid's four jobs: 1 transmits power along the pressure line, 2 lubricates the pump, 3 seals the cylinder and valve clearances, 4 carries heat back to the reservoir. An operating-point badge reads pressure 100 bar, flow 10 litres per minute, power about 1.67 kilowatts.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient>
+    <marker id="fl" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker>
+    <marker id="flR" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#7FB3AE"/></marker>
+  </defs>
+  <rect x="0" y="0" width="900" height="520" rx="20" fill="url(#bg)"/>
+  <text x="40" y="46" font-size="24" font-weight="700" fill="#0C2235">The loop, seen as the fluid sees it</text>
+  <text x="40" y="70" font-size="14" fill="#586876">The same closed circuit from Module 02 — now the working fluid carries the power, and does four jobs at once.</text>
+
+  <!-- operating-point badge -->
+  <rect x="330" y="92" width="360" height="52" rx="12" fill="#13314A"/>
+  <text x="350" y="114" font-size="11" font-weight="700" letter-spacing="1" fill="#7FD7D0">OPERATING POINT</text>
+  <text x="350" y="133" font-size="13" fill="#FFFFFF">p = 100 bar &#183; Q = 10 L/min &#8594; P = p&#8201;Q &#8776; 1.67 kW</text>
+
+  <!-- RESERVOIR -->
+  <path d="M110,400 H126 M110,400 V462 H340 V400 H324" fill="none" stroke="#1B3A55" stroke-width="2.5"/>
+  <rect x="112" y="430" width="226" height="30" fill="#BFE6E2"/>
+  <text x="225" y="480" font-size="12" font-weight="700" letter-spacing="1.5" fill="#1B3A55" text-anchor="middle">RESERVOIR</text>
+
+  <!-- MOTOR + PUMP -->
+  <circle cx="120" cy="300" r="24" fill="#1B3A55"/><text x="120" y="306" font-size="15" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',monospace">M</text>
+  <line x1="144" y1="295" x2="168" y2="295" stroke="#1B3A55" stroke-width="2"/><line x1="144" y1="305" x2="168" y2="305" stroke="#1B3A55" stroke-width="2"/>
+  <circle cx="192" cy="300" r="24" fill="#FFFFFF" stroke="#0E7E8C" stroke-width="2.5"/><path d="M192,284 L180,306 L204,306 Z" fill="#0E7E8C"/>
+  <text x="156" y="352" font-size="11" font-weight="700" fill="#586876" text-anchor="middle">motor + pump</text>
+  <!-- suction -->
+  <polyline points="192,400 192,324" fill="none" stroke="#7FB3AE" stroke-width="5" marker-end="url(#flR)"/>
+
+  <!-- WORKING (pressure) LINE: thick teal, pump -> up -> across -> down to cylinder cap -->
+  <polyline points="192,276 192,210 690,210 690,300 700,300" fill="none" stroke="#0E7E8C" stroke-width="7" marker-end="url(#fl)"/>
+  <text x="430" y="199" font-size="12.5" font-weight="700" fill="#0B5A63" text-anchor="middle">working line &#8212; carries power  P = p&#8201;Q</text>
+
+  <!-- RETURN LINE: lighter teal, cylinder -> down -> back to reservoir -->
+  <polyline points="700,340 700,388 300,388 300,400" fill="none" stroke="#7FB3AE" stroke-width="5" marker-end="url(#flR)"/>
+  <text x="470" y="405" font-size="11" fill="#4E9A93" text-anchor="middle">return line &#8212; carries heat back to be cooled</text>
+
+  <!-- CYLINDER + LOAD -->
+  <rect x="690" y="150" width="86" height="190" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+  <rect x="694" y="286" width="78" height="50" rx="2" fill="#1FB6AE" opacity="0.85"/>
+  <rect x="694" y="272" width="78" height="14" fill="#1B3A55"/>
+  <rect x="725" y="120" width="16" height="152" fill="#5B6B79"/>
+  <rect x="686" y="150" width="94" height="7" fill="#1B3A55"/>
+  <rect x="688" y="96" width="90" height="26" rx="4" fill="#DD841A"/>
+  <text x="733" y="115" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+  <text x="733" y="358" font-size="11" font-weight="700" fill="#586876" text-anchor="middle">cylinder &#183; lifts the load</text>
+
+  <!-- FOUR JOBS callouts (numbered) -->
+  <!-- 1 transmits power (on working line) -->
+  <circle cx="430" cy="210" r="11" fill="#0E7E8C"/><text x="430" y="214" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+  <!-- 2 lubricates (at pump) -->
+  <circle cx="192" cy="300" r="11" fill="#0E7E8C" opacity="0"/>
+  <circle cx="236" cy="286" r="11" fill="#0E7E8C"/><text x="236" y="290" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+  <!-- 3 seals (at cylinder piston) -->
+  <circle cx="668" cy="279" r="11" fill="#0E7E8C"/><text x="668" y="283" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+  <!-- 4 cools (on return line) -->
+  <circle cx="300" cy="388" r="11" fill="#0E7E8C"/><text x="300" y="392" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">4</text>
+
+  <!-- jobs legend -->
+  <g font-size="12.5" fill="#1B3A55">
+    <text x="40" y="150" font-size="11" font-weight="700" letter-spacing="1" fill="#0E7E8C">THE FLUID&#8217;S FOUR JOBS</text>
+    <text x="44" y="174"><tspan font-weight="700" fill="#0E7E8C">1</tspan>  Transmits power &#8212; carries p&#8201;Q to the load</text>
+    <text x="44" y="196"><tspan font-weight="700" fill="#0E7E8C">2</tspan>  Lubricates &#8212; coats every sliding surface</text>
+    <text x="44" y="218"><tspan font-weight="700" fill="#0E7E8C">3</tspan>  Seals &#8212; fills clearances so pressure holds</text>
+    <text x="44" y="240"><tspan font-weight="700" fill="#0E7E8C">4</tspan>  Cools &#8212; carries heat back to the reservoir</text>
+  </g>
+</svg>
