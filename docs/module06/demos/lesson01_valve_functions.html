@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · What the valves must do</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--slateb:#8AA0AE;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  #piston,#rod,#load,#capFill{transition:all .8s ease}
+  .toggle{display:flex;gap:8px;margin-top:16px}
+  .toggle button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:14px;font-weight:600;padding:10px;border-radius:10px;cursor:pointer}
+  .toggle button:hover{border-color:var(--teal)} .toggle button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+  .ctl{margin:16px 0 6px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .note{margin-top:14px;font-size:13px;padding:10px 12px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>What the valves must do — raise, lower, hold</h1>
+  <p class="sub">Pick a command and watch the 4/3 valve route the flow — P→A to raise, P→B to lower, all blocked to hold. The spool opening then meters how fast, through the orifice law.</p>
+
+  <div class="card">
+    <svg id="viz" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+      <rect x="180" y="30" width="280" height="60" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/>
+      <rect id="capFill" x="182" y="32" width="70" height="56" fill="#1FB6AE" opacity="0.4"/>
+      <rect id="piston" x="252" y="32" width="14" height="56" fill="#1B3A55"/>
+      <rect id="rod" x="266" y="53" width="194" height="10" fill="#5B6B79"/>
+      <rect id="load" x="456" y="42" width="20" height="32" rx="3" fill="#DD841A"/>
+      <text x="205" y="108" font-size="10" font-weight="700" fill="#1B3A55">A (cap)</text>
+      <text x="432" y="108" font-size="10" font-weight="700" fill="#1B3A55">B (rod)</text>
+      <line id="lineA" x1="210" y1="112" x2="210" y2="92" stroke="#0E7E8C" stroke-width="3"/>
+      <line id="lineB" x1="437" y1="112" x2="437" y2="92" stroke="#8AA0AE" stroke-width="3"/>
+      <rect x="240" y="150" width="160" height="50" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/>
+      <text id="routeTxt" x="320" y="180" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">P → A · B → T</text>
+      <text x="270" y="222" font-size="10" font-weight="700" fill="#0B5A63" text-anchor="middle">P</text>
+      <text x="370" y="222" font-size="10" font-weight="700" fill="#586876" text-anchor="middle">T</text>
+    </svg>
+
+    <div class="toggle">
+      <button id="bRaise" class="active">▲ Raise</button>
+      <button id="bLower">▼ Lower</button>
+      <button id="bHold">■ Hold</button>
+    </div>
+    <div class="ctl">
+      <label>Spool opening <span class="v"><span id="openOut">7.6</span> mm²</span></label>
+      <input id="openRange" type="range" min="0" max="12" step="0.2" value="7.6"/>
+    </div>
+    <div class="out">
+      <div class="tile"><div class="k">Metered flow</div><div class="v"><span id="flowOut">10.0</span> L/min</div></div>
+      <div class="tile"><div class="k">Cylinder</div><div class="v" id="actOut">rising</div></div>
+    </div>
+    <div class="note" id="note"></div>
+  </div>
+</div>
+
+<script>
+  const rho=870, Cd=0.65, dP=5e5;
+  const $=id=>document.getElementById(id);
+  let cmd='raise';
+  const flow=A=>Cd*(A*1e-6)*Math.sqrt(2*dP/rho)*60000;   // L/min
+  function place(px){ $('piston').setAttribute('x',px); $('rod').setAttribute('x',px+14); $('rod').setAttribute('width',Math.max(4,460-(px+14))); $('load').setAttribute('x',px+14+Math.max(4,460-(px+14))); $('capFill').setAttribute('width',px-182); }
+  function setCmd(c,btn){ cmd=c; for(const b of [$('bRaise'),$('bLower'),$('bHold')]) b.classList.toggle('active',b===btn); render(); }
+  function render(){
+    const A=+$('openRange').value, Q=cmd==='hold'?0:flow(A);
+    $('openOut').textContent=A.toFixed(1); $('flowOut').textContent=Q.toFixed(1);
+    const route=cmd==='raise'?'P → A · B → T':cmd==='lower'?'P → B · A → T':'all ports blocked';
+    $('routeTxt').textContent=route;
+    $('actOut').textContent=cmd==='hold'?'held':(cmd==='raise'?'rising':'lowering');
+    $('lineA').setAttribute('stroke', cmd==='raise'?'#0E7E8C':cmd==='lower'?'#8AA0AE':'#B9C7D1');
+    $('lineB').setAttribute('stroke', cmd==='lower'?'#0E7E8C':cmd==='raise'?'#8AA0AE':'#B9C7D1');
+    // piston target: raise -> extended (right), lower -> retracted (left), hold -> mid
+    place(cmd==='raise'?380:cmd==='lower'?210:300);
+    $('note').innerHTML = cmd==='hold'
+      ? 'Centre position: all four ports blocked, so the trapped oil holds the load — no flow, whatever the opening.'
+      : `${cmd==='raise'?'Raising':'Lowering'}: the valve routes <b>${route}</b>, metering <b>${Q.toFixed(1)} L/min</b> through a ${A.toFixed(1)} mm² opening. Wider opening → more flow → faster.`;
+  }
+  ['bRaise','bLower','bHold'].forEach(id=>$(id).onclick=()=>setCmd(id.replace('b','').toLowerCase(),$(id)));
+  $('openRange').addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>
