@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Bulk modulus and entrained air</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--red:#C2463B;--green:#1B8A5A;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .ctl{margin:16px 0 6px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .tile.sag .v{color:var(--amber)}
+  .verdict{margin-top:14px;font-size:13px;padding:10px 12px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2}
+  .verdict.bad{background:#FBEAE7;color:#9A2f27;border-color:#EBC3BE}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Bulk modulus and entrained air</h1>
+  <p class="sub">The trapped oil is a spring of stiffness <b>k = B·A/L</b>. Add entrained air and watch the effective bulk modulus collapse, softening the spring until a 2 kN disturbance sags the load past <b>±1 mm</b>.</p>
+
+  <div class="card">
+    <svg id="viz" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <!-- sag scale 0..1.5 mm -->
+      <text x="30" y="34" font-size="11" font-weight="700" fill="#586876">sag under a 2 kN disturbance</text>
+      <rect x="30" y="46" width="580" height="30" rx="6" fill="#EEF2F5" stroke="#D3DDE6"/>
+      <rect id="sagBar" x="30" y="46" width="0" height="30" rx="6" fill="#1FB6AE"/>
+      <!-- ±1 mm threshold at 1.0/1.5 of the width -->
+      <line id="thr" x1="416.7" y1="40" x2="416.7" y2="82" stroke="#C2463B" stroke-width="2" stroke-dasharray="4 3"/>
+      <text x="416.7" y="98" font-size="10.5" font-weight="700" fill="#C2463B" text-anchor="middle">±1 mm limit</text>
+      <text x="30" y="98" font-size="10" fill="#586876">0</text>
+      <text x="610" y="98" font-size="10" fill="#586876" text-anchor="end">1.5 mm</text>
+      <!-- stiffness bar -->
+      <text x="30" y="150" font-size="11" font-weight="700" fill="#586876">effective bulk modulus B&#8091;</text>
+      <rect x="30" y="162" width="580" height="26" rx="6" fill="#EEF2F5" stroke="#D3DDE6"/>
+      <rect id="beBar" x="30" y="162" width="0" height="26" rx="6" fill="#0E7E8C"/>
+      <text x="30" y="206" font-size="10" fill="#586876">0</text>
+      <text x="610" y="206" font-size="10" fill="#586876" text-anchor="end">1.8 GPa (clean)</text>
+    </svg>
+
+    <div class="ctl">
+      <label>Entrained air <span class="v"><span id="airOut">0.0</span> %</span></label>
+      <input id="airRange" type="range" min="0" max="2" step="0.05" value="0"/>
+    </div>
+    <div class="out">
+      <div class="tile"><div class="k">Effective B&#8091;</div><div class="v"><span id="beOut">1.80</span> GPa</div></div>
+      <div class="tile"><div class="k">Stiffness k</div><div class="v"><span id="kOut">5.9</span> MN/m</div></div>
+      <div class="tile sag"><div class="k">Sag (2 kN)</div><div class="v"><span id="sagOut">0.34</span> mm</div></div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+</div>
+
+<script>
+  const B_oil=1.8e9, p=100e5, A=Math.PI/4*0.05*0.05, L=0.6, dF=2000;
+  const $=id=>document.getElementById(id);
+  const Be=x=>1.0/((1-x)/B_oil + x/p);
+  function render(){
+    const x=+$('airRange').value/100, be=Be(x), k=be*A/L, sag=dF/k*1000;
+    $('airOut').textContent=(x*100).toFixed(1);
+    $('beOut').textContent=(be/1e9).toFixed(2);
+    $('kOut').textContent=(k/1e6).toFixed(1);
+    $('sagOut').textContent=sag.toFixed(2);
+    $('sagBar').setAttribute('width', Math.min(580, 580*sag/1.5).toFixed(1));
+    $('sagBar').setAttribute('fill', sag>1?'#C2463B':'#1FB6AE');
+    $('beBar').setAttribute('width', (580*be/1.8e9).toFixed(1));
+    const v=$('verdict');
+    if(sag<=1){ v.className='verdict'; v.innerHTML=`Air ${(x*100).toFixed(1)}%: B\u2091 = <b>${(be/1e9).toFixed(2)} GPa</b>, sag <b>${sag.toFixed(2)} mm</b> \u2014 inside ±1 mm. ${x===0?'Clean oil is a stiff 5.9 MN/m spring.':'Still holding, but the spring is softening.'}`; }
+    else { v.className='verdict bad'; v.innerHTML=`Air ${(x*100).toFixed(1)}%: B\u2091 = <b>${(be/1e9).toFixed(2)} GPa</b>, sag <b>${sag.toFixed(2)} mm</b> \u2014 <b>past ±1 mm</b>. The fluid is too soft to hold the load; get the air out.`; }
+  }
+  $('airRange').addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>

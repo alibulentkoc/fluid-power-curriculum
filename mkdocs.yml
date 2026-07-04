@@ -63,3 +63,4 @@ nav:
       - Overview: module03/index.md
       - "01 · The working fluid": module03/01_the_working_fluid.md
       - "02 · Viscosity": module03/02_viscosity.md
+      - "03 · Bulk modulus": module03/03_bulk_modulus.md

@@ -1,0 +1,32 @@
+<svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="The trapped oil column under the piston drawn as a spring, comparing clean oil and aerated oil against a shared target-height line. Left panel: clean oil at 1.8 gigapascals is a short stiff spring; under the load and a disturbance the piston and two-tonne load barely move, about 0.34 millimetres, inside the plus or minus one millimetre tolerance (a green tick). Right panel: oil with about 1.5 percent entrained air has an effective bulk modulus near 0.49 gigapascals, drawn as a longer, looser, soft spring; the same load and disturbance sag the load about 1.25 millimetres, below the tolerance (a red cross). The takeaway: keep the oil stiff by keeping air out.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="sa" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#586876"/></marker></defs>
+<rect x="0" y="0" width="900" height="500" rx="20" fill="url(#bg)"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#0C2235">The trapped oil is a spring — keep it stiff</text>
+<text x="40" y="68" font-size="14" fill="#586876">Clean oil is a stiff spring; a whisper of entrained air makes it soft, and the ±1&#8201;mm hold is lost.</text>
+<line x1="50" y1="150" x2="370" y2="150" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="54" y="144" font-size="10.5" fill="#586876">target height</text>
+<rect x="95" y="120" width="150" height="330" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+<rect x="99" y="176" width="142" height="274" fill="#1FB6AE" opacity="0.13"/>
+<polyline points="170.0,176.0 188.0,187.2 152.0,198.3 188.0,209.5 152.0,220.7 188.0,231.8 152.0,243.0 188.0,254.2 152.0,265.3 188.0,276.5 152.0,287.7 188.0,298.8 152.0,310.0 188.0,321.2 152.0,332.3 188.0,343.5 152.0,354.7 188.0,365.8 152.0,377.0 188.0,388.2 152.0,399.3 188.0,410.5 152.0,421.7 188.0,432.8 170.0,444.0" fill="none" stroke="#0E7E8C" stroke-width="2.4"/>
+<rect x="99" y="160" width="142" height="16" fill="#1B3A55"/>
+<rect x="161" y="88" width="18" height="72" fill="#5B6B79"/>
+<rect x="124" y="62" width="92" height="26" rx="4" fill="#DD841A"/>
+<text x="170" y="81" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+<line x1="265" y1="150" x2="265" y2="62" stroke="#0E7E8C" stroke-width="1.8" marker-end="url(#sa)"/>
+<text x="272" y="110" font-size="12" font-weight="700" fill="#0E7E8C">0.34 mm  ✓</text>
+<text x="170" y="476" font-size="13" font-weight="700" fill="#1B3A55" text-anchor="middle">clean oil · B = 1.8 GPa</text>
+<text x="170" y="493" font-size="11" fill="#586876" text-anchor="middle">stiff spring — 0.56% squeeze at 100 bar</text>
+<line x1="480" y1="150" x2="800" y2="150" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="484" y="144" font-size="10.5" fill="#586876">target height</text>
+<rect x="525" y="120" width="150" height="330" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+<rect x="529" y="224" width="142" height="226" fill="#1FB6AE" opacity="0.13"/>
+<polyline points="600.0,224.0 634.0,246.0 566.0,268.0 634.0,290.0 566.0,312.0 634.0,334.0 566.0,356.0 634.0,378.0 566.0,400.0 634.0,422.0 600.0,444.0" fill="none" stroke="#0E7E8C" stroke-width="2.4"/>
+<rect x="529" y="208" width="142" height="16" fill="#1B3A55"/>
+<rect x="591" y="136" width="18" height="72" fill="#5B6B79"/>
+<rect x="554" y="110" width="92" height="26" rx="4" fill="#DD841A"/>
+<text x="600" y="129" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+<line x1="695" y1="150" x2="695" y2="110" stroke="#C2463B" stroke-width="1.8" marker-end="url(#sa)"/>
+<text x="702" y="134" font-size="12" font-weight="700" fill="#C2463B">1.25 mm  ✗</text>
+<text x="600" y="476" font-size="13" font-weight="700" fill="#1B3A55" text-anchor="middle">~1.5% air · Bₑ ≈ 0.49 GPa</text>
+<text x="600" y="493" font-size="11" fill="#586876" text-anchor="middle">soft spring — sags past ±1 mm</text>
+</svg>
