@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Sizing the pump</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--green:#1B8A5A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .ctl{margin:14px 0 6px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .tile.flow .v{color:var(--amber)}
+  .note{margin-top:14px;font-size:13px;padding:10px 12px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Sizing the pump — displacement × speed = flow</h1>
+  <p class="sub">Delivered flow is <b>Q = D · n · η<sub>vol</sub></b>. Find the displacement and drive speed that land on the platform's <b>10 L/min</b> — and see the torque and shaft power the pump demands at 100 bar.</p>
+
+  <div class="card">
+    <svg id="viz" viewBox="0 0 640 130" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="26" font-size="11" font-weight="700" fill="#586876">delivered flow vs the 10 L/min target</text>
+      <rect x="20" y="40" width="600" height="30" rx="6" fill="#EEF2F5" stroke="#D3DDE6"/>
+      <rect id="flowBar" x="20" y="40" width="0" height="30" rx="6" fill="#DD841A"/>
+      <line id="tgt" x1="320" y1="34" x2="320" y2="76" stroke="#0E7E8C" stroke-width="2" stroke-dasharray="4 3"/>
+      <text x="320" y="90" font-size="10" font-weight="700" fill="#0B5A63" text-anchor="middle">10 L/min target</text>
+      <text id="flowTxt" x="28" y="60" font-size="13" font-weight="700" fill="#fff" font-family="'IBM Plex Mono',monospace"></text>
+    </svg>
+
+    <div class="ctl">
+      <label>Displacement <span class="v"><span id="dispOut">7.5</span> cm³/rev</span></label>
+      <input id="dispRange" type="range" min="2" max="20" step="0.5" value="7.5"/>
+    </div>
+    <div class="ctl">
+      <label>Drive speed <span class="v"><span id="rpmOut">1450</span> rpm</span></label>
+      <input id="rpmRange" type="range" min="500" max="3000" step="50" value="1450"/>
+    </div>
+    <div class="out">
+      <div class="tile flow"><div class="k">Delivered flow</div><div class="v"><span id="flowOut">10.0</span> L/min</div></div>
+      <div class="tile"><div class="k">Torque @ 100 bar</div><div class="v"><span id="torqueOut">12</span> N·m</div></div>
+      <div class="tile"><div class="k">Shaft power</div><div class="v"><span id="powerOut">1.85</span> kW</div></div>
+    </div>
+    <div class="note" id="note"></div>
+  </div>
+</div>
+
+<script>
+  const eta_vol=0.92, eta_pump=0.90, eta_mech=0.978, dp=100e5;   // 100 bar working
+  const $=id=>document.getElementById(id);
+  const FMAX=20;  // L/min for bar scaling
+  function render(){
+    const D=+$('dispRange').value, n=+$('rpmRange').value;
+    const Q=D*n*eta_vol/1000;                          // L/min
+    const Dsi=D*1e-6, T=Dsi*dp/(2*Math.PI*eta_mech);   // N.m
+    const Phyd=dp*(Q/60000), Pshaft=Phyd/eta_pump;     // W
+    $('dispOut').textContent=D.toFixed(1); $('rpmOut').textContent=n;
+    $('flowOut').textContent=Q.toFixed(1); $('torqueOut').textContent=Math.round(T); $('powerOut').textContent=(Pshaft/1000).toFixed(2);
+    $('flowBar').setAttribute('width',(600*Math.min(Q,FMAX)/FMAX).toFixed(1));
+    $('tgt').setAttribute('x1',20+600*10/FMAX); $('tgt').setAttribute('x2',20+600*10/FMAX);
+    $('flowTxt').textContent=Q.toFixed(1)+' L/min';
+    const onTarget=Math.abs(Q-10)<0.3;
+    $('note').innerHTML = onTarget
+      ? `<b>On target.</b> ${D.toFixed(1)} cm³/rev at ${n} rpm delivers ${Q.toFixed(1)} L/min — the platform's demand — needing <b>${Math.round(T)} N·m</b> and <b>${(Pshaft/1000).toFixed(2)} kW</b> at 100 bar. That power/torque is the motor's spec (Lesson 03).`
+      : Q>10 ? `${Q.toFixed(1)} L/min — more than needed. A bigger scoop or faster drive overshoots; trim the displacement toward 7.5 cm³/rev.`
+             : `${Q.toFixed(1)} L/min — short of 10. Increase displacement or speed. Torque depends only on displacement and pressure, not speed.`;
+  }
+  $('dispRange').addEventListener('input',render); $('rpmRange').addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>

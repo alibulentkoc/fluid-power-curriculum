@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Knowledge check · The pump</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal-soft:#ECFAF8;--green:#1B8A5A;--green-soft:#E7F6EE;--red:#C2463B;--red-soft:#FBECEA;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.55}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:13.5px;margin:0 0 8px}
+  .banner{font-size:12.5px;background:var(--teal-soft);color:var(--teal);border:1px solid #9FE0DA;border-radius:10px;padding:10px 14px;margin:0 0 22px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(12,34,53,.05)}
+  .q .num{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+  .q .stem{font-size:15px;font-weight:600;margin:6px 0 14px}
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:9px;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:600}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .fb{font-size:13px;margin-top:8px;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}.fb.ok{background:var(--green-soft);color:var(--green)}.fb.no{background:var(--red-soft);color:var(--red)}
+  .score{position:sticky;bottom:14px;background:#0C2235;color:#fff;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;box-shadow:0 4px 16px rgba(12,34,53,.25)}
+  .score b{font-size:18px}
+  .retry{background:none;border:1px solid #3a5670;color:#cfe0ec;font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .retry:hover{border-color:#7FD7D0;color:#7FD7D0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Knowledge check — The pump</h1>
+  <p class="sub">Module 05 · Lesson 02</p>
+  <p class="banner">Check your understanding — unlimited attempts, immediate feedback, not graded.</p>
+  <div id="quiz"></div>
+  <div class="score"><span>Answered <b id="done">0</b> / 5 &nbsp;·&nbsp; Correct <b id="right">0</b></span>
+    <button class="retry" id="retry">Start over</button></div>
+</div>
+<script>
+const QUESTIONS=[
+  {stem:"Does a pump make <b>pressure or flow</b>? Where does pressure come from?",
+   opts:["pressure directly","flow — pressure appears only when that flow meets resistance downstream","both equally","neither; the motor makes pressure"], correct:1,
+   why:"A pump moves a fixed volume per revolution — it makes flow. Pressure builds only when that flow is resisted by the load. A pump pushing into an open line makes almost no pressure."},
+  {stem:"What is a pump's <b>displacement</b>, and how does it set the flow?",
+   opts:["its physical weight","the volume of oil it moves per revolution — flow is displacement × speed","its pressure rating","its efficiency percentage"], correct:1,
+   why:"Displacement D is the fixed volume carried per revolution. Delivered flow is Q = D·n·η_vol — spin the same scoop faster for more flow."},
+  {stem:"Why does the pump need <b>~7.5 cm³/rev</b> rather than exactly 6.9 to make 10 L/min at 1450 rpm?",
+   opts:["rounding up","volumetric efficiency: internal leakage means you need a bit more displacement to actually deliver the target","the motor runs slow","higher pressure needs more displacement"], correct:1,
+   why:"The ideal D = Q/n = 6.9 cm³/rev, but ~8% leaks internally. Dividing by η_vol = 0.92 gives ~7.5 cm³/rev to deliver the full 10 L/min."},
+  {stem:"Why is a <b>fixed-displacement gear pump</b> a sensible choice for this platform?",
+   opts:["it is the most efficient pump possible","100 bar is well within its range and the platform runs most of the time, so it is economical and robust","it varies its flow automatically","it is the quietest option"], correct:1,
+   why:"Gear pumps are cheap and robust to ~250 bar. At the platform's moderate 100 bar and mostly-moving duty, a variable piston pump's cost buys efficiency the duty never cashes in."},
+  {stem:"What happens to the pump's flow when the platform is <b>just holding</b> position and needs none?",
+   opts:["the pump stops turning","it still delivers its full flow, which escapes over the relief valve","the flow reverses direction","the pressure drops to zero"], correct:1,
+   why:"A fixed-displacement pump delivers its full flow whenever it spins. With nowhere else to go, that oil passes over the relief valve — becoming heat, as Lessons 04 and 05 handle."}
+];
+const quiz=document.getElementById('quiz'),doneEl=document.getElementById('done'),rightEl=document.getElementById('right');
+let answered,correctCount;
+function render(){
+  answered=new Array(QUESTIONS.length).fill(false);correctCount=0;doneEl.textContent='0';rightEl.textContent='0';quiz.innerHTML='';
+  QUESTIONS.forEach((q,qi)=>{const card=document.createElement('div');card.className='q';
+    card.innerHTML=`<div class="num">Question ${qi+1}</div><div class="stem">${q.stem}</div>`;
+    q.opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
+    const fb=document.createElement('div');fb.className='fb';card.appendChild(fb);quiz.appendChild(card);});
+}
+function choose(qi,oi,card,q){
+  if(answered[qi])return;answered[qi]=true;
+  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});
+  const fb=card.querySelector('.fb');
+  if(oi===q.correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
+  else{btns[oi].classList.add('wrong');fb.className='fb show no';fb.innerHTML='Not quite. '+q.why;}
+  doneEl.textContent=answered.filter(Boolean).length;rightEl.textContent=correctCount;
+}
+document.getElementById('retry').onclick=render;render();
+</script>
+</body>
+</html>

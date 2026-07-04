@@ -1,0 +1,33 @@
+<svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Left: an external gear pump. Two meshing toothed gears in a housing carry oil trapped in the tooth gaps from the inlet at the bottom around the outside to the outlet at the top, displacing a fixed 7.5 cubic centimetres per revolution; at 1450 rpm and 92 percent volumetric efficiency that is 10 litres per minute. Right: a comparison of pump types by pressure ceiling — gear to about 250 bar, cheap and robust with some ripple; vane to about 175 bar, quiet; piston to about 350 bar, most efficient and available as variable displacement but costliest. A line at the platform 100 bar operating point shows it sits comfortably within gear-pump territory, which is the chosen type.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="am" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker></defs>
+<rect x="0" y="0" width="900" height="470" rx="20" fill="url(#bg)"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#0C2235">A fixed scoop of oil, every revolution</text>
+<text x="40" y="68" font-size="14" fill="#586876">The pump makes flow — displacement × speed. For 100 bar and 10 L/min, a gear pump is the economical fit.</text>
+<text x="60" y="116" font-size="12" font-weight="700" letter-spacing="1" fill="#0E7E8C">EXTERNAL GEAR PUMP</text>
+<rect x="70" y="140" width="300" height="190" rx="14" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+<circle cx="180" cy="235" r="48" fill="#9FB6C2" stroke="#1B3A55" stroke-width="2"/><rect x="233.0" y="231.0" width="8" height="8" fill="#7C93A1" transform="rotate(0 237.0 235.0)"/><rect x="222.1" y="264.5" width="8" height="8" fill="#7C93A1" transform="rotate(36 226.1 268.5)"/><rect x="193.6" y="285.2" width="8" height="8" fill="#7C93A1" transform="rotate(72 197.6 289.2)"/><rect x="158.4" y="285.2" width="8" height="8" fill="#7C93A1" transform="rotate(108 162.4 289.2)"/><rect x="129.9" y="264.5" width="8" height="8" fill="#7C93A1" transform="rotate(144 133.9 268.5)"/><rect x="119.0" y="231.0" width="8" height="8" fill="#7C93A1" transform="rotate(180 123.0 235.0)"/><rect x="129.9" y="197.5" width="8" height="8" fill="#7C93A1" transform="rotate(216 133.9 201.5)"/><rect x="158.4" y="176.8" width="8" height="8" fill="#7C93A1" transform="rotate(252 162.4 180.8)"/><rect x="193.6" y="176.8" width="8" height="8" fill="#7C93A1" transform="rotate(288 197.6 180.8)"/><rect x="222.1" y="197.5" width="8" height="8" fill="#7C93A1" transform="rotate(324 226.1 201.5)"/><circle cx="180" cy="235" r="6" fill="#1B3A55"/>
+<circle cx="268" cy="235" r="48" fill="#9FB6C2" stroke="#1B3A55" stroke-width="2"/><rect x="318.2" y="248.6" width="8" height="8" fill="#7C93A1" transform="rotate(18 322.2 252.6)"/><rect x="297.5" y="277.1" width="8" height="8" fill="#7C93A1" transform="rotate(54 301.5 281.1)"/><rect x="264.0" y="288.0" width="8" height="8" fill="#7C93A1" transform="rotate(90 268.0 292.0)"/><rect x="230.5" y="277.1" width="8" height="8" fill="#7C93A1" transform="rotate(126 234.5 281.1)"/><rect x="209.8" y="248.6" width="8" height="8" fill="#7C93A1" transform="rotate(162 213.8 252.6)"/><rect x="209.8" y="213.4" width="8" height="8" fill="#7C93A1" transform="rotate(198 213.8 217.4)"/><rect x="230.5" y="184.9" width="8" height="8" fill="#7C93A1" transform="rotate(234 234.5 188.9)"/><rect x="264.0" y="174.0" width="8" height="8" fill="#7C93A1" transform="rotate(270 268.0 178.0)"/><rect x="297.5" y="184.9" width="8" height="8" fill="#7C93A1" transform="rotate(306 301.5 188.9)"/><rect x="318.2" y="213.4" width="8" height="8" fill="#7C93A1" transform="rotate(342 322.2 217.4)"/><circle cx="268" cy="235" r="6" fill="#1B3A55"/>
+<line x1="150" y1="360" x2="150" y2="300" stroke="#0E7E8C" stroke-width="6" marker-end="url(#am)"/>
+<text x="150" y="378" font-size="11" font-weight="700" fill="#0B5A63" text-anchor="middle">inlet (suction)</text>
+<line x1="300" y1="180" x2="300" y2="120" stroke="#0E7E8C" stroke-width="6" marker-end="url(#am)"/>
+<text x="300" y="116" font-size="11" font-weight="700" fill="#0B5A63" text-anchor="middle">outlet (flow)</text>
+<text x="224" y="352" font-size="10" fill="#586876" text-anchor="middle">oil carried in tooth gaps around the outside</text>
+<rect x="70" y="392" width="300" height="34" rx="8" fill="#13314A"/>
+<text x="220" y="414" font-size="12.5" font-weight="700" fill="#7FD7D0" text-anchor="middle" font-family="'IBM Plex Mono',monospace">7.5 cc/rev × 1450 rpm × 92% = 10 L/min</text>
+<text x="470" y="116" font-size="12" font-weight="700" letter-spacing="1" fill="#0E7E8C">CHOOSING THE TYPE (pressure ceiling)</text>
+<rect x="470" y="150" width="250.0" height="30" rx="5" fill="#1FB6AE" stroke="#0C6A5F" stroke-width="2.5"/>
+<text x="478" y="170" font-size="12" font-weight="700" fill="#fff">GEAR</text>
+<text x="728" y="163" font-size="10.5" font-weight="700" fill="#1B3A55">250 bar</text>
+<text x="728" y="176" font-size="9" fill="#8AA0AE">cheap · robust · some ripple  ✓ chosen</text>
+<rect x="470" y="215" width="175.0" height="30" rx="5" fill="#5EA9C9"/>
+<text x="478" y="235" font-size="12" font-weight="700" fill="#fff">VANE</text>
+<text x="653" y="228" font-size="10.5" font-weight="700" fill="#1B3A55">175 bar</text>
+<text x="653" y="241" font-size="9" fill="#8AA0AE">quiet · moderate pressure</text>
+<rect x="470" y="280" width="350.0" height="30" rx="5" fill="#8FB0C4"/>
+<text x="478" y="300" font-size="12" font-weight="700" fill="#fff">PISTON</text>
+<text x="828" y="293" font-size="10.5" font-weight="700" fill="#1B3A55">350 bar</text>
+<text x="828" y="306" font-size="9" fill="#8AA0AE">efficient · variable · costly</text>
+<line x1="570.0" y1="140" x2="570.0" y2="330" stroke="#DD841A" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="570.0" y="352" font-size="11" font-weight="700" fill="#B5670F" text-anchor="middle">platform 100 bar</text>
+<text x="470" y="392" font-size="11.5" fill="#586876">The 100 bar / 10 L/min duty sits well inside gear-pump territory — no need to pay for a piston pump.</text>
+</svg>
