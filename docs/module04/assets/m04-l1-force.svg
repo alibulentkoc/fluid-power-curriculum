@@ -1,0 +1,34 @@
+<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="The cylinder shown extending and retracting. Top: extending, fluid at 100 bar fills the cap side and pushes on the full 50 mm bore, area 1963.5 square millimetres, giving 19.6 kilonewtons to the right, lifting the load. Bottom: retracting, fluid fills the rod side and pushes only on the annulus, the bore minus the 28 mm rod, area 1347.7 square millimetres, giving 13.5 kilonewtons to the left. On the right two cross-sections show the full bore circle for extend and the annulus ring for retract, with the rod circle of 615.8 square millimetres removed. The area ratio is 1.457.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="fbig" viewBox="0 0 12 12" refX="7" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,1 L11,6 L0,11 z" fill="#0E7E8C"/></marker><marker id="fbig2" viewBox="0 0 12 12" refX="7" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,1 L11,6 L0,11 z" fill="#DD841A"/></marker></defs>
+<rect x="0" y="0" width="900" height="520" rx="20" fill="url(#bg)"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#0C2235">The rod makes two forces, not one</text>
+<text x="40" y="68" font-size="14" fill="#586876">Same 100 bar — full bore extending, only the annulus retracting.</text>
+<rect x="620" y="86" width="240" height="30" rx="8" fill="#13314A"/>
+<text x="740" y="106" font-size="13.5" font-weight="700" fill="#7FD7D0" text-anchor="middle">A_b / A_r = 1.457</text>
+<rect x="60" y="150" width="300" height="72" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+<rect x="64" y="154" width="146" height="64" fill="#1FB6AE" opacity="0.30"/>
+<rect x="210" y="154" width="14" height="64" fill="#1B3A55"/>
+<rect x="224" y="178.0" width="206" height="16" fill="#5B6B79"/>
+<rect x="418" y="164.0" width="34" height="44" rx="4" fill="#DD841A"/>
+<line x1="170" y1="186.0" x2="204" y2="186.0" stroke="#0E7E8C" stroke-width="5" marker-end="url(#fbig)"/>
+<text x="60" y="142" font-size="13" font-weight="700" fill="#1B3A55">EXTEND — pushes on the full bore</text>
+<text x="370" y="244" font-size="11.5" fill="#586876" text-anchor="end">A_b = 1963.5 mm²</text>
+<text x="166" y="176.0" font-size="13" font-weight="700" fill="#0B5A63" text-anchor="middle">19.6 kN</text>
+<rect x="60" y="330" width="300" height="72" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.5"/>
+<rect x="224" y="334" width="132" height="64" fill="#1FB6AE" opacity="0.30"/>
+<rect x="210" y="334" width="14" height="64" fill="#1B3A55"/>
+<rect x="224" y="358.0" width="206" height="16" fill="#5B6B79"/>
+<rect x="418" y="344.0" width="34" height="44" rx="4" fill="#DD841A"/>
+<line x1="266" y1="366.0" x2="230" y2="366.0" stroke="#DD841A" stroke-width="5" marker-end="url(#fbig2)"/>
+<text x="60" y="322" font-size="13" font-weight="700" fill="#1B3A55">RETRACT — pushes on the annulus</text>
+<text x="370" y="424" font-size="11.5" fill="#586876" text-anchor="end">A_r = 1347.7 mm² (rod removes 615.8)</text>
+<text x="166" y="356.0" font-size="13" font-weight="700" fill="#B5670F" text-anchor="middle">13.5 kN</text>
+<circle cx="690" cy="190" r="52" fill="#1FB6AE" opacity="0.85" stroke="#0E7E8C" stroke-width="2"/>
+<text x="690" y="262" font-size="12" font-weight="700" fill="#1B3A55" text-anchor="middle">A_b = 1963.5 mm²</text>
+<text x="690" y="278" font-size="10.5" fill="#586876" text-anchor="middle">full bore · extend</text>
+<circle cx="690" cy="360" r="52" fill="#1FB6AE" opacity="0.85" stroke="#0E7E8C" stroke-width="2"/>
+<circle cx="690" cy="360" r="29.12" fill="#FFFFFF" stroke="#5B6B79" stroke-width="2"/>
+<text x="690" y="364" font-size="9.5" fill="#586876" text-anchor="middle">rod</text>
+<text x="690" y="432" font-size="12" font-weight="700" fill="#1B3A55" text-anchor="middle">A_r = 1347.7 mm²</text>
+<text x="690" y="448" font-size="10.5" fill="#586876" text-anchor="middle">annulus · retract</text>
+</svg>

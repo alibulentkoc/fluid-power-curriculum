@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Cylinder force — extend vs retract</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .seg{display:flex;gap:8px;margin:16px 0 6px}
+  .seg button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:14px;font-weight:600;padding:11px;border-radius:10px;cursor:pointer}
+  .seg button:hover{border-color:var(--teal)} .seg button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+  .ctl{margin:12px 0 4px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .tile.force .v{color:var(--amber)}
+  .note{font-size:12.5px;color:var(--slate);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cylinder force — extend vs retract</h1>
+  <p class="sub">Same pressure, two areas: the full bore extending, only the annulus retracting. <b>F = p · A</b>. Find 100 bar.</p>
+
+  <div class="card">
+    <svg id="viz" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+      <text x="320" y="26" font-size="11" font-weight="700" fill="#586876" text-anchor="middle" id="vizTitle">driven area — full bore (extend)</text>
+      <!-- cross-section circle -->
+      <circle id="bore" cx="120" cy="120" r="70" fill="#1FB6AE" opacity="0.85" stroke="#0E7E8C" stroke-width="2"/>
+      <circle id="rodHole" cx="120" cy="120" r="39.2" fill="#F2F6F9" stroke="#5B6B79" stroke-width="2" opacity="0"/>
+      <text x="120" y="205" font-size="11" fill="#586876" text-anchor="middle" id="areaLabel">A = 1963.5 mm²</text>
+      <!-- force bars: extend vs retract -->
+      <text x="250" y="66" font-size="11" font-weight="700" fill="#586876">force at this pressure</text>
+      <rect x="250" y="78" width="360" height="22" rx="5" fill="#EEF2F5" stroke="#D3DDE6"/>
+      <rect id="barExt" x="250" y="78" width="0" height="22" rx="5" fill="#0E7E8C"/>
+      <text x="255" y="94" font-size="10.5" font-weight="700" fill="#fff" id="labExt">extend</text>
+      <rect x="250" y="110" width="360" height="22" rx="5" fill="#EEF2F5" stroke="#D3DDE6"/>
+      <rect id="barRet" x="250" y="110" width="0" height="22" rx="5" fill="#DD841A"/>
+      <text x="255" y="126" font-size="10.5" font-weight="700" fill="#fff" id="labRet">retract</text>
+      <text x="250" y="164" font-size="11" fill="#586876">area ratio A_b/A_r = <tspan font-family="'IBM Plex Mono',monospace" font-weight="700" fill="#0C2235">1.457</tspan> (fixed)</text>
+      <text x="250" y="184" font-size="10.5" fill="#586876">the return stroke is always 1.457× weaker</text>
+    </svg>
+
+    <div class="seg">
+      <button id="bExtend" class="active">&#9654; Extend (full bore)</button>
+      <button id="bRetract">&#9664; Retract (annulus)</button>
+    </div>
+    <div class="ctl">
+      <label>Pressure <span class="v"><span id="pOut">100</span> bar</span></label>
+      <input id="pRange" type="range" min="0" max="160" step="5" value="100"/>
+    </div>
+    <div class="out">
+      <div class="tile"><div class="k">Driven area</div><div class="v"><span id="areaOut">1963.5</span> mm²</div></div>
+      <div class="tile force"><div class="k">Force</div><div class="v"><span id="forceOut">19.6</span> kN</div></div>
+      <div class="tile"><div class="k">Area ratio</div><div class="v" id="ratioOut">1.457</div></div>
+    </div>
+    <p class="note" id="note"></p>
+  </div>
+</div>
+
+<script>
+  const Ab=1963.5, Arod=615.8, Ar=Ab-Arod;      // mm^2
+  const $=id=>document.getElementById(id);
+  let extending=true;
+  const Fmax = 160e5 * (Ab/1e6) / 1000;          // kN at 160 bar, extend (bar scale)
+  function force(p_bar, A_mm2){ return p_bar*1e5 * (A_mm2/1e6) / 1000; }  // kN
+  function render(){
+    const p=+$('pRange').value;
+    const A = extending?Ab:Ar, F=force(p,A);
+    $('pOut').textContent=p; $('areaOut').textContent=A.toFixed(1); $('forceOut').textContent=F.toFixed(1);
+    $('ratioOut').textContent=(Ab/Ar).toFixed(3);
+    $('rodHole').setAttribute('opacity', extending?0:1);
+    $('vizTitle').textContent='driven area — '+(extending?'full bore (extend)':'annulus (retract)');
+    $('areaLabel').textContent='A = '+A.toFixed(1)+' mm²';
+    $('barExt').setAttribute('width',(360*force(p,Ab)/Fmax).toFixed(1));
+    $('barRet').setAttribute('width',(360*force(p,Ar)/Fmax).toFixed(1));
+    $('labExt').textContent='extend '+force(p,Ab).toFixed(1)+' kN';
+    $('labRet').textContent='retract '+force(p,Ar).toFixed(1)+' kN';
+    if(p===100 && extending) $('note').innerHTML='At 100 bar the extend force is <b>19.6 kN</b> — exactly the 19.6 kN load. That is how the 50 mm bore was chosen.';
+    else if(p===100) $('note').innerHTML='At 100 bar the retract force is <b>13.5 kN</b> — weaker, because the rod removes 615.8 mm² of area. Fine for lowering, which gravity helps.';
+    else $('note').innerHTML='F = p · A. Same pressure gives more force on the full bore than on the annulus.';
+  }
+  $('bExtend').onclick=()=>{extending=true;$('bExtend').classList.add('active');$('bRetract').classList.remove('active');render();};
+  $('bRetract').onclick=()=>{extending=false;$('bRetract').classList.add('active');$('bExtend').classList.remove('active');render();};
+  $('pRange').addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>

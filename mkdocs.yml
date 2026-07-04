@@ -65,3 +65,6 @@ nav:
       - "02 · Viscosity": module03/02_viscosity.md
       - "03 · Bulk modulus": module03/03_bulk_modulus.md
       - "04 · Fluid cleanliness": module03/04_fluid_cleanliness.md
+  - "Module 04 — Actuators":
+      - Overview: module04/index.md
+      - "01 · Force from pressure": module04/01_force_from_pressure.md

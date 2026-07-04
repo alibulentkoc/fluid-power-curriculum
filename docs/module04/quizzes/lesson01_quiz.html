@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Knowledge check · Force from pressure</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal-soft:#ECFAF8;--green:#1B8A5A;--green-soft:#E7F6EE;--red:#C2463B;--red-soft:#FBECEA;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.55}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:13.5px;margin:0 0 8px}
+  .banner{font-size:12.5px;background:var(--teal-soft);color:var(--teal);border:1px solid #9FE0DA;border-radius:10px;padding:10px 14px;margin:0 0 22px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(12,34,53,.05)}
+  .q .num{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+  .q .stem{font-size:15px;font-weight:600;margin:6px 0 14px}
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:9px;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:600}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .fb{font-size:13px;margin-top:8px;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}.fb.ok{background:var(--green-soft);color:var(--green)}.fb.no{background:var(--red-soft);color:var(--red)}
+  .score{position:sticky;bottom:14px;background:#0C2235;color:#fff;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;box-shadow:0 4px 16px rgba(12,34,53,.25)}
+  .score b{font-size:18px}
+  .retry{background:none;border:1px solid #3a5670;color:#cfe0ec;font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .retry:hover{border-color:#7FD7D0;color:#7FD7D0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Knowledge check — Force from pressure</h1>
+  <p class="sub">Module 04 · Lesson 01</p>
+  <p class="banner">Check your understanding — unlimited attempts, immediate feedback, not graded.</p>
+  <div id="quiz"></div>
+  <div class="score"><span>Answered <b id="done">0</b> / 5 &nbsp;·&nbsp; Correct <b id="right">0</b></span>
+    <button class="retry" id="retry">Start over</button></div>
+</div>
+<script>
+const QUESTIONS=[
+  {stem:"Which stroke — <b>extend or retract</b> — gives the larger force, and why?",
+   opts:["retract, because the rod adds working area","extend, because the full bore area is larger than the annulus","they are equal at the same pressure","it depends only on the pressure"], correct:1,
+   why:"Extend drives on the full bore area (1963.5 mm²); retract drives on the annulus (1347.7 mm²), which is smaller because the rod removes area. Same pressure, larger area — larger force extending."},
+  {stem:"What is the <b>annulus</b> area, and why is it smaller than the bore?",
+   opts:["the rod’s cross-section; it is larger than the bore","the bore area minus the rod’s cross-section — the rod takes up working area on the rod side","the same as the bore area","the area of the rod’s tip only"], correct:1,
+   why:"On the rod side the piston area is the bore minus the rod: A_r = A_b − A_rod = 1963.5 − 615.8 = 1347.7 mm². The rod occupies area that cannot be pressurised."},
+  {stem:"At 100 bar the cylinder gives <b>19.6 kN</b> extending. Why is that significant for this platform?",
+   opts:["it is the most the pump can produce","it equals the 19.6 kN (two-tonne) load — the 50 mm bore was sized so 100 bar just lifts it","it is the relief-valve setting","it is a coincidence"], correct:1,
+   why:"The bore was chosen in Module 02 precisely so that 100 bar on the full bore area produces the 19.6 kN needed to lift two tonnes. The force lands on the load by design."},
+  {stem:"The retract force is <b>13.5 kN</b> — why is a weaker return stroke acceptable here?",
+   opts:["it is not — it is a design flaw","retracting only lowers the load, and gravity already helps","the retract stroke is never used","the pressure is higher on retract"], correct:1,
+   why:"Extending must lift the full load; retracting lowers it, and gravity assists. So the smaller annulus force on retract is not a problem for this platform."},
+  {stem:"What does the <b>area ratio (1.457)</b> tell you in one number?",
+   opts:["the pump’s efficiency","how much weaker — and, next lesson, how much faster — the retract stroke is than extend","the oil’s viscosity","the stroke length"], correct:1,
+   why:"A_b/A_r = 1.457 fixes the asymmetry: retract force is 1.457× smaller than extend, and (Lesson 02) retract speed is 1.457× faster for the same flow."}
+];
+const quiz=document.getElementById('quiz'),doneEl=document.getElementById('done'),rightEl=document.getElementById('right');
+let answered,correctCount;
+function render(){
+  answered=new Array(QUESTIONS.length).fill(false);correctCount=0;doneEl.textContent='0';rightEl.textContent='0';quiz.innerHTML='';
+  QUESTIONS.forEach((q,qi)=>{const card=document.createElement('div');card.className='q';
+    card.innerHTML=`<div class="num">Question ${qi+1}</div><div class="stem">${q.stem}</div>`;
+    q.opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
+    const fb=document.createElement('div');fb.className='fb';card.appendChild(fb);quiz.appendChild(card);});
+}
+function choose(qi,oi,card,q){
+  if(answered[qi])return;answered[qi]=true;
+  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});
+  const fb=card.querySelector('.fb');
+  if(oi===q.correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
+  else{btns[oi].classList.add('wrong');fb.className='fb show no';fb.innerHTML='Not quite. '+q.why;}
+  doneEl.textContent=answered.filter(Boolean).length;rightEl.textContent=correctCount;
+}
+document.getElementById('retry').onclick=render;render();
+</script>
+</body>
+</html>
