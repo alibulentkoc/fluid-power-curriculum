@@ -1,0 +1,35 @@
+<svg viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Left: a spool-in-bore cutaway of a 4/3 directional valve. A spool with three lands slides in a body drilled with ports A and B on top and P and T on the bottom; solenoids at each end shift it and springs re-centre it. In the shown tandem centre, a groove links P to T so the pump unloads, while the lands block A and B so the load is held. Right: a comparison of hold heat by centre type. A closed centre deadheads the pump over the 115 bar relief, dumping about 1.9 kilowatts as a tall red bar; a tandem centre unloads the pump to tank across only a few bar, dumping about 0.08 kilowatts as a tiny bar — roughly 23 times less heat while holding.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="tm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker></defs>
+<rect x="0" y="0" width="900" height="460" rx="20" fill="url(#bg)"/>
+<text x="40" y="42" font-size="23" font-weight="700" fill="#0C2235">The spool — and the centre that saves the heat</text>
+<text x="40" y="64" font-size="13.5" fill="#586876">A tandem centre holds the load and unloads the pump, nearly erasing Module 05’s hold heat.</text>
+<text x="60" y="108" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C">SPOOL IN BORE — tandem centre</text>
+<rect x="110" y="190" width="310" height="54" rx="6" fill="#EEF2F5" stroke="#1B3A55" stroke-width="2"/>
+<line x1="110" y1="217.0" x2="420" y2="217.0" stroke="#9FB6C2" stroke-width="6"/>
+<rect x="136" y="194" width="28" height="46" rx="2" fill="#5B6B79" stroke="#1B3A55"/>
+<rect x="221" y="194" width="28" height="46" rx="2" fill="#5B6B79" stroke="#1B3A55"/>
+<rect x="346" y="194" width="28" height="46" rx="2" fill="#5B6B79" stroke="#1B3A55"/>
+<text x="192" y="184" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">A</text><line x1="192" y1="188" x2="192" y2="190" stroke="#1B3A55"/>
+<text x="318" y="184" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">B</text>
+<text x="255" y="184" font-size="9" fill="#9A2f27" text-anchor="middle">A, B blocked by lands</text>
+<text x="200" y="260" font-size="10.5" font-weight="700" fill="#0B5A63" text-anchor="middle">P</text>
+<text x="300" y="260" font-size="10.5" font-weight="700" fill="#586876" text-anchor="middle">T</text>
+<line x1="200" y1="244" x2="200" y2="250" stroke="#0E7E8C" stroke-width="3"/>
+<path d="M200,238 Q255,222 300,238" fill="none" stroke="#0E7E8C" stroke-width="3" marker-end="url(#tm)"/>
+<text x="255" y="218" font-size="9.5" font-weight="700" fill="#0B5A63" text-anchor="middle">P → T (pump unloaded)</text>
+<rect x="68" y="198" width="34" height="38" rx="3" fill="#13314A"/><text x="85" y="221.0" font-size="8" fill="#7FD7D0" text-anchor="middle">SOL</text>
+<rect x="428" y="198" width="34" height="38" rx="3" fill="#13314A"/><text x="445" y="221.0" font-size="8" fill="#7FD7D0" text-anchor="middle">SOL</text>
+<text x="255" y="278" font-size="10" fill="#586876" text-anchor="middle">solenoids shift · springs re-centre (fail-safe)</text>
+<text x="510" y="108" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C">HOLD HEAT BY CENTRE</text>
+<line x1="530" y1="340" x2="800" y2="340" stroke="#1B3A55" stroke-width="1.5"/>
+<rect x="560" y="71" width="70" height="269" rx="4" fill="#C2463B"/>
+<text x="595" y="63" font-size="14" font-weight="700" fill="#9A2f27" text-anchor="middle">1.9 kW</text>
+<text x="595" y="356" font-size="10.5" font-weight="700" fill="#586876" text-anchor="middle">closed</text>
+<text x="595" y="370" font-size="9" fill="#8AA0AE" text-anchor="middle">deadhead → relief</text>
+<rect x="700" y="328" width="70" height="12" rx="3" fill="#1FB6AE"/>
+<text x="735" y="320" font-size="14" font-weight="700" fill="#0B5A63" text-anchor="middle">0.08 kW</text>
+<text x="735" y="356" font-size="10.5" font-weight="700" fill="#586876" text-anchor="middle">tandem</text>
+<text x="735" y="370" font-size="9" fill="#8AA0AE" text-anchor="middle">unload → tank</text>
+<text x="665" y="111" font-size="16" font-weight="700" fill="#DD841A" text-anchor="middle">23× less</text>
+<text x="665" y="392" font-size="10.5" fill="#586876" text-anchor="middle">both hold the load; tandem also idles the pump</text>
+</svg>

@@ -82,3 +82,4 @@ nav:
   - "Module 06 — Valves & Control":
       - Overview: module06/index.md
       - "01 · What the valves must do": module06/01_what_the_valves_must_do.md
+      - "02 · The directional control valve": module06/02_the_directional_control_valve.md
