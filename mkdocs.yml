@@ -68,3 +68,4 @@ nav:
   - "Module 04 — Actuators":
       - Overview: module04/index.md
       - "01 · Force from pressure": module04/01_force_from_pressure.md
+      - "02 · Speed from flow": module04/02_speed_from_flow.md

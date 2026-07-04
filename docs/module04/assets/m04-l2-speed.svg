@@ -1,0 +1,30 @@
+<svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Cylinder speed from the same 10 litres per minute. Top row, extend: the flow fills the full bore, so the piston moves at about 85 millimetres per second behind the strong 19.6 kilonewton push — strong and slow, shown as a shorter speed bar. Bottom row, retract: the same flow fills the smaller annulus, so the piston moves faster, about 124 millimetres per second, behind the weaker 13.5 kilonewton force — weak and fast, shown as a longer speed bar. The speed ratio equals the area ratio, 1.457. A badge shows force times speed equals pressure times flow, about 1.67 kilowatts, for both strokes, so the power is conserved.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="ar" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker><marker id="arA" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#DD841A"/></marker></defs>
+<rect x="0" y="0" width="900" height="470" rx="20" fill="url(#bg)"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#0C2235">Same flow, two speeds — and the same power</text>
+<text x="40" y="68" font-size="14" fill="#586876">10 L/min fills the full bore slowly, the annulus fast. Area helps force and hurts speed, in equal measure.</text>
+<rect x="48" y="128.0" width="150" height="44" rx="5" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/>
+<rect x="51" y="131.0" width="144" height="38" rx="3" fill="#1FB6AE" opacity="0.55"/>
+<line x1="88" y1="150" x2="182" y2="150" stroke="#0E7E8C" stroke-width="6" marker-end="url(#ar)"/>
+<text x="123.0" y="120.0" font-size="12.5" font-weight="700" fill="#1B3A55" text-anchor="middle">EXTEND — full bore</text>
+<text x="123.0" y="188.0" font-size="10.5" fill="#586876" text-anchor="middle">fills the wide bore → slower</text>
+<rect x="250" y="137" width="297.5" height="26" rx="5" fill="#0E7E8C"/>
+<text x="557.5" y="155" font-size="15" font-weight="700" fill="#0E7E8C" font-family="'IBM Plex Mono',monospace">85 mm/s</text>
+<text x="258" y="155" font-size="11" font-weight="700" fill="#FFFFFF">19.6 kN · strong</text>
+<rect x="48" y="233.0" width="150" height="44" rx="5" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/>
+<rect x="51" y="236.0" width="144" height="38" rx="3" fill="#1FB6AE" opacity="0.55"/>
+<rect x="51" y="249.0" width="144" height="12" fill="#F7F9FB"/>
+<line x1="158" y1="255" x2="64" y2="255" stroke="#DD841A" stroke-width="6" marker-end="url(#arA)"/>
+<text x="123.0" y="225.0" font-size="12.5" font-weight="700" fill="#1B3A55" text-anchor="middle">RETRACT — annulus</text>
+<text x="123.0" y="293.0" font-size="10.5" fill="#586876" text-anchor="middle">fills the narrow annulus → faster</text>
+<rect x="250" y="242" width="434.0" height="26" rx="5" fill="#DD841A"/>
+<text x="694.0" y="260" font-size="15" font-weight="700" fill="#DD841A" font-family="'IBM Plex Mono',monospace">124 mm/s</text>
+<text x="258" y="260" font-size="11" font-weight="700" fill="#FFFFFF">13.5 kN · weak</text>
+<rect x="250" y="330" width="300" height="46" rx="10" fill="#13314A"/>
+<text x="270" y="351" font-size="11" font-weight="700" letter-spacing=".5" fill="#7FD7D0">SPEED RATIO = AREA RATIO</text>
+<text x="270" y="369" font-size="13" fill="#fff" font-family="'IBM Plex Mono',monospace">v_ret / v_ext = A_b / A_r = 1.457</text>
+<rect x="570" y="330" width="290" height="46" rx="10" fill="#0C6A5F"/>
+<text x="590" y="351" font-size="11" font-weight="700" letter-spacing=".5" fill="#9DEBE2">POWER IS CONSERVED</text>
+<text x="590" y="369" font-size="13" fill="#fff" font-family="'IBM Plex Mono',monospace">F · v = p · Q ≈ 1.67 kW  (both)</text>
+<text x="250" y="410" font-size="11.5" fill="#586876">The rod trades force for speed — the full bore is strong &amp; slow, the annulus weak &amp; fast, at the same 1.67 kW.</text>
+</svg>
