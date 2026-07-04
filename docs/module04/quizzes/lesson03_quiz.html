@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Knowledge check · Friction and the usable force</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal-soft:#ECFAF8;--green:#1B8A5A;--green-soft:#E7F6EE;--red:#C2463B;--red-soft:#FBECEA;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.55}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:13.5px;margin:0 0 8px}
+  .banner{font-size:12.5px;background:var(--teal-soft);color:var(--teal);border:1px solid #9FE0DA;border-radius:10px;padding:10px 14px;margin:0 0 22px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(12,34,53,.05)}
+  .q .num{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+  .q .stem{font-size:15px;font-weight:600;margin:6px 0 14px}
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:9px;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:600}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .fb{font-size:13px;margin-top:8px;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}.fb.ok{background:var(--green-soft);color:var(--green)}.fb.no{background:var(--red-soft);color:var(--red)}
+  .score{position:sticky;bottom:14px;background:#0C2235;color:#fff;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;box-shadow:0 4px 16px rgba(12,34,53,.25)}
+  .score b{font-size:18px}
+  .retry{background:none;border:1px solid #3a5670;color:#cfe0ec;font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .retry:hover{border-color:#7FD7D0;color:#7FD7D0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Knowledge check — Friction and the usable force</h1>
+  <p class="sub">Module 04 · Lesson 03</p>
+  <p class="banner">Check your understanding — unlimited attempts, immediate feedback, not graded.</p>
+  <div id="quiz"></div>
+  <div class="score"><span>Answered <b id="done">0</b> / 5 &nbsp;·&nbsp; Correct <b id="right">0</b></span>
+    <button class="retry" id="retry">Start over</button></div>
+</div>
+<script>
+const QUESTIONS=[
+  {stem:"What is <b>breakaway (static)</b> friction, and how does it compare to the friction once moving?",
+   opts:["the friction at top speed; it is lower","the higher force needed to start the piston — larger than the kinetic friction once it is sliding","the same at all speeds","the friction of the load only"], correct:1,
+   why:"Static (breakaway) friction is the force you must beat to start motion — here 120 N. Once moving, kinetic friction is lower (about 65–85 N), just like shoving a heavy box that eases once it slides."},
+  {stem:"The usable force is only ~0.4% below ideal. So <b>why does friction matter</b> so much here?",
+   opts:["it doesn’t, really","because friction is high and uneven at low speed, causing stick-slip that threatens the ±1 mm hold","because it doubles the force","because it changes the piston area"], correct:1,
+   why:"The force loss is tiny, but the friction is highest and roughest exactly at the crawl — where the platform eases into its final position — so it causes stick-slip and hurts precision."},
+  {stem:"In the friction model, which term <b>dominates at very low speed</b>, and which at high speed?",
+   opts:["viscous at low, Coulomb at high","the Stribeck/static term at low speed; the viscous term (b·v) at high speed","gravity; then inertia","they are always equal"], correct:1,
+   why:"Near zero speed the Stribeck exponential is ~1, raising friction toward the 120 N breakaway. At speed the exponential vanishes and the viscous term b·v grows, so friction rises again."},
+  {stem:"What is <b>stick-slip</b>, and when does the platform meet it?",
+   opts:["smooth gliding at speed","the piston sticks, pressure builds, then it jumps — met when easing slowly into the final position","a noise at high speed only","only when the cylinder is overloaded"], correct:1,
+   why:"At a crawl, static friction lets the piston stick; force builds until it breaks free and lurches. The platform meets it every time it inches to its target — the enemy of a clean ±1 mm stop."},
+  {stem:"Why does the cylinder need a little <b>pressure margin just to start</b> moving?",
+   opts:["to hold the load steady","to overcome the 120 N breakaway (static) friction before motion begins","to cool the oil","it does not — holding force is enough"], correct:1,
+   why:"A cylinder sized only to hold a load may lack the extra force to beat the 120 N breakaway and get moving. You must size for breakaway, not just steady state."}
+];
+const quiz=document.getElementById('quiz'),doneEl=document.getElementById('done'),rightEl=document.getElementById('right');
+let answered,correctCount;
+function render(){
+  answered=new Array(QUESTIONS.length).fill(false);correctCount=0;doneEl.textContent='0';rightEl.textContent='0';quiz.innerHTML='';
+  QUESTIONS.forEach((q,qi)=>{const card=document.createElement('div');card.className='q';
+    card.innerHTML=`<div class="num">Question ${qi+1}</div><div class="stem">${q.stem}</div>`;
+    q.opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
+    const fb=document.createElement('div');fb.className='fb';card.appendChild(fb);quiz.appendChild(card);});
+}
+function choose(qi,oi,card,q){
+  if(answered[qi])return;answered[qi]=true;
+  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});
+  const fb=card.querySelector('.fb');
+  if(oi===q.correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
+  else{btns[oi].classList.add('wrong');fb.className='fb show no';fb.innerHTML='Not quite. '+q.why;}
+  doneEl.textContent=answered.filter(Boolean).length;rightEl.textContent=correctCount;
+}
+document.getElementById('retry').onclick=render;render();
+</script>
+</body>
+</html>

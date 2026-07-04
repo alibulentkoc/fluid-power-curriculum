@@ -1,0 +1,32 @@
+<svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="A friction-versus-velocity Stribeck curve for the platform cylinder, with a usable-force side bar. Friction starts at the 120 newton breakaway at zero speed, dips to about 65 newtons near 22 millimetres per second, then rises along the viscous line. Marked points: breakaway 120 N at 0, slow approach 108 N at 5 mm/s, running 77 N at 85 mm/s, retract 85 N at 124 mm/s. The side bar shows the ideal 19.6 kilonewton force with a thin friction sliver of about 80 newtons removed, leaving a usable force of about 19.5 kilonewtons.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient></defs>
+<rect x="0" y="0" width="900" height="470" rx="20" fill="url(#bg)"/>
+<text x="40" y="44" font-size="24" font-weight="700" fill="#0C2235">Friction is worst where precision is needed</text>
+<text x="40" y="68" font-size="14" fill="#586876">High at breakaway, dipping as it moves, rising with speed — and only a sliver off the ideal force.</text>
+<line x1="95" y1="400" x2="600" y2="400" stroke="#1B3A55" stroke-width="2"/>
+<line x1="95" y1="400" x2="95" y2="95" stroke="#1B3A55" stroke-width="2"/>
+<line x1="91" y1="400.0" x2="95" y2="400.0" stroke="#1B3A55"/><text x="86" y="404.0" font-size="10.5" fill="#586876" text-anchor="end">0 N</text>
+<line x1="91" y1="259.2" x2="95" y2="259.2" stroke="#1B3A55"/><text x="86" y="263.2" font-size="10.5" fill="#586876" text-anchor="end">60 N</text>
+<line x1="91" y1="118.5" x2="95" y2="118.5" stroke="#1B3A55"/><text x="86" y="122.5" font-size="10.5" fill="#586876" text-anchor="end">120 N</text>
+<line x1="95.0" y1="400" x2="95.0" y2="404" stroke="#1B3A55"/><text x="95.0" y="418" font-size="10" fill="#586876" text-anchor="middle">0</text>
+<line x1="114.4" y1="400" x2="114.4" y2="404" stroke="#1B3A55"/><text x="114.4" y="418" font-size="10" fill="#586876" text-anchor="middle">5</text>
+<line x1="180.5" y1="400" x2="180.5" y2="404" stroke="#1B3A55"/><text x="180.5" y="418" font-size="10" fill="#586876" text-anchor="middle">22</text>
+<line x1="425.2" y1="400" x2="425.2" y2="404" stroke="#1B3A55"/><text x="425.2" y="418" font-size="10" fill="#586876" text-anchor="middle">85</text>
+<line x1="576.7" y1="400" x2="576.7" y2="404" stroke="#1B3A55"/><text x="576.7" y="418" font-size="10" fill="#586876" text-anchor="middle">124</text>
+<text x="348" y="438" font-size="12" font-weight="700" fill="#1B3A55" text-anchor="middle">piston speed (mm/s)</text>
+<text x="46" y="248" font-size="12" font-weight="700" fill="#1B3A55" text-anchor="middle" transform="rotate(-90 46 248)">friction (N)</text>
+<line x1="95" y1="259.2" x2="600" y2="259.2" stroke="#9FB6C2" stroke-width="1" stroke-dasharray="4 3"/><text x="596" y="254.2" font-size="9.5" fill="#8AA0AE" text-anchor="end">Coulomb floor 60 N</text>
+<polyline points="95.0,118.5 98.9,119.4 102.8,123.0 106.7,129.2 110.5,137.4 114.4,147.3 118.3,158.2 122.2,169.7 126.1,181.3 130.0,192.4 133.8,202.8 137.7,212.1 141.6,220.2 145.5,227.2 149.4,232.8 153.3,237.4 157.2,240.8 161.0,243.4 164.9,245.3 168.8,246.5 172.7,247.3 176.6,247.7 180.5,247.8 184.3,247.7 188.2,247.5 192.1,247.2 196.0,246.9 199.9,246.5 203.8,246.0 207.7,245.6 211.5,245.1 215.4,244.7 219.3,244.2 223.2,243.7 227.1,243.3 231.0,242.8 234.8,242.3 238.7,241.9 242.6,241.4 246.5,240.9 250.4,240.5 254.3,240.0 258.2,239.5 262.0,239.1 265.9,238.6 269.8,238.1 273.7,237.6 277.6,237.2 281.5,236.7 285.3,236.2 289.2,235.8 293.1,235.3 297.0,234.8 300.9,234.4 304.8,233.9 308.7,233.4 312.5,233.0 316.4,232.5 320.3,232.0 324.2,231.5 328.1,231.1 332.0,230.6 335.8,230.1 339.7,229.7 343.6,229.2 347.5,228.7 351.4,228.3 355.3,227.8 359.2,227.3 363.0,226.9 366.9,226.4 370.8,225.9 374.7,225.4 378.6,225.0 382.5,224.5 386.3,224.0 390.2,223.6 394.1,223.1 398.0,222.6 401.9,222.2 405.8,221.7 409.7,221.2 413.5,220.8 417.4,220.3 421.3,219.8 425.2,219.3 429.1,218.9 433.0,218.4 436.8,217.9 440.7,217.5 444.6,217.0 448.5,216.5 452.4,216.1 456.3,215.6 460.2,215.1 464.0,214.7 467.9,214.2 471.8,213.7 475.7,213.2 479.6,212.8 483.5,212.3 487.3,211.8 491.2,211.4 495.1,210.9 499.0,210.4 502.9,210.0 506.8,209.5 510.7,209.0 514.5,208.6 518.4,208.1 522.3,207.6 526.2,207.1 530.1,206.7 534.0,206.2 537.8,205.7 541.7,205.3 545.6,204.8 549.5,204.3 553.4,203.9 557.3,203.4 561.2,202.9 565.0,202.5 568.9,202.0 572.8,201.5 576.7,201.0 580.6,200.6 584.5,200.1 588.3,199.6 592.2,199.2 596.1,198.7 600.0,198.2" fill="none" stroke="#0E7E8C" stroke-width="3.2"/>
+<circle cx="95.0" cy="118.5" r="5" fill="#DD841A" stroke="#fff" stroke-width="1.5"/><text x="103.0" y="112.5" font-size="10.5" font-weight="700" fill="#0C2235">breakaway 120 N</text>
+<circle cx="114.4" cy="147.3" r="5" fill="#DD841A" stroke="#fff" stroke-width="1.5"/><text x="122.4" y="141.3" font-size="10.5" font-weight="700" fill="#0C2235">5 mm/s · 108 N</text>
+<circle cx="180.5" cy="247.7" r="5" fill="#DD841A" stroke="#fff" stroke-width="1.5"/><text x="186.5" y="263.7" font-size="10.5" font-weight="700" fill="#0C2235">dip ~65 N</text>
+<circle cx="425.2" cy="219.3" r="5" fill="#DD841A" stroke="#fff" stroke-width="1.5"/><text x="415.2" y="207.3" font-size="10.5" font-weight="700" fill="#0C2235">running 77 N</text>
+<circle cx="576.7" cy="201.0" r="5" fill="#DD841A" stroke="#fff" stroke-width="1.5"/><text x="476.7" y="191.0" font-size="10.5" font-weight="700" fill="#0C2235">retract 85 N</text>
+<text x="725" y="96" font-size="11" font-weight="700" fill="#0C2235" text-anchor="middle">usable force</text>
+<rect x="690" y="110" width="70" height="290" rx="6" fill="#1FB6AE" opacity="0.85"/>
+<rect x="690" y="110" width="70" height="16" fill="#C2463B"/>
+<text x="768" y="122" font-size="10" font-weight="700" fill="#9A2f27">friction ~80 N</text>
+<text x="768" y="134" font-size="9" fill="#9A2f27">(0.4%, shown large)</text>
+<text x="725" y="259" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" transform="rotate(-90 725 255)">usable ≈ 19.5 kN</text>
+<text x="725" y="418" font-size="10.5" fill="#586876" text-anchor="middle">ideal 19.6 kN</text>
+</svg>

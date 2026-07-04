@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Friction and the usable force</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--red:#C2463B;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .ctl{margin:16px 0 6px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:19px;font-weight:700;margin-top:3px}
+  .tile.fric .v{color:var(--red)} .tile.use .v{color:var(--teal)}
+  .note{margin-top:14px;font-size:13px;padding:10px 12px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2}
+  .comp{display:flex;gap:8px;margin-top:12px;font-size:11px;color:var(--slate);font-family:var(--mono);flex-wrap:wrap}
+  .comp span{background:#EEF2F5;border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Friction and the usable force</h1>
+  <p class="sub">Friction follows the <b>Stribeck curve</b>: 120 N at breakaway, dipping as the piston moves, rising with speed. The usable force is the ideal 19.6 kN minus this drag.</p>
+
+  <div class="card">
+    <svg id="chart" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif">
+      <line x1="60" y1="250" x2="610" y2="250" stroke="#1B3A55" stroke-width="1.6"/>
+      <line x1="60" y1="250" x2="60" y2="30" stroke="#1B3A55" stroke-width="1.6"/>
+      <g id="yt" font-size="9" fill="#586876"></g>
+      <g id="xt" font-size="9" fill="#586876"></g>
+      <text x="335" y="286" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">piston speed (mm/s)</text>
+      <text x="20" y="140" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle" transform="rotate(-90 20 140)">friction (N)</text>
+      <line x1="60" x2="610" id="coul" stroke="#9FB6C2" stroke-width="1" stroke-dasharray="4 3"/>
+      <polyline id="curve" fill="none" stroke="#0E7E8C" stroke-width="3"/>
+      <line id="vline" stroke="#B5670F" stroke-width="1.3" stroke-dasharray="3 3"/>
+      <circle id="dot" r="6" fill="#DD841A" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+
+    <div class="ctl">
+      <label>Piston speed <span class="v"><span id="velOut">85</span> mm/s</span></label>
+      <input id="velRange" type="range" min="0" max="130" step="1" value="85"/>
+    </div>
+    <div class="out">
+      <div class="tile fric"><div class="k">Friction now</div><div class="v"><span id="ffOut">77</span> N</div></div>
+      <div class="tile use"><div class="k">Usable force</div><div class="v"><span id="usableOut">19.52</span> kN</div></div>
+    </div>
+    <div class="comp">
+      <span>Coulomb 60 N</span><span>viscous b·v = <span id="viscOut">17</span> N</span><span>Stribeck <span id="stribOut">0</span> N</span>
+    </div>
+    <div class="note" id="note"></div>
+  </div>
+</div>
+
+<script>
+  const Fc=60,Fs=120,b=200,vs=0.010, Fideal=19600;
+  const PX0=60,PX1=610,PY0=250,PY1=30, VMAX=130, FMAX=130;
+  const $=id=>document.getElementById(id);
+  const xp=vmm=>PX0+(vmm/VMAX)*(PX1-PX0), yp=F=>PY0-(F/FMAX)*(PY0-PY1);
+  function Ff(v){ return Fc + b*v + (Fs-Fc)*Math.exp(-Math.pow(v/vs,2)); }  // v m/s
+  // static chart
+  let yt=''; [0,60,120].forEach(F=>{yt+=`<line x1="56" y1="${yp(F)}" x2="60" y2="${yp(F)}" stroke="#1B3A55"/><text x="52" y="${yp(F)+3}" text-anchor="end">${F}</text>`;}); $('yt').innerHTML=yt;
+  let xt=''; [0,20,40,60,85,124].forEach(v=>{xt+=`<line x1="${xp(v)}" y1="250" x2="${xp(v)}" y2="254" stroke="#1B3A55"/><text x="${xp(v)}" y="266" text-anchor="middle">${v}</text>`;}); $('xt').innerHTML=xt;
+  $('coul').setAttribute('y1',yp(60)); $('coul').setAttribute('y2',yp(60));
+  let cp=[]; for(let vmm=0;vmm<=VMAX;vmm++) cp.push(xp(vmm).toFixed(1)+','+yp(Ff(vmm/1000)).toFixed(1)); $('curve').setAttribute('points',cp.join(' '));
+  function render(){
+    const vmm=+$('velRange').value, v=vmm/1000, f=Ff(v);
+    $('velOut').textContent=vmm; $('ffOut').textContent=Math.round(f);
+    $('usableOut').textContent=((Fideal-f)/1000).toFixed(2);
+    $('viscOut').textContent=Math.round(b*v); $('stribOut').textContent=Math.round((Fs-Fc)*Math.exp(-Math.pow(v/vs,2)));
+    $('dot').setAttribute('cx',xp(vmm)); $('dot').setAttribute('cy',yp(f));
+    $('vline').setAttribute('x1',xp(vmm)); $('vline').setAttribute('x2',xp(vmm)); $('vline').setAttribute('y1',yp(f)); $('vline').setAttribute('y2',PY0);
+    const n=$('note');
+    if(vmm===0) n.innerHTML='<b>Breakaway:</b> at a standstill the piston must beat the full <b>120 N</b> static friction before it moves at all — the cylinder needs pressure margin just to start.';
+    else if(vmm<=10) n.innerHTML=`At a crawl (${vmm} mm/s) friction is high and uneven (<b>${Math.round(f)} N</b>) \u2014 this is where <b>stick-slip</b> threatens the ±1 mm hold.`;
+    else if(vmm<40) n.innerHTML=`Past the dip, friction is near its lowest (<b>${Math.round(f)} N</b>) \u2014 smoothest motion, but not where the platform needs to stop precisely.`;
+    else n.innerHTML=`Running near ${vmm} mm/s: friction \u2248 <b>${Math.round(f)} N</b>, so the usable force is <b>${((Fideal-f)/1000).toFixed(2)} kN</b> \u2014 only ~0.4% below ideal.`;
+  }
+  $('velRange').addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>
