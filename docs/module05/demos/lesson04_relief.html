@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Setting the relief valve</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--red:#C2463B;--green:#1B8A5A;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .ctl{margin:16px 0 6px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:18px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .tile.heat .v{color:var(--red)}
+  .status{margin-top:14px;font-size:13px;padding:10px 12px;border-radius:10px;font-weight:600}
+  .status.ok{background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2}
+  .status.bad{background:#FBEAE7;color:#9A2f27;border:1px solid #EBC3BE}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Setting the relief valve</h1>
+  <p class="sub">The relief must sit <b>above</b> the 100 bar working pressure (or it opens during a lift) and <b>below</b> the ~135 bar component limit (or it protects nothing). And on the fixed pump, holding dumps its full flow over it as heat.</p>
+
+  <div class="card">
+    <svg id="bar" viewBox="0 0 640 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="24" font-size="10.5" font-weight="700" fill="#586876">pressure (bar)</text>
+      <rect x="20" y="46" width="600" height="34" rx="6" fill="#EEF2F5" stroke="#D3DDE6"/>
+      <rect id="safe" y="46" height="34" fill="#1FB6AE" opacity="0.18"/>
+      <line id="workL" y1="40" y2="86" stroke="#0E7E8C" stroke-width="2" stroke-dasharray="4 3"/>
+      <text id="workT" y="100" font-size="9.5" font-weight="700" fill="#0B5A63" text-anchor="middle">100 work</text>
+      <line id="limL" y1="40" y2="86" stroke="#C2463B" stroke-width="2" stroke-dasharray="4 3"/>
+      <text id="limT" y="100" font-size="9.5" font-weight="700" fill="#9A2f27" text-anchor="middle">135 limit</text>
+      <line id="relL" y1="36" y2="90" stroke="#DD841A" stroke-width="3"/>
+      <circle id="relDot" cy="63" r="7" fill="#DD841A" stroke="#fff" stroke-width="1.5"/>
+      <text id="relT" y="30" font-size="10.5" font-weight="700" fill="#B5670F" text-anchor="middle"></text>
+    </svg>
+
+    <div class="ctl">
+      <label>Relief setting <span class="v"><span id="reliefOut">115</span> bar</span></label>
+      <input id="reliefRange" type="range" min="100" max="150" step="1" value="115"/>
+    </div>
+    <div class="out">
+      <div class="tile heat"><div class="k">Heat dumped when holding</div><div class="v"><span id="heatOut">1.92</span> kW</div></div>
+      <div class="tile"><div class="k">Margin over working</div><div class="v"><span id="marginOut">15</span> %</div></div>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+
+<script>
+  const pWork=100, pLimit=135, pSafeLow=103, Q=10;   // bar, L/min
+  const X0=20,X1=620,PMIN=95,PMAX=150;
+  const $=id=>document.getElementById(id);
+  const xp=p=>X0+((p-PMIN)/(PMAX-PMIN))*(X1-X0);
+  // static markers
+  $('workL').setAttribute('x1',xp(pWork)); $('workL').setAttribute('x2',xp(pWork)); $('workT').setAttribute('x',xp(pWork));
+  $('limL').setAttribute('x1',xp(pLimit)); $('limL').setAttribute('x2',xp(pLimit)); $('limT').setAttribute('x',xp(pLimit));
+  $('safe').setAttribute('x',xp(pSafeLow)); $('safe').setAttribute('width',xp(pLimit)-xp(pSafeLow));
+  function render(){
+    const pr=+$('reliefRange').value;
+    const heat=pr*1e5*(Q/60000)/1000;
+    $('reliefOut').textContent=pr; $('heatOut').textContent=heat.toFixed(2); $('marginOut').textContent=Math.round((pr/pWork-1)*100);
+    $('relL').setAttribute('x1',xp(pr)); $('relL').setAttribute('x2',xp(pr)); $('relDot').setAttribute('cx',xp(pr)); $('relT').setAttribute('x',xp(pr)); $('relT').textContent=pr+' bar';
+    const st=$('status');
+    if(pr<pSafeLow){ st.className='status bad'; st.textContent=`Too low (${pr} bar): only ${(pr-pWork)} bar over working — it will crack open during a lift, bleeding flow and starving the platform of force.`; }
+    else if(pr>pLimit){ st.className='status bad'; st.textContent=`Too high (${pr} bar): above the ~135 bar component limit — it can no longer protect the pump, hoses, or cylinder from bursting.`; }
+    else { st.className='status ok'; st.textContent=`Safely set at ${pr} bar: above working, below the limit. Holding dumps ${heat.toFixed(2)} kW as heat — the load the reservoir must shed (Lesson 05).`; }
+  }
+  $('reliefRange').addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>

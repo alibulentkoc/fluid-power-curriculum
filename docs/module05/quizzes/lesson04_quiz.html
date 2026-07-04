@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Knowledge check · The relief valve</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal-soft:#ECFAF8;--green:#1B8A5A;--green-soft:#E7F6EE;--red:#C2463B;--red-soft:#FBECEA;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.55}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:13.5px;margin:0 0 8px}
+  .banner{font-size:12.5px;background:var(--teal-soft);color:var(--teal);border:1px solid #9FE0DA;border-radius:10px;padding:10px 14px;margin:0 0 22px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(12,34,53,.05)}
+  .q .num{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+  .q .stem{font-size:15px;font-weight:600;margin:6px 0 14px}
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:9px;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:600}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .fb{font-size:13px;margin-top:8px;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}.fb.ok{background:var(--green-soft);color:var(--green)}.fb.no{background:var(--red-soft);color:var(--red)}
+  .score{position:sticky;bottom:14px;background:#0C2235;color:#fff;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;box-shadow:0 4px 16px rgba(12,34,53,.25)}
+  .score b{font-size:18px}
+  .retry{background:none;border:1px solid #3a5670;color:#cfe0ec;font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .retry:hover{border-color:#7FD7D0;color:#7FD7D0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Knowledge check — The relief valve</h1>
+  <p class="sub">Module 05 · Lesson 04</p>
+  <p class="banner">Check your understanding — unlimited attempts, immediate feedback, not graded.</p>
+  <div id="quiz"></div>
+  <div class="score"><span>Answered <b id="done">0</b> / 5 &nbsp;·&nbsp; Correct <b id="right">0</b></span>
+    <button class="retry" id="retry">Start over</button></div>
+</div>
+<script>
+const QUESTIONS=[
+  {stem:"What does a relief valve do, and what would happen <b>without one</b> when the platform holds?",
+   opts:["it adds flow; nothing would happen","it caps pressure by dumping flow to tank; without it, pressure would spike and burst a component","it cools the oil; the oil would boil","it opens the cylinder; the load would drop"], correct:1,
+   why:"A fixed pump pushing into a held (closed) platform raises pressure explosively. The relief opens at its set pressure and dumps the flow to tank, capping the pressure before anything bursts."},
+  {stem:"Why is the relief set <b>above</b> the working pressure rather than at it?",
+   opts:["to make more force","so it stays shut during normal lifts instead of bleeding flow and starving the platform","to save energy","to run cooler"], correct:1,
+   why:"If it opened at (or below) the 100 bar working pressure, it would crack open during every lift — wasting flow and robbing the platform of force. A 10–20% margin keeps it shut in normal work."},
+  {stem:"Why must it also be set <b>below</b> the components' pressure limits?",
+   opts:["for efficiency","so it opens and protects them before the weakest part bursts","to reduce heat","to hold the load steady"], correct:1,
+   why:"The whole point is to vent before failure. Set above a component's rating, the relief protects nothing — the part fails first."},
+  {stem:"On a <b>fixed-pump</b> system, where does the pump's flow go while the platform is holding?",
+   opts:["back into the pump","over the relief valve to tank","into the reservoir directly through the cylinder","nowhere — the pump stops itself"], correct:1,
+   why:"The fixed pump keeps delivering 10 L/min. With the cylinder valve closed, that flow can only escape over the relief to tank — which is why holding makes so much heat."},
+  {stem:"Why does <b>holding</b>, not lifting, make the most heat in this power unit?",
+   opts:["holding uses more force","the full pump flow dumps over the relief at 115 bar (~1.9 kW), more than the working power","the motor speeds up when holding","the oil gets thicker"], correct:1,
+   why:"P = p_relief × Q = 115 bar × 10 L/min ≈ 1.9 kW, all as heat — more than the 1.67 kW used working, and ~5× the 0.39 kW working-point loss. Fixed-pump machines run hottest while holding."}
+];
+const quiz=document.getElementById('quiz'),doneEl=document.getElementById('done'),rightEl=document.getElementById('right');
+let answered,correctCount;
+function render(){
+  answered=new Array(QUESTIONS.length).fill(false);correctCount=0;doneEl.textContent='0';rightEl.textContent='0';quiz.innerHTML='';
+  QUESTIONS.forEach((q,qi)=>{const card=document.createElement('div');card.className='q';
+    card.innerHTML=`<div class="num">Question ${qi+1}</div><div class="stem">${q.stem}</div>`;
+    q.opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
+    const fb=document.createElement('div');fb.className='fb';card.appendChild(fb);quiz.appendChild(card);});
+}
+function choose(qi,oi,card,q){
+  if(answered[qi])return;answered[qi]=true;
+  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});
+  const fb=card.querySelector('.fb');
+  if(oi===q.correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
+  else{btns[oi].classList.add('wrong');fb.className='fb show no';fb.innerHTML='Not quite. '+q.why;}
+  doneEl.textContent=answered.filter(Boolean).length;rightEl.textContent=correctCount;
+}
+document.getElementById('retry').onclick=render;render();
+</script>
+</body>
+</html>
