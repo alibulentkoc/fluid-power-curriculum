@@ -86,3 +86,6 @@ nav:
       - "03 · Holding the load": module06/03_holding_the_load.md
       - "04 · Metering flow: the proportional valve": module06/04_metering_flow_the_proportional_valve.md
       - "05 · Controlling the overrunning load": module06/05_controlling_the_overrunning_load.md
+  - "Module 07 — Circuits":
+      - Overview: module07/index.md
+      - "01 · Reading a hydraulic circuit": module07/01_reading_a_hydraulic_circuit.md

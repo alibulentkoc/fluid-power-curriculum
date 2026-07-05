@@ -1,0 +1,85 @@
+<svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="A legend of ISO 1219 hydraulic symbols for the platform, all drawn from one library ported from reference files: reservoir, fixed pump, electric motor, relief valve, filter, 4/3 tandem directional valve with all four ports on the centre envelope, pilot-operated check valve, and a double-acting cylinder. Below, line conventions.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker></defs>
+<rect x="0" y="0" width="900" height="500" rx="20" fill="url(#bg)"/>
+<text x="40" y="42" font-size="23" font-weight="700" fill="#0C2235">The language of circuits — ISO 1219</text>
+<text x="40" y="64" font-size="13.5" fill="#586876">Functional, not pictorial: each symbol shows what a part does; each line, how it connects.</text>
+<rect x="40" y="96" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<line x1="112.0" y1="126.6" x2="112.0" y2="150.0" stroke="#1B3A55" stroke-width="1.8"/>
+<line x1="112.0" y1="150.0" x2="164.0" y2="150.0" stroke="#1B3A55" stroke-width="1.8"/>
+<line x1="164.0" y1="150.0" x2="164.0" y2="126.6" stroke="#1B3A55" stroke-width="1.8"/>
+<text x="138" y="208" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">Reservoir</text>
+<text x="226" y="114" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M05</text>
+<rect x="255" y="96" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<circle cx="353.0" cy="146.0" r="16.0" fill="none" stroke="#1B3A55" stroke-width="1.3"/>
+<polygon points="349.0,137.0 353.0,130.0 357.0,137.0" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<line x1="353.0" y1="130.0" x2="353.0" y2="118.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="353.0" y1="162.0" x2="353.0" y2="174.0" stroke="#1B3A55" stroke-width="1.6"/>
+<text x="353" y="208" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">Fixed pump</text>
+<text x="441" y="114" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M05</text>
+<rect x="470" y="96" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<circle cx="568.0" cy="146.0" r="16.0" fill="none" stroke="#1B3A55" stroke-width="1.3"/>
+<text x="568" y="151.5" font-size="16" font-weight="700" fill="#1B3A55" text-anchor="middle" font-family="sans-serif">M</text>
+<line x1="568.0" y1="130.0" x2="568.0" y2="118.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="568.0" y1="162.0" x2="568.0" y2="174.0" stroke="#1B3A55" stroke-width="1.6"/>
+<text x="568" y="208" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">Electric motor</text>
+<text x="656" y="114" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M05</text>
+<rect x="685" y="96" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<rect x="767.0" y="138.0" width="32.0" height="32.0" fill="none" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="795.0" y1="164.0" x2="771.0" y2="164.0" stroke="#1B3A55" stroke-width="1.6"/>
+<polygon points="775.0,161.5 771.0,164.0 775.0,166.5" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<polyline points="783.0,138.0 788.0,134.0 778.0,129.0 788.0,124.0 778.0,119.0 783.0,115.0" fill="none" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="775.0" y1="136.0" x2="791.0" y2="113.0" stroke="#1B3A55" stroke-width="1.4"/>
+<polygon points="791.0,113.0 788.0,116.0 790.0,117.0" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<line x1="767.0" y1="164.0" x2="757.0" y2="164.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="799.0" y1="164.0" x2="809.0" y2="164.0" stroke="#1B3A55" stroke-width="1.6"/>
+<polyline points="803.0,164.0 803.0,176.0 783.0,176.0 783.0,170.0" fill="none" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="4 2"/>
+<text x="783" y="208" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">Relief valve</text>
+<text x="871" y="114" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M05</text>
+<rect x="40" y="238" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<polyline points="138.0,274.0 156.0,292.0 138.0,310.0 120.0,292.0 138.0,274.0" fill="none" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="120.0" y1="292.0" x2="156.0" y2="292.0" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="3 2"/>
+<line x1="138.0" y1="274.0" x2="138.0" y2="266.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="138.0" y1="310.0" x2="138.0" y2="318.0" stroke="#1B3A55" stroke-width="1.6"/>
+<text x="138" y="350" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">Filter</text>
+<text x="226" y="256" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M02</text>
+<rect x="255" y="238" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<rect x="305.0" y="274.0" width="32" height="36" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/>
+<rect x="337.0" y="274.0" width="32" height="36" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/>
+<rect x="369.0" y="274.0" width="32" height="36" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/>
+<polyline points="344,307.0 344,300 362,300 362,307.0" fill="none" stroke="#0E7E8C" stroke-width="1.5"/>
+<line x1="344" y1="277.0" x2="344" y2="283" stroke="#0E7E8C" stroke-width="1.4"/><line x1="340.5" y1="283" x2="347.5" y2="283" stroke="#0E7E8C" stroke-width="1.4"/>
+<line x1="362" y1="277.0" x2="362" y2="283" stroke="#0E7E8C" stroke-width="1.4"/><line x1="358.5" y1="283" x2="365.5" y2="283" stroke="#0E7E8C" stroke-width="1.4"/>
+<line x1="314.0" y1="306.0" x2="314.0" y2="280.0" stroke="#0E7E8C" stroke-width="1.3" marker-end="url(#ah)"/><line x1="328.0" y1="278.0" x2="328.0" y2="304.0" stroke="#0E7E8C" stroke-width="1.3" marker-end="url(#ah)"/>
+<line x1="378.0" y1="306.0" x2="392.0" y2="280.0" stroke="#0E7E8C" stroke-width="1.3" marker-end="url(#ah)"/><line x1="392.0" y1="306.0" x2="378.0" y2="280.0" stroke="#0E7E8C" stroke-width="1.3" marker-end="url(#ah)"/>
+<rect x="289.0" y="284" width="14" height="16" fill="none" stroke="#1B3A55" stroke-width="1.3"/><line x1="289.0" y1="300" x2="303.0" y2="284" stroke="#1B3A55" stroke-width="1.1"/>
+<rect x="403.0" y="284" width="14" height="16" fill="none" stroke="#1B3A55" stroke-width="1.3"/><line x1="403.0" y1="300" x2="417.0" y2="284" stroke="#1B3A55" stroke-width="1.1"/>
+<text x="344" y="270.0" font-size="9" font-weight="700" fill="#1B3A55" text-anchor="middle">A</text>
+<text x="362" y="270.0" font-size="9" font-weight="700" fill="#1B3A55" text-anchor="middle">B</text>
+<text x="344" y="321.0" font-size="9" font-weight="700" fill="#1B3A55" text-anchor="middle">P</text>
+<text x="362" y="321.0" font-size="9" font-weight="700" fill="#1B3A55" text-anchor="middle">T</text>
+<text x="353" y="350" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">4/3 directional (tandem)</text>
+<text x="441" y="256" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M06</text>
+<rect x="470" y="238" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<rect x="550.0" y="276.0" width="36.0" height="32.0" fill="none" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="523.0" y1="292.0" x2="550.0" y2="292.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="586.0" y1="292.0" x2="613.0" y2="292.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="550.0" y1="292.0" x2="562.0" y2="292.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="579.0" y1="292.0" x2="586.0" y2="292.0" stroke="#1B3A55" stroke-width="1.6"/>
+<polyline points="573.0,285.0 579.0,292.0 573.0,299.0" fill="none" stroke="#1B3A55" stroke-width="1.3"/>
+<circle cx="568.0" cy="292.0" r="6.0" fill="#FFFFFF" stroke="#1B3A55" stroke-width="1.3"/>
+<polyline points="578.0,276.0 598.0,276.0 598.0,264.0" fill="none" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="4 2"/>
+<text x="568" y="350" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">Pilot-op. check</text>
+<text x="656" y="256" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M06</text>
+<rect x="685" y="238" width="196" height="130" rx="10" fill="#FFFFFF" stroke="#D3DDE6"/>
+<rect x="753.0" y="280.0" width="60.0" height="24.0" fill="none" stroke="#1B3A55" stroke-width="1.8"/>
+<line x1="760.2" y1="280.0" x2="760.2" y2="274.0" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="805.8" y1="280.0" x2="805.8" y2="274.0" stroke="#1B3A55" stroke-width="1.4"/>
+<rect x="767.4" y="281.2" width="6.0" height="21.6" fill="none" stroke="#1B3A55" stroke-width="1.5"/>
+<line x1="773.4" y1="292.0" x2="843.0" y2="292.0" stroke="#1B3A55" stroke-width="1.8"/>
+<text x="783" y="350" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">Cylinder (double-acting)</text>
+<text x="871" y="256" font-size="8.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M04</text>
+<text x="40" y="410" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C">LINE CONVENTIONS</text>
+<line x1="60" y1="436" x2="180" y2="436" stroke="#1B3A55" stroke-width="2.5"/><text x="190" y="440" font-size="12" fill="#0C2235">working line (power flow)</text>
+<line x1="420" y1="436" x2="540" y2="436" stroke="#0E7E8C" stroke-width="2" stroke-dasharray="6 3"/><text x="550" y="440" font-size="12" fill="#0C2235">pilot line (command)</text>
+<line x1="60" y1="464" x2="180" y2="464" stroke="#8AA0AE" stroke-width="1.6" stroke-dasharray="2 3"/><text x="190" y="468" font-size="12" fill="#0C2235">drain line (to tank)</text>
+</svg>
