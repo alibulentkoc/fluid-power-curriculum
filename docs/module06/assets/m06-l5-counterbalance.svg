@@ -1,0 +1,45 @@
+<svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Left: a counterbalance valve at the cylinder cap port. An integral check valve lets oil flow freely in to raise; for holding it seals drop-tight; for lowering, a relief element spring-set to 130 bar is helped open by a rod-side pilot line of about 10 bar, and a feedback arrow shows that if the load overruns, the cap pressure drops and the valve closes to throttle the outflow, self-regulating. Right: the complete valve set listed around the cylinder: a proportional 4/3 directional valve for direction and metered speed, the counterbalance valve at the cap port for holding and overrunning control, and the system relief valve as the pressure cap, fed by the Module 05 power unit, ready for Module 07 to wire into a circuit.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="tm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker><marker id="rm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#C2463B"/></marker></defs>
+<rect x="0" y="0" width="900" height="480" rx="20" fill="url(#bg)"/>
+<text x="40" y="42" font-size="23" font-weight="700" fill="#0C2235">Gravity, tamed automatically</text>
+<text x="40" y="64" font-size="13.5" fill="#586876">A counterbalance valve holds the load and self-meters the descent — the last piece of the valve set.</text>
+<text x="60" y="104" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C">COUNTERBALANCE VALVE (at cap port)</text>
+<rect x="120" y="120" width="150" height="40" rx="5" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/><text x="195" y="145" font-size="10" font-weight="700" fill="#1B3A55" text-anchor="middle">cylinder cap (~100 bar)</text>
+<line x1="195" y1="160" x2="195" y2="182" stroke="#1B3A55" stroke-width="2"/>
+<rect x="110" y="182" width="170" height="96" rx="8" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2.2"/>
+<circle cx="150" cy="228" r="8" fill="#1FB6AE" stroke="#0C6A5F" stroke-width="1.5"/>
+<line x1="150" y1="270" x2="150" y2="212" stroke="#0C6A5F" stroke-width="2.5" marker-end="url(#tm)"/>
+<text x="150" y="292" font-size="8.5" fill="#0B5A63" text-anchor="middle">check: free lift</text>
+<polyline points="215,270 221,262 209,254 221,246 209,238 221,230 215,222" fill="none" stroke="#DD841A" stroke-width="2"/>
+<rect x="228" y="216" width="28" height="58" rx="3" fill="#FDF0DE" stroke="#DD841A"/>
+<text x="242" y="240" font-size="9" font-weight="700" fill="#B5670F" text-anchor="middle">130</text>
+<text x="242" y="252" font-size="8" fill="#B5670F" text-anchor="middle">bar</text>
+<text x="240" y="292" font-size="8.5" fill="#B5670F" text-anchor="middle">relief: lower</text>
+<line x1="330" y1="228" x2="282" y2="228" stroke="#0E7E8C" stroke-width="2.2" stroke-dasharray="4 2" marker-end="url(#tm)"/>
+<text x="334" y="224" font-size="9" font-weight="700" fill="#0B5A63">rod-side</text>
+<text x="334" y="236" font-size="9" fill="#0B5A63">pilot ~10 bar</text>
+<rect x="110" y="300" width="240" height="46" rx="8" fill="#EAF6F5" stroke="#BFE6E2"/>
+<text x="230" y="318" font-size="10" font-weight="700" fill="#0B5A63" text-anchor="middle">self-regulating:</text>
+<text x="230" y="333" font-size="9.5" fill="#0B5A63" text-anchor="middle">overrun → cap p drops → valve closes → throttles</text>
+<text x="470" y="104" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C">THE COMPLETE VALVE SET</text>
+<rect x="470" y="122" width="390" height="52" rx="8" fill="#FFFFFF" stroke="#D3DDE6"/>
+<rect x="470" y="122" width="8" height="52" rx="4" fill="#13314A"/>
+<text x="492" y="144" font-size="12.5" font-weight="700" fill="#0C2235">PROPORTIONAL 4/3 DCV</text>
+<text x="492" y="162" font-size="10.5" fill="#586876">direction · metered speed · unloads pump</text>
+<text x="848" y="144" font-size="9.5" font-weight="700" fill="#8AA0AE" text-anchor="end">L02·L04</text>
+<rect x="470" y="184" width="390" height="52" rx="8" fill="#FFFFFF" stroke="#D3DDE6"/>
+<rect x="470" y="184" width="8" height="52" rx="4" fill="#0E7E8C"/>
+<text x="492" y="206" font-size="12.5" font-weight="700" fill="#0C2235">COUNTERBALANCE VALVE</text>
+<text x="492" y="224" font-size="10.5" fill="#586876">drop-tight hold · overrunning control</text>
+<text x="848" y="206" font-size="9.5" font-weight="700" fill="#8AA0AE" text-anchor="end">L03·L05</text>
+<rect x="470" y="246" width="390" height="52" rx="8" fill="#FFFFFF" stroke="#D3DDE6"/>
+<rect x="470" y="246" width="8" height="52" rx="4" fill="#DD841A"/>
+<text x="492" y="268" font-size="12.5" font-weight="700" fill="#0C2235">RELIEF VALVE</text>
+<text x="492" y="286" font-size="10.5" fill="#586876">system pressure safety cap</text>
+<text x="848" y="268" font-size="9.5" font-weight="700" fill="#8AA0AE" text-anchor="end">M05</text>
+<rect x="470" y="308" width="390" height="40" rx="8" fill="#EEF2F5" stroke="#D3DDE6"/>
+<text x="665" y="326" font-size="11" font-weight="700" fill="#1B3A55" text-anchor="middle">fed by the Module 05 power unit</text>
+<text x="665" y="340" font-size="10" fill="#586876" text-anchor="middle">10 L/min @ 100 bar, clean &amp; cool</text>
+<rect x="470" y="358" width="390" height="34" rx="8" fill="#0C6A5F"/>
+<text x="665" y="380" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">→ Module 07: wire into the full circuit</text>
+</svg>

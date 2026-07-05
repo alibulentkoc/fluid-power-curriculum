@@ -85,3 +85,4 @@ nav:
       - "02 · The directional control valve": module06/02_the_directional_control_valve.md
       - "03 · Holding the load": module06/03_holding_the_load.md
       - "04 · Metering flow: the proportional valve": module06/04_metering_flow_the_proportional_valve.md
+      - "05 · Controlling the overrunning load": module06/05_controlling_the_overrunning_load.md

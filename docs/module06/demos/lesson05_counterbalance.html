@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Controlling the overrunning load</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal2:#1FB6AE;--amber:#DD841A;--red:#C2463B;--green:#0C6A5F;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+  svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
+  .ctl{margin:16px 0 6px}
+  .ctl label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+  .ctl .v{font-family:var(--mono);color:var(--teal)}
+  input[type=range]{width:100%;accent-color:#0E7E8C}
+  .out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .tile{border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:var(--bg);text-align:center}
+  .tile .k{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--slate)}
+  .tile .v{font-family:var(--mono);font-size:16px;font-weight:700;margin-top:3px;color:var(--teal)}
+  .btn{margin-top:12px;width:100%;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:13px;font-weight:600;padding:10px;border-radius:10px;cursor:pointer}
+  .btn:hover{border-color:var(--teal)}
+  .note{margin-top:12px;font-size:13px;padding:10px 12px;border-radius:10px;font-weight:600}
+  .note.ok{background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2}
+  .note.warn{background:#FEF3E2;color:#8A5000;border:1px solid #F3D9AE}
+  .note.bad{background:#FBEAE7;color:#9A2f27;border:1px solid #EBC3BE}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Controlling the overrunning load — the counterbalance valve</h1>
+  <p class="sub">Set above the 100 bar load, the valve holds. A rod-side pilot cracks it to lower — and it self-throttles any overrun. Opens when <b>p<sub>load</sub> + 3·p<sub>pilot</sub> ≥ setting</b>.</p>
+
+  <div class="card">
+    <svg id="viz" viewBox="0 0 640 110" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="22" font-size="10.5" font-weight="700" fill="#586876">opening pressure vs setting (bar)</text>
+      <rect x="20" y="40" width="600" height="30" rx="5" fill="#EEF2F5" stroke="#D3DDE6"/>
+      <rect id="sumBar" x="20" y="40" width="0" height="30" rx="5" fill="#0E7E8C"/>
+      <line id="setLine" y1="34" y2="76" stroke="#DD841A" stroke-width="2.5"/>
+      <text id="setLab" y="90" font-size="9.5" font-weight="700" fill="#B5670F" text-anchor="middle"></text>
+      <text id="sumTxt" x="26" y="60" font-size="12" font-weight="700" fill="#fff" font-family="'IBM Plex Mono',monospace"></text>
+    </svg>
+
+    <div class="ctl">
+      <label>Counterbalance setting <span class="v"><span id="setOut">130</span> bar</span></label>
+      <input id="setRange" type="range" min="90" max="160" step="1" value="130"/>
+    </div>
+    <div class="ctl">
+      <label>Rod-side pilot pressure <span class="v"><span id="pilotOut">10</span> bar</span></label>
+      <input id="pilotRange" type="range" min="0" max="20" step="1" value="10"/>
+    </div>
+    <div class="out">
+      <div class="tile"><div class="k">Load pressure</div><div class="v"><span id="loadOut">100</span> bar</div></div>
+      <div class="tile"><div class="k">Valve</div><div class="v" id="stateOut">held</div></div>
+    </div>
+    <button class="btn" id="overrunBtn">⟳ Nudge the load toward overrun</button>
+    <div class="note ok" id="note"></div>
+  </div>
+</div>
+
+<script>
+  const R=3, X0=20,X1=620,PMAX=200;
+  const $=id=>document.getElementById(id);
+  let pLoad=100;
+  const xp=p=>X0+(p/PMAX)*(X1-X0);
+  function render(){
+    const set=+$('setRange').value, pilot=+$('pilotRange').value;
+    const sum=pLoad+R*pilot;
+    $('setOut').textContent=set; $('pilotOut').textContent=pilot; $('loadOut').textContent=pLoad;
+    $('sumBar').setAttribute('width',(xp(sum)-X0).toFixed(1));
+    $('sumTxt').textContent=sum+' bar';
+    $('setLine').setAttribute('x1',xp(set)); $('setLine').setAttribute('x2',xp(set));
+    $('setLab').setAttribute('x',xp(set)); $('setLab').textContent='set '+set;
+    const opens = sum>=set, holdsStatically = set>pLoad;
+    const n=$('note');
+    if(!holdsStatically){ $('stateOut').textContent='UNSAFE'; n.className='note bad'; n.textContent=`Setting ${set} bar is at or below the 100 bar load — the load opens the valve by itself. No holding, no control. The setting must sit above the load (≈130 bar).`; }
+    else if(!opens){ $('stateOut').textContent='held'; n.className='note ok'; n.textContent=`Held: p_load + 3×pilot = ${sum} bar < ${set} bar setting. With too little pilot the valve stays shut and the load is locked — this is the fail-safe (no pump → no descent).`; }
+    else { $('stateOut').textContent='descending'; n.className='note ok'; n.textContent=`Descending, metered: ${sum} bar ≥ ${set} bar cracks the valve. Try the overrun nudge — the valve self-throttles so gravity can't run the load away.`; }
+  }
+  $('overrunBtn').onclick=()=>{
+    // simulate an overrun: load momentarily outruns the oil, cap pressure drops
+    pLoad = pLoad===100 ? 82 : 100;
+    $('overrunBtn').textContent = pLoad===82 ? '⟳ Overrun! cap pressure dropped to 82 bar — reset' : '⟳ Nudge the load toward overrun';
+    render();
+    if(pLoad===82){ const n=$('note'); const set=+$('setRange').value, pilot=+$('pilotRange').value;
+      if(82+R*pilot < set){ n.className='note ok'; n.textContent='Self-regulation: the overrun dropped the cap pressure to 82 bar, so p_load + 3×pilot fell below the setting — the valve CLOSED, throttling the outflow and slowing the load. Gravity cannot win.'; } }
+  };
+  $('setRange').addEventListener('input',render); $('pilotRange').addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>
