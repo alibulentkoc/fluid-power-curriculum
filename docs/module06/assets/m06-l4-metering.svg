@@ -1,0 +1,50 @@
+<svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" role="img" aria-label="Left: a graph of piston speed against valve command, a straight line rising from zero to about 85 millimetres per second as command goes 0 to 100 percent, with markers at 100 percent 85, 50 percent 42, and 5 percent 4 millimetres per second, and a note that winding the command down near the target creeps the last millimetre to stop within plus or minus 1 millimetre. Right: two schematics for lowering an overrunning load. Meter-in throttles the supply and the load runs away under gravity, marked unsafe. Meter-out throttles the cap-side outflow, holding about 100 bar of back-pressure so the descent stays controlled, marked safe.">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FB"/><stop offset="1" stop-color="#EBEFF4"/></linearGradient><marker id="tm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0C6A5F"/></marker><marker id="rm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#C2463B"/></marker></defs>
+<rect x="0" y="0" width="900" height="470" rx="20" fill="url(#bg)"/>
+<text x="40" y="42" font-size="23" font-weight="700" fill="#0C2235">A dimmer, not a switch</text>
+<text x="40" y="64" font-size="13.5" fill="#586876">Speed scales with command; taper near the target to land within ±1 mm. Lowering needs meter-out.</text>
+<text x="60" y="104" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C">SPEED SCALES WITH COMMAND</text>
+<line x1="90" y1="300" x2="410" y2="300" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="90" y1="300" x2="90" y2="130" stroke="#1B3A55" stroke-width="1.4"/>
+<text x="90" y="315" font-size="9" fill="#586876" text-anchor="middle">0%</text>
+<text x="250" y="315" font-size="9" fill="#586876" text-anchor="middle">50%</text>
+<text x="410" y="315" font-size="9" fill="#586876" text-anchor="middle">100%</text>
+<line x1="86" y1="300" x2="90" y2="300" stroke="#1B3A55"/><text x="82" y="303" font-size="8.5" fill="#586876" text-anchor="end">0</text>
+<line x1="86" y1="221" x2="90" y2="221" stroke="#1B3A55"/><text x="82" y="224" font-size="8.5" fill="#586876" text-anchor="end">42</text>
+<line x1="86" y1="139" x2="90" y2="139" stroke="#1B3A55"/><text x="82" y="142" font-size="8.5" fill="#586876" text-anchor="end">85</text>
+<text x="60" y="215" font-size="10" font-weight="700" fill="#1B3A55" text-anchor="middle" transform="rotate(-90 60 215)">speed (mm/s)</text>
+<text x="250" y="330" font-size="10" fill="#586876" text-anchor="middle">valve command</text>
+<line x1="90.0" y1="300.0" x2="410.0" y2="139.4" stroke="#0E7E8C" stroke-width="3"/>
+<circle cx="410.0" cy="139.4" r="4" fill="#0E7E8C"/>
+<text x="416" y="135" font-size="9" font-weight="700" fill="#0B5A63">100% → 85</text>
+<circle cx="250.0" cy="220.7" r="4" fill="#0E7E8C"/>
+<text x="256" y="217" font-size="9" font-weight="700" fill="#0B5A63">50% → 42</text>
+<circle cx="106.0" cy="292.4" r="4" fill="#0E7E8C"/>
+<text x="112" y="288" font-size="9" font-weight="700" fill="#0B5A63">5% → 4 (creep)</text>
+<rect x="96" y="260" width="150" height="30" rx="6" fill="#EAF6F5" stroke="#BFE6E2"/>
+<text x="171" y="273" font-size="9" font-weight="700" fill="#0B5A63" text-anchor="middle">wind down near target</text>
+<text x="171" y="284" font-size="9" fill="#0B5A63" text-anchor="middle">→ creep → ±1 mm, no overshoot</text>
+<text x="480" y="104" font-size="11.5" font-weight="700" letter-spacing="1" fill="#0E7E8C">LOWERING AN OVERRUNNING LOAD</text>
+<rect x="500" y="150" width="70" height="46" rx="4" fill="#FFFFFF" stroke="#1B3A55" stroke-width="1.8"/>
+<rect x="525" y="153" width="12" height="40" fill="#1B3A55"/>
+<rect x="548" y="136" width="18" height="16" rx="2" fill="#DD841A"/>
+<rect x="553" y="152" width="8" height="0" fill="#5B6B79"/>
+<line x1="561" y1="136" x2="561" y2="153" stroke="#5B6B79" stroke-width="6"/>
+<line x1="590" y1="134" x2="590" y2="154" stroke="#C2463B" stroke-width="3" marker-end="url(#rm)"/>
+<line x1="640" y1="190" x2="600" y2="190" stroke="#8AA0AE" stroke-width="3"/>
+<path d="M652,181 L659,190 L652,199 Z" fill="#C2463B"/><path d="M668,181 L661,190 L668,199 Z" fill="#C2463B"/>
+<text x="680" y="194" font-size="9" fill="#586876">throttle supply</text>
+<text x="500" y="216" font-size="10.5" font-weight="700" fill="#9A2f27">METER-IN ✗ runs away (gravity wins)</text>
+<text x="500" y="229" font-size="9" fill="#9A2f27">nothing resists gravity → cavitation</text>
+<rect x="500" y="320" width="70" height="46" rx="4" fill="#FFFFFF" stroke="#1B3A55" stroke-width="1.8"/>
+<rect x="525" y="323" width="12" height="40" fill="#1B3A55"/>
+<rect x="548" y="306" width="18" height="16" rx="2" fill="#DD841A"/>
+<rect x="553" y="322" width="8" height="0" fill="#5B6B79"/>
+<line x1="561" y1="306" x2="561" y2="323" stroke="#5B6B79" stroke-width="6"/>
+<line x1="590" y1="304" x2="590" y2="324" stroke="#0C6A5F" stroke-width="3" marker-end="url(#tm)"/>
+<line x1="600" y1="328" x2="640" y2="328" stroke="#0E7E8C" stroke-width="3"/>
+<path d="M652,319 L659,328 L652,337 Z" fill="#0C6A5F"/><path d="M668,319 L661,328 L668,337 Z" fill="#0C6A5F"/>
+<text x="680" y="332" font-size="9" fill="#586876">throttle outflow</text>
+<text x="500" y="386" font-size="10.5" font-weight="700" fill="#0C6A5F">METER-OUT ✓ controlled descent</text>
+<text x="500" y="399" font-size="9" fill="#0B5A63">holds ~100 bar back-pressure vs gravity</text>
+</svg>
