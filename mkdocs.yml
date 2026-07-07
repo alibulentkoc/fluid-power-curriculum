@@ -103,3 +103,4 @@ nav:
   - "Module 09 — Modeling & Simulation":
       - Overview: module09/index.md
       - "01 · Why model the platform": module09/01_why_model_the_platform.md
+      - "02 · The equations of motion": module09/02_the_equations_of_motion.md

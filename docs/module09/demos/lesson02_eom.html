@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · The equations of motion</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+h2{font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate);margin:4px 0 8px}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:10px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:4px}
+.reads{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.read{flex:1 1 110px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.read .k{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:17px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.hr{height:1px;background:var(--line);margin:18px 0}
+.note{margin-top:12px;font-size:13px;padding:11px 13px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2;font-weight:600}
+</style></head>
+<body><div class="wrap">
+<h1>The equations of motion</h1>
+<p class="sub">See Newton's law as a force balance, and watch the oil-spring natural frequency change along the stroke.</p>
+<div class="card">
+<h2>Force balance → acceleration  (m·v̇ = pA − mg − bv)</h2>
+<svg viewBox="0 0 640 130" xmlns="http://www.w3.org/2000/svg">
+  <text x="10" y="20" font-size="10" fill="#586876">drive pA</text>
+  <rect x="90" y="10" width="0" height="18" id="bar-drive" fill="#0E7E8C" rx="3"/>
+  <text x="10" y="46" font-size="10" fill="#586876">weight mg</text>
+  <rect x="90" y="36" width="0" height="18" id="bar-mg" fill="#C0392B" rx="3"/>
+  <text x="10" y="72" font-size="10" fill="#586876">friction bv</text>
+  <rect x="90" y="62" width="0" height="18" id="bar-fric" fill="#8AA0AE" rx="3"/>
+  <line x1="90" y1="6" x2="90" y2="86" stroke="#D3DDE6" stroke-width="1"/>
+  <text x="10" y="112" font-size="11" font-weight="700" fill="#0C2235">net → a</text>
+  <rect x="90" y="100" width="0" height="18" id="bar-net" fill="#DD841A" rx="3"/>
+  <text x="360" y="112" font-size="12" font-weight="700" font-family="'IBM Plex Mono',monospace" id="atxt" fill="#0C2235"></text>
+</svg>
+<div class="ctrl"><label>Cap pressure p = <span id="plbl">100</span> bar</label><input id="p" type="range" min="80" max="120" step="1" value="100"/></div>
+<div class="ctrl"><label>Velocity v = <span id="vlbl">0</span> mm/s</label><input id="v" type="range" min="0" max="85" step="1" value="0"/></div>
+<div class="reads">
+  <div class="read"><div class="k">Net force</div><div class="v" id="rnet">—</div></div>
+  <div class="read"><div class="k">Acceleration</div><div class="v" id="ra">—</div></div>
+  <div class="read"><div class="k">State</div><div class="v" id="rstate" style="font-size:14px">—</div></div>
+</div>
+<div class="hr"></div>
+<h2>Oil spring → natural frequency  (fₙ = ½π·√(βA²/mV))</h2>
+<div class="ctrl"><label>Piston position x = <span id="xlbl">300</span> mm (chamber volume grows with x)</label><input id="x" type="range" min="50" max="600" step="10" value="300"/></div>
+<div class="reads">
+  <div class="read"><div class="k">Chamber volume</div><div class="v" id="rV">—</div></div>
+  <div class="read"><div class="k">Oil stiffness</div><div class="v" id="rk">—</div></div>
+  <div class="read"><div class="k">Natural freq fₙ</div><div class="v" id="rfn">—</div></div>
+</div>
+<div class="note" id="note"></div>
+</div></div>
+<script>
+  var A=1963.5e-6, m=2000, g=9.81, beta=1.8e9, b=2000, $=function(id){return document.getElementById(id);};
+  function fbar(id,F,scale){var w=Math.min(Math.abs(F)*scale,520); $(id).setAttribute('width',w); if(F<0)$(id).setAttribute('x',90-w); else $(id).setAttribute('x',90);}
+  function draw(){
+    var p=+$('p').value, v=+$('v').value/1000;
+    $('plbl').textContent=p; $('vlbl').textContent=Math.round(v*1000);
+    var drive=p*1e5*A, mg=m*g, fric=b*v, net=drive-mg-fric, a=net/m, sc=0.012;
+    fbar('bar-drive',drive,sc); fbar('bar-mg',mg,sc); fbar('bar-fric',fric,sc); fbar('bar-net',net,sc*8);
+    $('atxt').textContent='a = '+a.toFixed(3)+' m/s²';
+    $('rnet').textContent=Math.round(net)+' N';
+    $('ra').textContent=a.toFixed(3)+' m/s²';
+    var st = Math.abs(net)<50? 'balanced' : (net>0? 'accel ↑':'decel ↓');
+    $('rstate').textContent=st;
+    // oil spring
+    var x=+$('x').value/1000, V=A*x, k=beta*A*A/V, fn=Math.sqrt(k/m)/(2*Math.PI);
+    $('xlbl').textContent=Math.round(x*1000);
+    $('rV').textContent=Math.round(V*1e6)+' cm³';
+    $('rk').textContent=(k/1e6).toFixed(1)+'e6 N/m';
+    $('rfn').textContent=fn.toFixed(1)+' Hz';
+    var n=$('note');
+    var msg1 = Math.abs(net)<50? 'At '+p+' bar the drive balances weight+friction — the platform holds/cruises (a≈0). ' : (net>0? 'Drive exceeds weight — the platform accelerates up ('+a.toFixed(2)+' m/s²). ' : 'Drive is below weight — it decelerates/sinks. ');
+    n.textContent = msg1 + 'At x='+Math.round(x*1000)+' mm the oil spring gives fₙ='+fn.toFixed(1)+' Hz — it falls as the piston extends (V grows, spring softens), so the platform rings slowest near the top.';
+  }
+  ['p','v','x'].forEach(function(id){$(id).addEventListener('input',draw);}); draw();
+</script>
+</body></html>

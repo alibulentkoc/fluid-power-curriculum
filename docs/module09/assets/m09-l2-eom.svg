@@ -1,0 +1,34 @@
+<svg viewBox="0 0 760 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif" role="img" aria-label="Free-body and chamber diagram of the platform with its three equations. The piston-and-load mass has oil pressure times area pushing up, weight mg pulling down, and friction b v opposing motion (Newton: m a = pA - mg - bv). The cap chamber below is a compressible volume V(x) that grows with position; flow Q_in enters and the piston sweeps volume at rate A v, so pressure rate = beta/V times (Q_in - A v). The valve is a variable orifice set by command u. A callout shows the oil as a spring of stiffness beta A squared over V giving a natural frequency about 12 Hz at mid-stroke. A steady-state box notes zeroing the rates returns 100 bar hold and 10 L/min cruise.">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#1B3A55"/></marker><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#C0392B"/></marker><marker id="at" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker></defs>
+<rect width="760" height="470" rx="16" fill="#F7F9FB"/>
+<text x="30" y="40" font-size="20" font-weight="700" fill="#0C2235">The equations of motion</text>
+<text x="30" y="62" font-size="12.5" fill="#586876">Newton for the mass · compressibility for the pressure · orifice for the valve — three coupled laws.</text>
+<rect x="104" y="100" width="92" height="30" rx="4" fill="#DD841A"/><text x="150" y="120" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">2 t load</text>
+<rect x="110" y="130" width="80" height="14" fill="#5B6B79"/>
+<text x="150" y="141" font-size="8" fill="#fff" text-anchor="middle">piston</text>
+<line x1="80" y1="150" x2="80" y2="110" stroke="#1B3A55" stroke-width="2.4" marker-end="url(#ah)"/><text x="58" y="132" font-size="11" font-weight="700" fill="#1B3A55">pA</text>
+<line x1="220" y1="100" x2="220" y2="140" stroke="#C0392B" stroke-width="2.4" marker-end="url(#ar)"/><text x="226" y="125" font-size="11" font-weight="700" fill="#C0392B">mg</text>
+<line x1="190" y1="118" x2="214" y2="118" stroke="#8AA0AE" stroke-width="2" marker-end="url(#ah)"/><text x="198" y="112" font-size="9" fill="#8AA0AE">bv</text>
+<rect x="110" y="144" width="80" height="150" fill="#EAF6F5" stroke="#1B3A55" stroke-width="1.8"/>
+<text x="150" y="200" font-size="11" font-weight="700" fill="#0E7E8C" text-anchor="middle">V(x)</text>
+<text x="150" y="216" font-size="9" fill="#586876" text-anchor="middle">compressible</text>
+<path d="M126,228 l 8 -6 l 8 6 l 8 -6 l 8 6 l 8 -6 l 8 6 l 8 -6 l 8 6 l 8 -6 l 8 6 l 8 -6 l 8 6" fill="none" stroke="#DD841A" stroke-width="1.6"/><text x="150" y="250" font-size="8.5" fill="#DD841A" text-anchor="middle">oil = spring</text>
+<rect x="120" y="300" width="60" height="34" rx="4" fill="#fff" stroke="#1B3A55" stroke-width="1.6"/><rect x="144" y="304" width="8" height="26" fill="#1B3A55"/><text x="150" y="350" font-size="9" fill="#586876" text-anchor="middle">valve (orifice, u)</text>
+<line x1="150" y1="294" x2="150" y2="300" stroke="#0E7E8C" stroke-width="2.4"/>
+<line x1="92" y1="317" x2="118" y2="317" stroke="#0E7E8C" stroke-width="2.4" marker-end="url(#at)"/><text x="80" y="320" font-size="10" font-weight="700" fill="#0E7E8C" text-anchor="end">Q_in</text>
+<rect x="330" y="110" width="400" height="54" rx="10" fill="#fff" stroke="#1B3A55" stroke-width="1.7"/>
+<text x="346" y="131" font-size="11" font-weight="700" fill="#1B3A55">1 · Newton (mass)</text>
+<text x="346" y="153" font-size="15" fill="#0C2235" font-family="'IBM Plex Mono',monospace">m v̇ = pA − mg − bv</text>
+<rect x="330" y="176" width="400" height="54" rx="10" fill="#fff" stroke="#0E7E8C" stroke-width="1.7"/>
+<text x="346" y="197" font-size="11" font-weight="700" fill="#0E7E8C">2 · Chamber (compressibility)</text>
+<text x="346" y="219" font-size="15" fill="#0C2235" font-family="'IBM Plex Mono',monospace">ṗ = (β / V) (Q_in − A v)</text>
+<rect x="330" y="242" width="400" height="54" rx="10" fill="#fff" stroke="#DD841A" stroke-width="1.7"/>
+<text x="346" y="263" font-size="11" font-weight="700" fill="#DD841A">3 · Valve (orifice)</text>
+<text x="346" y="285" font-size="15" fill="#0C2235" font-family="'IBM Plex Mono',monospace">Q_in ≈ Q_max · u · √(p_s − p)</text>
+<rect x="330" y="314" width="400" height="52" rx="10" fill="#E8F3EC" stroke="#0B6A3B" stroke-width="1.5"/>
+<text x="346" y="334" font-size="11" font-weight="700" fill="#0B6A3B">steady state (v̇=0, ṗ=0) → the platform you know</text>
+<text x="346" y="354" font-size="12" fill="#0C2235">p = mg/A = 100 bar (hold) · Q_in = A·v = 10 L/min (cruise)</text>
+<rect x="330" y="378" width="400" height="52" rx="10" fill="#FCF3E2" stroke="#DD841A" stroke-width="1.5"/>
+<text x="346" y="398" font-size="11" font-weight="700" fill="#9A6212">oil-spring resonance</text>
+<text x="346" y="418" font-size="12" fill="#0C2235">k = βA²/V → f_n = (1/2π)√(k/m) ≈ 12 Hz — caps control bandwidth</text>
+</svg>
