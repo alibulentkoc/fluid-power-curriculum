@@ -114,3 +114,6 @@ nav:
       - "03 · PID control": module10/03_pid_control.md
       - "04 · Tuning and stability": module10/04_tuning_and_stability.md
       - "05 · The closed-loop platform": module10/05_the_closed_loop_platform.md
+  - "Module 11 — The Live Digital Model":
+      - Overview: module11/index.md
+      - "01 · The live digital model": module11/01_the_live_digital_model.md

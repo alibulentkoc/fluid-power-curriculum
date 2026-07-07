@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · The live digital model</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.row{display:flex;gap:8px;margin-top:12px}
+.row button{flex:1 1 0;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:13px;font-weight:700;padding:10px 6px;border-radius:9px;cursor:pointer}
+.row button:hover{border-color:var(--teal)}.row button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+.reads{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.read{flex:1 1 120px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.read .k{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:18px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.verdict{margin-top:14px;font-size:13.5px;font-weight:700;padding:11px 14px;border-radius:10px;border:1px solid}
+.ok{background:#E8F3EC;color:var(--green);border-color:#BFE6CF}
+.bad{background:#FBEAE7;color:var(--red);border-color:#F0C4BC}
+</style></head>
+<body><div class="wrap">
+<h1>The live digital model</h1>
+<p class="sub">The model runs beside the machine on the same command. Inject a fault and watch the residual — measured minus predicted — climb past the alarm threshold.</p>
+<div class="card">
+<svg viewBox="0 0 660 230" xmlns="http://www.w3.org/2000/svg">
+  <text x="40" y="14" font-size="9.5" font-weight="700" fill="#586876">RESIDUAL |measured − predicted| (mm)</text>
+  <line x1="46" y1="20" x2="46" y2="200" stroke="#1B3A55" stroke-width="1.3"/>
+  <line x1="46" y1="200" x2="640" y2="200" stroke="#1B3A55" stroke-width="1.3"/>
+  <line id="thr" x1="46" y1="150" x2="640" y2="150" stroke="#C0392B" stroke-width="1.1" stroke-dasharray="4 3"/>
+  <text x="636" y="146" font-size="9" fill="#C0392B" text-anchor="end">alarm threshold</text>
+  <line id="fmark" x1="0" y1="20" x2="0" y2="200" stroke="#8AA0AE" stroke-width="1" stroke-dasharray="2 2" opacity="0"/>
+  <polyline id="curve" points="" fill="none" stroke="#0B6A3B" stroke-width="2"/>
+  <text x="636" y="218" font-size="9" fill="#586876" text-anchor="end">time →</text>
+</svg>
+<div class="row">
+  <button id="healthy" class="active">Healthy</button>
+  <button id="leak">Seal leak</button>
+  <button id="friction">Added friction</button>
+</div>
+<div class="reads">
+  <div class="read"><div class="k">Peak residual</div><div class="v" id="rpk">—</div></div>
+  <div class="read"><div class="k">Threshold</div><div class="v">0.30 mm</div></div>
+  <div class="read"><div class="k">Status</div><div class="v" id="rstat" style="font-size:15px">—</div></div>
+</div>
+<div class="verdict" id="verdict"></div>
+</div></div>
+<script>
+  var vmax=85,dt=1e-3,target=300,thr=0.30,mode='healthy',$=function(id){return document.getElementById(id);};
+  function rng(seed){var s=seed;return function(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};}
+  function gauss(r){return (r()+r()+r()+r()-2)*0.5;}
+  function run(){
+    var r=rng(7), xr=0,xm=0,t=0,T=10,fault_at=5,pts=[],peak=0,flag=null;
+    while(t<T){
+      var u=Math.max(-1,Math.min(1,0.02*(target-xm)));
+      var vr=vmax*u, vm=vmax*u;
+      if(t>=fault_at){ if(mode==='leak')vr-=6.0; if(mode==='friction')vr*=0.80; }
+      xr+=vr*dt; xm+=vm*dt;
+      var res=Math.abs((xr+gauss(r)*0.04)-xm);
+      if(t>=fault_at){peak=Math.max(peak,res); if(flag===null&&res>thr)flag=t;}
+      if(pts.length===0||t-pts[pts.length-1][0]>=0.04) pts.push([t,res]);
+      t+=dt;
+    }
+    return {pts:pts,peak:peak,flag:flag,fault_at:fault_at};
+  }
+  function draw(){
+    var r=run(), T=10, ymax=Math.max(0.6, r.peak*1.15);
+    function PX(t){return 46+(t/T)*594;} function PY(v){return 200-(v/ymax)*180;}
+    $('thr').setAttribute('y1',PY(thr)); $('thr').setAttribute('y2',PY(thr));
+    $('curve').setAttribute('points', r.pts.map(function(q){return PX(q[0]).toFixed(1)+','+Math.max(6,Math.min(204,PY(q[1]))).toFixed(1);}).join(' '));
+    $('curve').setAttribute('stroke', r.peak>thr?'#C0392B':'#0B6A3B');
+    if(mode!=='healthy'){$('fmark').setAttribute('x1',PX(r.fault_at));$('fmark').setAttribute('x2',PX(r.fault_at));$('fmark').setAttribute('opacity','1');}
+    else $('fmark').setAttribute('opacity','0');
+    $('rpk').textContent=(r.peak>10?r.peak.toFixed(0):r.peak.toFixed(2))+' mm';
+    var detected=r.peak>thr;
+    $('rstat').textContent=detected?'FAULT':'healthy';
+    var vd=$('verdict');
+    if(mode==='healthy'){vd.className='verdict ok';vd.textContent='Healthy: the residual stays at the sensor-noise floor ('+r.peak.toFixed(2)+' mm), well under the threshold. The model and machine agree — behaving as designed.';}
+    else if(detected){vd.className='verdict bad';vd.textContent=(mode==='leak'?'Seal leak':'Added friction')+': the machine diverges from the healthy prediction and the residual climbs to '+(r.peak>10?r.peak.toFixed(0):r.peak.toFixed(2))+' mm, crossing the threshold — a fault is flagged, even though the controller may still be holding target.';}
+    else {vd.className='verdict ok';vd.textContent='The residual rose to '+r.peak.toFixed(2)+' mm — detectable but under this threshold. A tighter threshold (still above noise) would flag it earlier.';}
+  }
+  ['healthy','leak','friction'].forEach(function(mk){ $(mk).addEventListener('click',function(){mode=mk;['healthy','leak','friction'].forEach(function(x){$(x).classList.toggle('active',x===mk);});draw();});});
+  draw();
+</script>
+</body></html>
