@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Simulating the mission</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:14px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:6px}
+.verd{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.v{flex:1 1 100px;border-radius:10px;padding:9px 11px;border:1px solid}
+.v .k{font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:var(--slate)}
+.v .d{font-size:15px;font-weight:800;font-family:var(--mono)}
+.pass{background:#E8F3EC;border-color:#BFE6CF}.pass .d{color:var(--green)}
+.fail{background:#FBEAE7;border-color:#F0C4BC}.fail .d{color:var(--red)}
+.note{margin-top:14px;font-size:13px;padding:11px 13px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2;font-weight:600}
+</style></head>
+<body><div class="wrap">
+<h1>Simulating the mission</h1>
+<p class="sub">Run the validated model through a full raise. Read the verdict against the limits — and see the open-loop drift.</p>
+<div class="card">
+<svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg">
+  <text x="40" y="16" font-size="9.5" font-weight="700" fill="#0E7E8C">position (mm)</text>
+  <line x1="40" y1="20" x2="40" y2="120" stroke="#1B3A55" stroke-width="1.2"/><line x1="40" y1="120" x2="640" y2="120" stroke="#1B3A55" stroke-width="1.2"/>
+  <polyline id="pos" points="" fill="none" stroke="#0E7E8C" stroke-width="2.2"/>
+  <line id="tgtl" x1="40" y1="0" x2="640" y2="0" stroke="#0B6A3B" stroke-width="0.8" stroke-dasharray="3 2"/>
+  <text x="40" y="142" font-size="9.5" font-weight="700" fill="#DD841A">pressure (bar)</text>
+  <line x1="40" y1="146" x2="40" y2="238" stroke="#1B3A55" stroke-width="1.2"/><line x1="40" y1="238" x2="640" y2="238" stroke="#1B3A55" stroke-width="1.2"/>
+  <line id="rell" x1="40" y1="0" x2="640" y2="0" stroke="#C0392B" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text id="rellt" x="636" y="0" font-size="8.5" fill="#C0392B" text-anchor="end">115 relief</text>
+  <polyline id="prs" points="" fill="none" stroke="#DD841A" stroke-width="2.2"/>
+  <text x="636" y="250" font-size="9" fill="#586876" text-anchor="end">time →</text>
+</svg>
+<div class="ctrl"><label>Raise height = <span id="hlbl">500</span> mm</label>
+<input id="h" type="range" min="100" max="600" step="10" value="500"/></div>
+<div class="verd">
+  <div class="v pass" id="vt"><div class="k">Arrival time</div><div class="d" id="dt">—</div></div>
+  <div class="v pass" id="vp"><div class="k">Peak pressure</div><div class="d" id="dp">—</div></div>
+  <div class="v pass" id="vf"><div class="k">Peak flow</div><div class="d" id="df">—</div></div>
+  <div class="v fail" id="vh"><div class="k">Hold ±1 mm</div><div class="d" id="dh">—</div></div>
+</div>
+<div class="note" id="note"></div>
+</div></div>
+<script>
+  var m=2000,A=1963.5e-6,g=9.81,b=6000,vmax=0.085,relief=115,pump=10,dt=1e-3,$=function(id){return document.getElementById(id);};
+  function run(h){
+    var x=0,t=0,vprev=0,peakp=0,pos=[],prs=[];
+    while(x<h/1000 && t<20){
+      var u=Math.min(1,t/0.3), v=vmax*u, a=(v-vprev)/dt; vprev=v; x+=v*dt; t+=dt;
+      var p=(m*g+m*a+b*v)/A/1e5; peakp=Math.max(peakp,p);
+      if(pos.length===0 || t-pos[pos.length-1][0]>=0.03){pos.push([t,x*1000]); prs.push([t,p]);}
+    }
+    return {t:t,peakp:peakp,flow:A*vmax*60*1000,pos:pos,prs:prs,drift:vmax*0.03*t*1000};
+  }
+  function draw(){
+    var h=+$('h').value; $('hlbl').textContent=h;
+    var r=run(h), Tmax=r.t*1.02;
+    function PX(tt){return 40+(tt/Tmax)*600;}
+    function PYp(x){return 120-(x/620)*96;}      // position panel
+    function PYr(p){return 238-(p/140)*88;}      // pressure panel
+    $('tgtl').setAttribute('y1',PYp(h)); $('tgtl').setAttribute('y2',PYp(h));
+    $('rell').setAttribute('y1',PYr(relief)); $('rell').setAttribute('y2',PYr(relief)); $('rellt').setAttribute('y',PYr(relief)-3);
+    $('pos').setAttribute('points', r.pos.map(function(q){return PX(q[0]).toFixed(1)+','+PYp(q[1]).toFixed(1);}).join(' '));
+    $('prs').setAttribute('points', r.prs.map(function(q){return PX(q[0]).toFixed(1)+','+PYr(q[1]).toFixed(1);}).join(' '));
+    $('dt').textContent=r.t.toFixed(1)+' s';
+    $('dp').textContent=r.peakp.toFixed(0)+' bar';
+    $('df').textContent=r.flow.toFixed(0)+' L/min';
+    $('dh').textContent='~'+r.drift.toFixed(0)+' mm';
+    $('vp').className='v '+(r.peakp<relief?'pass':'fail');
+    $('vf').className='v '+(r.flow<=pump+0.1?'pass':'fail');
+    $('note').textContent='Raise '+h+' mm: arrives in '+r.t.toFixed(1)+' s (flow-limited), peak '+r.peakp.toFixed(0)+' bar ('+(relief-r.peakp).toFixed(0)+' bar under relief), flow at the '+pump+' L/min pump limit. Feasible — but open-loop drift of ~'+r.drift.toFixed(0)+' mm is far more than ±1 mm, so holding the height needs the closed loop of Module 10.';
+  }
+  $('h').addEventListener('input',draw); draw();
+</script>
+</body></html>
