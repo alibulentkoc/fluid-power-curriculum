@@ -1,0 +1,60 @@
+<svg viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif" role="img" aria-label="Sensing the platform position. Left: the cylinder with a magnetostrictive sensor in the rod bore measuring the piston’s absolute position over the 600 mm stroke. Centre: the measurement chain from position to sensor to a 4 to 20 mA signal to an analogue-to-digital converter to a digital count. Right: a resolution ladder over 600 mm, with 10-bit at 0.59 mm and 12-bit at 0.15 mm marked too coarse (above the 0.1 mm line, a tenth of the plus or minus 1 mm band) and 14-bit at 0.037 mm and 16-bit at 0.009 mm below it.">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#DD841A"/></marker></defs>
+<rect width="760" height="430" rx="16" fill="#F7F9FB"/>
+<text x="30" y="40" font-size="20" font-weight="700" fill="#0C2235">Sensing position</text>
+<text x="30" y="62" font-size="12.5" fill="#586876">Measure the height finely enough that ±1 mm is even visible — you cannot control tighter than you can sense.</text>
+<rect x="73.0" y="100" width="44" height="230" rx="3" fill="#fff" stroke="#1B3A55" stroke-width="1.9"/>
+<rect x="75.0" y="250" width="40" height="6" fill="#1B3A55"/>
+<circle cx="95" cy="253" r="5" fill="#DD841A" stroke="#1B3A55" stroke-width="1.2"/><text x="111" y="257" font-size="8.5" fill="#DD841A">magnet</text>
+<line x1="95" y1="253" x2="95" y2="60" stroke="#5B6B79" stroke-width="7"/>
+<line x1="95" y1="250" x2="95" y2="322" stroke="#0E7E8C" stroke-width="1.6" stroke-dasharray="4 3"/>
+<rect x="65" y="42" width="60" height="20" rx="3" fill="#DD841A"/><text x="95" y="56" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">platform</text>
+<rect x="73.0" y="330" width="44" height="16" rx="2" fill="#0E7E8C"/><text x="95" y="342" font-size="8" font-weight="700" fill="#fff" text-anchor="middle">sensor</text>
+<line x1="131.0" y1="100" x2="131.0" y2="330" stroke="#1B3A55" stroke-width="1"/>
+<text x="135.0" y="215.0" font-size="10" fill="#586876" transform="rotate(90 135.0 215.0)" text-anchor="middle">600 mm stroke</text>
+<text x="95" y="364" font-size="9" fill="#8AA0AE" text-anchor="middle">magnetostrictive · in the bore</text>
+<rect x="210" y="110" width="100" height="40" rx="8" fill="#fff" stroke="#0E7E8C" stroke-width="1.7"/>
+<text x="260.0" y="128" font-size="11.5" font-weight="700" fill="#0C2235" text-anchor="middle">position</text>
+<text x="260.0" y="142" font-size="9" fill="#8AA0AE" text-anchor="middle">piston height</text>
+<line x1="260.0" y1="150" x2="260.0" y2="174" stroke="#DD841A" stroke-width="2" marker-end="url(#a)"/>
+<rect x="210" y="176" width="100" height="40" rx="8" fill="#fff" stroke="#1B3A55" stroke-width="1.7"/>
+<text x="260.0" y="194" font-size="11.5" font-weight="700" fill="#0C2235" text-anchor="middle">sensor</text>
+<text x="260.0" y="208" font-size="9" fill="#8AA0AE" text-anchor="middle">magnetostrictive</text>
+<line x1="260.0" y1="216" x2="260.0" y2="240" stroke="#DD841A" stroke-width="2" marker-end="url(#a)"/>
+<rect x="210" y="242" width="100" height="40" rx="8" fill="#fff" stroke="#1B3A55" stroke-width="1.7"/>
+<text x="260.0" y="260" font-size="11.5" font-weight="700" fill="#0C2235" text-anchor="middle">signal</text>
+<text x="260.0" y="274" font-size="9" fill="#8AA0AE" text-anchor="middle">4–20 mA</text>
+<line x1="260.0" y1="282" x2="260.0" y2="306" stroke="#DD841A" stroke-width="2" marker-end="url(#a)"/>
+<rect x="210" y="308" width="100" height="40" rx="8" fill="#fff" stroke="#1B3A55" stroke-width="1.7"/>
+<text x="260.0" y="326" font-size="11.5" font-weight="700" fill="#0C2235" text-anchor="middle">ADC</text>
+<text x="260.0" y="340" font-size="9" fill="#8AA0AE" text-anchor="middle">N-bit</text>
+<line x1="260.0" y1="348" x2="260.0" y2="372" stroke="#DD841A" stroke-width="2" marker-end="url(#a)"/>
+<rect x="210" y="374" width="100" height="40" rx="8" fill="#fff" stroke="#0E7E8C" stroke-width="1.7"/>
+<text x="260.0" y="392" font-size="11.5" font-weight="700" fill="#0C2235" text-anchor="middle">count</text>
+<text x="260.0" y="406" font-size="9" fill="#8AA0AE" text-anchor="middle">controller reads</text>
+<text x="555.0" y="102" font-size="11" font-weight="700" letter-spacing=".5" fill="#0E7E8C" text-anchor="middle">RESOLUTION over 600 mm vs the 0.1 mm need</text>
+<rect x="380" y="110" width="350" height="250" rx="10" fill="#fff" stroke="#E2E8F0"/>
+<line x1="561.9694829939328" y1="124" x2="561.9694829939328" y2="346" stroke="#C0392B" stroke-width="1.8" stroke-dasharray="4 3"/>
+<text x="561.9694829939328" y="358" font-size="9.5" font-weight="700" fill="#C0392B" text-anchor="middle">0.1 mm need</text>
+<text x="392" y="358" font-size="8.5" fill="#0B6A3B">finer ←</text><text x="690" y="358" font-size="8.5" fill="#C0392B">→ coarser</text>
+<text x="394" y="144" font-size="11" font-weight="700" fill="#1B3A55">10-bit</text>
+<line x1="444" y1="140" x2="658.7480165484193" y2="140" stroke="#C0392B" stroke-width="2" opacity="0.5"/>
+<circle cx="658.7480165484193" cy="140" r="5.5" fill="#C0392B" stroke="#fff" stroke-width="1.5"/>
+<text x="668.7480165484193" y="144" font-size="10" font-weight="700" fill="#C0392B" text-anchor="start">0.586 mm</text>
+<text x="720" y="144" font-size="9" fill="#C0392B" text-anchor="end">too coarse</text>
+<text x="394" y="188" font-size="11" font-weight="700" fill="#1B3A55">12-bit</text>
+<line x1="444" y1="184" x2="582.6829583798691" y2="184" stroke="#C0392B" stroke-width="2" opacity="0.5"/>
+<circle cx="582.6829583798691" cy="184" r="5.5" fill="#C0392B" stroke="#fff" stroke-width="1.5"/>
+<text x="592.6829583798691" y="188" font-size="10" font-weight="700" fill="#C0392B" text-anchor="start">0.146 mm</text>
+<text x="720" y="188" font-size="9" fill="#C0392B" text-anchor="end">too coarse</text>
+<text x="394" y="232" font-size="11" font-weight="700" fill="#1B3A55">14-bit</text>
+<line x1="444" y1="228" x2="507.5497230357678" y2="228" stroke="#0B6A3B" stroke-width="2" opacity="0.5"/>
+<circle cx="507.5497230357678" cy="228" r="5.5" fill="#0B6A3B" stroke="#fff" stroke-width="1.5"/>
+<text x="497.5497230357678" y="232" font-size="10" font-weight="700" fill="#0B6A3B" text-anchor="end">0.037 mm</text>
+<text x="720" y="232" font-size="9" fill="#0B6A3B" text-anchor="end">OK</text>
+<text x="394" y="276" font-size="11" font-weight="700" fill="#1B3A55">16-bit</text>
+<line x1="444" y1="272" x2="430.17212579560356" y2="272" stroke="#0B6A3B" stroke-width="2" opacity="0.5"/>
+<circle cx="430.17212579560356" cy="272" r="5.5" fill="#0B6A3B" stroke="#fff" stroke-width="1.5"/>
+<text x="420.17212579560356" y="276" font-size="10" font-weight="700" fill="#0B6A3B" text-anchor="end">0.009 mm</text>
+<text x="720" y="276" font-size="9" fill="#0B6A3B" text-anchor="end">OK</text>
+</svg>
