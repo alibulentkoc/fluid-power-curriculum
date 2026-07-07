@@ -111,3 +111,4 @@ nav:
       - Overview: module10/index.md
       - "01 · The feedback principle": module10/01_the_feedback_principle.md
       - "02 · Proportional control": module10/02_proportional_control.md
+      - "03 · PID control": module10/03_pid_control.md

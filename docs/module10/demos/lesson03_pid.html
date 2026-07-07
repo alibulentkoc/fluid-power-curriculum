@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · PID control</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.row{display:flex;gap:8px;margin-top:12px}
+.row button{flex:1 1 0;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:14px;font-weight:700;padding:11px 8px;border-radius:9px;cursor:pointer}
+.row button:hover{border-color:var(--teal)}.row button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+.reads{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.read{flex:1 1 130px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.read .k{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:18px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.verdict{margin-top:14px;font-size:13.5px;font-weight:700;padding:11px 14px;border-radius:10px;border:1px solid}
+.warn{background:#FCF3E2;color:#9A6212;border-color:#EBD6A8}
+.ok{background:#E8F3EC;color:var(--green);border-color:#BFE6CF}
+</style></head>
+<body><div class="wrap">
+<h1>PID control</h1>
+<p class="sub">The platform holds 100 mm while a downward load pushes it. Switch controllers and watch the droop appear, then vanish, then settle cleanly.</p>
+<div class="card">
+<svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+  <line x1="46" y1="16" x2="46" y2="196" stroke="#1B3A55" stroke-width="1.3"/>
+  <line x1="46" y1="196" x2="640" y2="196" stroke="#1B3A55" stroke-width="1.3"/>
+  <line id="tgt" x1="46" y1="70" x2="640" y2="70" stroke="#0B6A3B" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="636" y="66" font-size="9" fill="#0B6A3B" text-anchor="end">target 100 mm</text>
+  <text x="50" y="30" font-size="9" fill="#586876">100.5</text>
+  <text x="50" y="192" font-size="9" fill="#586876">98.5</text>
+  <polyline id="curve" points="" fill="none" stroke="#0E7E8C" stroke-width="2.2"/>
+  <text x="636" y="214" font-size="9" fill="#586876" text-anchor="end">time →</text>
+</svg>
+<div class="row">
+  <button id="bP">P only</button>
+  <button id="bPI">PI</button>
+  <button id="bPID" class="active">PID</button>
+</div>
+<div class="reads">
+  <div class="read"><div class="k">Steady error</div><div class="v" id="rerr">—</div></div>
+  <div class="read"><div class="k">Overshoot</div><div class="v" id="ros">—</div></div>
+  <div class="read"><div class="k">Terms active</div><div class="v" id="rterms" style="font-size:15px">—</div></div>
+</div>
+<div class="verdict" id="verdict"></div>
+</div></div>
+<script>
+  var vmax=85,wn=77,zeta=0.12,dt=2e-5,target=100,dist=-3,mode='PID',$=function(id){return document.getElementById(id);};
+  var gains={P:[0.15,0,0],PI:[0.15,0.4,0],PID:[0.15,0.4,0.006]};
+  function sim(){
+    var g=gains[mode],Kp=g[0],Ki=g[1],Kd=g[2];
+    var x=target,v=0,w=0,t=0,I=0,eprev=0,T=2.5,pts=[],minx=target,maxx=target;
+    while(t<T){ var e=target-x; I+=e*dt; var de=(e-eprev)/dt; eprev=e;
+      var u=Math.max(-1,Math.min(1,Kp*e+Ki*I+Kd*de));
+      var dv=w,dw=wn*wn*(vmax*u+dist-v)-2*zeta*wn*w;
+      v+=dv*dt; w+=dw*dt; x+=v*dt; t+=dt;
+      minx=Math.min(minx,x); maxx=Math.max(maxx,x);
+      if(pts.length===0||t-pts[pts.length-1][0]>=0.008) pts.push([t,x]); }
+    return {pts:pts,xf:x,minx:minx,maxx:maxx};
+  }
+  function draw(){
+    var r=sim(),T=2.5;
+    function PX(t){return 46+(t/T)*594;} function PY(x){return 196-((x-98.5)/2.0)*180;}
+    $('tgt').setAttribute('y1',PY(100)); $('tgt').setAttribute('y2',PY(100));
+    $('curve').setAttribute('points', r.pts.map(function(q){return PX(q[0]).toFixed(1)+','+Math.max(6,Math.min(214,PY(q[1]))).toFixed(1);}).join(' '));
+    var err=target-r.xf, os=(r.maxx-target)/target*100; if(os<0)os=0;
+    $('curve').setAttribute('stroke', Math.abs(err)<0.05?'#0B6A3B':'#DD841A');
+    $('rerr').textContent=(err>=0?'+':'')+err.toFixed(2)+' mm';
+    $('ros').textContent=os.toFixed(1)+' %';
+    $('rterms').textContent=mode;
+    var vd=$('verdict');
+    if(mode==='P'){vd.className='verdict warn';vd.textContent='P only: the platform settles '+err.toFixed(2)+' mm below target — the residual droop. Proportional control needs a standing error to hold command against the load.';}
+    else if(mode==='PI'){vd.className='verdict ok';vd.textContent='PI: the integral accumulates the error and drives it to '+err.toFixed(2)+' mm — the droop is erased. The integral now supplies the holding command.';}
+    else {vd.className='verdict ok';vd.textContent='PID: zero steady error ('+err.toFixed(2)+' mm) and the derivative damps the settle (overshoot '+os.toFixed(1)+'%). Fast, exact, and damped — the full controller.';}
+  }
+  ['P','PI','PID'].forEach(function(mk){ $('b'+mk).addEventListener('click',function(){mode=mk;['P','PI','PID'].forEach(function(x){$('b'+x).classList.toggle('active',x===mk);});draw();});});
+  draw();
+</script>
+</body></html>
