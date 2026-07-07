@@ -117,3 +117,4 @@ nav:
   - "Module 11 — The Live Digital Model":
       - Overview: module11/index.md
       - "01 · The live digital model": module11/01_the_live_digital_model.md
+      - "02 · The residual signal": module11/02_the_residual_signal.md

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · The residual signal</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:12px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:5px}
+.reads{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.read{flex:1 1 110px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.read .k{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:17px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.verdict{margin-top:14px;font-size:13.5px;font-weight:700;padding:11px 14px;border-radius:10px;border:1px solid}
+.ok{background:#E8F3EC;color:var(--green);border-color:#BFE6CF}
+.warn{background:#FCF3E2;color:#9A6212;border-color:#EBD6A8}
+</style></head>
+<body><div class="wrap">
+<h1>The residual signal</h1>
+<p class="sub">A slow drift develops in the residual after the midpoint. Tune the threshold (in σ) and the averaging window, and balance false alarms against catching the drift.</p>
+<div class="card">
+<svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+  <text x="40" y="13" font-size="9.5" font-weight="700" fill="#586876">RESIDUAL (mm)</text>
+  <line x1="46" y1="18" x2="46" y2="196" stroke="#1B3A55" stroke-width="1.3"/>
+  <line x1="46" y1="196" x2="640" y2="196" stroke="#1B3A55" stroke-width="1.3"/>
+  <line id="thr" x1="46" y1="80" x2="640" y2="80" stroke="#C0392B" stroke-width="1.1" stroke-dasharray="4 3"/>
+  <text id="thrl" x="636" y="76" font-size="9" fill="#C0392B" text-anchor="end">threshold</text>
+  <line id="dstart" x1="343" y1="18" x2="343" y2="196" stroke="#8AA0AE" stroke-width="1" stroke-dasharray="2 2"/>
+  <text x="346" y="192" font-size="8" fill="#8AA0AE">drift starts</text>
+  <polyline id="raw" points="" fill="none" stroke="#B8C4CE" stroke-width="0.8"/>
+  <polyline id="filt" points="" fill="none" stroke="#0E7E8C" stroke-width="2"/>
+</svg>
+<div class="ctrl"><label>Threshold = <span id="klbl">3.0</span> σ</label>
+<input id="k" type="range" min="1.5" max="4.5" step="0.1" value="3.0"/></div>
+<div class="ctrl"><label>Averaging window = <span id="wlbl">20</span> samples</label>
+<input id="w" type="range" min="1" max="100" step="1" value="20"/></div>
+<div class="reads">
+  <div class="read"><div class="k">Threshold</div><div class="v" id="rthr">—</div></div>
+  <div class="read"><div class="k">False alarms</div><div class="v" id="rfa">—</div></div>
+  <div class="read"><div class="k">Drift caught</div><div class="v" id="rdet" style="font-size:14px">—</div></div>
+</div>
+<div class="verdict" id="verdict"></div>
+</div></div>
+<script>
+  var mu=0.01,sd=0.02,drift_rate=0.10,$=function(id){return document.getElementById(id);};
+  function rng(s){return function(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};}
+  function gauss(r){var s=0;for(var i=0;i<12;i++)s+=r();return s-6;}
+  var N=300, dstart=150;
+  function build(){
+    var r=rng(11), raw=[];
+    for(var i=0;i<N;i++){ var drift=i>=dstart?(i-dstart)/150*0.07:0; raw.push(mu+drift+gauss(r)*sd); }
+    return raw;
+  }
+  var RAW=build();
+  function draw(){
+    var k=+$('k').value, Wn=+$('w').value; $('klbl').textContent=k.toFixed(1); $('wlbl').textContent=Wn;
+    var sigf=sd/Math.sqrt(Wn), thr=mu+k*sigf;
+    // filtered
+    var filt=[], fa=0, detAt=null;
+    for(var i=0;i<N;i++){ var a=Math.max(0,i-Wn+1), s=0,c=0; for(var j=a;j<=i;j++){s+=RAW[j];c++;} var f=s/c; filt.push(f);
+      if(i<dstart-Wn){ if(f>thr) fa++; }                       // false alarms in healthy region
+      if(i>=dstart && detAt===null && f>thr) detAt=i;
+    }
+    function PX(i){return 46+(i/N)*594;} function PY(v){return 196-(v/0.14)*178;}
+    $('thr').setAttribute('y1',PY(thr)); $('thr').setAttribute('y2',PY(thr)); $('thrl').setAttribute('y',PY(thr)-4);
+    $('raw').setAttribute('points', RAW.map(function(v,i){return PX(i).toFixed(1)+','+Math.max(4,Math.min(214,PY(v))).toFixed(1);}).join(' '));
+    $('filt').setAttribute('points', filt.map(function(v,i){return PX(i).toFixed(1)+','+Math.max(4,Math.min(214,PY(v))).toFixed(1);}).join(' '));
+    $('rthr').textContent=thr.toFixed(3)+' mm';
+    $('rfa').textContent=fa;
+    $('rdet').textContent=detAt!==null?'yes':'missed';
+    var vd=$('verdict');
+    if(fa>3){vd.className='verdict warn';vd.textContent='Threshold too tight for this window: '+fa+' false alarms in the healthy region. Raise the σ multiplier or widen the averaging window (which shrinks the noise) so the line sits clear of the noise.';}
+    else if(detAt===null){vd.className='verdict warn';vd.textContent='No false alarms, but the slow drift was missed — the threshold is above what the (lightly filtered) drift reaches. Widen the window to shrink the noise band so a lower threshold still avoids false alarms.';}
+    else {vd.className='verdict ok';vd.textContent='Well balanced: '+fa+' false alarms and the drift is caught. Filtering (W='+Wn+') shrank the noise to σ/√W='+sigf.toFixed(4)+' mm, so a '+k.toFixed(1)+'σ threshold sits clear of noise yet low enough to catch the drift.';}
+  }
+  $('k').addEventListener('input',draw); $('w').addEventListener('input',draw); draw();
+</script>
+</body></html>
