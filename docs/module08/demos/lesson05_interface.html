@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · The driven-and-sensed platform</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:14px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:6px}
+.row{display:flex;gap:8px;margin-top:12px}
+.row button{flex:1 1 0;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-family:var(--sans);font-size:13.5px;font-weight:700;padding:11px 10px;border-radius:9px;cursor:pointer}
+.row button:hover{border-color:var(--teal)}
+.row button.primary{background:#0C6A74;border-color:#0C6A74;color:#fff}
+.reads{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.read{flex:1 1 90px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.read .k{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:17px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.read.in{border-color:#BFE6E2;background:#EAF6F5}
+.read.out{border-color:#CBD8E0}
+.note{margin-top:14px;font-size:13px;padding:11px 13px;border-radius:10px;background:#FCF3E2;color:#9A6212;border:1px solid #EBD6A8;font-weight:600}
+</style></head>
+<body><div class="wrap">
+<h1>The driven-and-sensed platform</h1>
+<p class="sub">Command a speed and step the clock. Position and pressure report back through the interface. Try to land on the target — with the loop open, you must stop it yourself.</p>
+<div class="card">
+<svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- position column 0..600mm -->
+  <text x="60" y="20" font-size="10" fill="#586876" text-anchor="middle">position 0–600 mm</text>
+  <rect x="40" y="30" width="40" height="170" rx="5" fill="#EEF2F5" stroke="#D3DDE6"/>
+  <rect id="xfill" x="40" y="200" width="40" height="0" rx="5" fill="#0E7E8C"/>
+  <!-- target line at 300mm -->
+  <line id="tgt" x1="34" y1="0" x2="86" y2="0" stroke="#0B6A3B" stroke-width="2" stroke-dasharray="4 2"/>
+  <text id="tgtl" x="92" y="0" font-size="10" font-weight="700" fill="#0B6A3B">target 300 mm</text>
+  <!-- interface schematic -->
+  <rect x="150" y="70" width="120" height="70" rx="10" fill="#EAF6F5" stroke="#1B3A55" stroke-width="1.8"/>
+  <text x="210" y="100" font-size="11" font-weight="800" fill="#0C2235" text-anchor="middle">PLATFORM</text>
+  <text x="210" y="118" font-size="9" fill="#586876" text-anchor="middle">plant</text>
+  <line x1="120" y1="105" x2="148" y2="105" stroke="#0E7E8C" stroke-width="2.2" marker-end="url(#a)"/>
+  <text x="110" y="100" font-size="11" font-weight="700" fill="#0E7E8C" text-anchor="end">u</text>
+  <line x1="270" y1="90" x2="320" y2="90" stroke="#0E7E8C" stroke-width="2.2" marker-end="url(#a)"/><text x="296" y="83" font-size="10" font-weight="700" fill="#0E7E8C" text-anchor="middle">x</text>
+  <line x1="270" y1="120" x2="320" y2="120" stroke="#0E7E8C" stroke-width="2.2" marker-end="url(#a)"/><text x="296" y="135" font-size="10" font-weight="700" fill="#0E7E8C" text-anchor="middle">p</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker>
+        <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#B7C2CC"/></marker></defs>
+  <!-- open feedback -->
+  <path d="M330,120 L330,170 L90,170 L90,140" fill="none" stroke="#B7C2CC" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#ag)"/>
+  <text x="210" y="185" font-size="9.5" font-weight="700" fill="#8AA0AE" text-anchor="middle">feedback open — closed in Module 10</text>
+  <!-- out readouts -->
+  <text x="340" y="94" font-size="12" font-family="'IBM Plex Mono',monospace" font-weight="700" fill="#0C2235" id="xtxt">0 mm</text>
+  <text x="340" y="124" font-size="12" font-family="'IBM Plex Mono',monospace" font-weight="700" fill="#0C2235" id="ptxt">100 bar</text>
+</svg>
+<div class="ctrl"><label>Command u = <span id="ulbl">50</span>%  (speed <span id="vlbl">42.5</span> mm/s)</label>
+<input id="u" type="range" min="0" max="100" step="1" value="50"/></div>
+<div class="row">
+  <button id="step" class="primary">▶ Step +0.5 s</button>
+  <button id="reset">Reset</button>
+</div>
+<div class="reads">
+  <div class="read in"><div class="k">In · command</div><div class="v" id="ru">50%</div></div>
+  <div class="read out"><div class="k">Out · position</div><div class="v" id="rx">0 mm</div></div>
+  <div class="read out"><div class="k">Out · load</div><div class="v" id="rl">2000 kg</div></div>
+  <div class="read"><div class="k">Elapsed</div><div class="v" id="rt">0.0 s</div></div>
+</div>
+<div class="note" id="note">Drive the platform up and try to stop exactly on the 300 mm target by zeroing the command in time.</div>
+</div></div>
+<script>
+  var vmax=85, stroke=600, A=1963.5e-6, loadkg=2000, target=300;
+  var x=0, t=0, $=function(id){return document.getElementById(id);};
+  function yfor(mm){return 30+170-(mm/stroke)*170;}
+  function pressure(){return loadkg*9.81/A/1e5;}
+  function draw(){
+    var u=+$('u').value/100, v=vmax*u;
+    $('ulbl').textContent=Math.round(u*100); $('vlbl').textContent=v.toFixed(1);
+    $('xfill').setAttribute('y', yfor(x)); $('xfill').setAttribute('height', 30+170-yfor(x));
+    $('tgt').setAttribute('y1', yfor(target)); $('tgt').setAttribute('y2', yfor(target)); $('tgtl').setAttribute('y', yfor(target)+3);
+    $('xtxt').textContent=x.toFixed(1)+' mm'; $('ptxt').textContent=pressure().toFixed(0)+' bar';
+    $('ru').textContent=Math.round(u*100)+'%';
+    $('rx').textContent=x.toFixed(1)+' mm';
+    $('rl').textContent=Math.round(pressure()*1e5*A/9.81)+' kg';
+    $('rt').textContent=t.toFixed(1)+' s';
+    var err=x-target, n=$('note');
+    if(x>=stroke){n.textContent='Top of stroke (600 mm). Reset to try again.';}
+    else if(Math.abs(err)<=1){n.style.cssText='';n.textContent='On target ('+x.toFixed(1)+' mm, error '+err.toFixed(1)+' mm) — but you had to time the stop by hand. A closed loop (Module 10) does this automatically and holds it.';}
+    else if(err>1){n.textContent='Overshot by '+err.toFixed(1)+' mm — with the loop open, nothing eased off near the target. Reset and stop earlier.';}
+    else {n.textContent='Below target by '+(-err).toFixed(1)+' mm. Keep a command and step, or raise it — but you must stop it yourself (loop open).';}
+  }
+  $('u').addEventListener('input',draw);
+  $('step').addEventListener('click',function(){var u=+$('u').value/100; x=Math.min(x+vmax*u*0.5, stroke); t+=0.5; draw();});
+  $('reset').addEventListener('click',function(){x=0;t=0;draw();});
+  draw();
+</script>
+</body></html>
