@@ -1,0 +1,42 @@
+<svg viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif" role="img" aria-label="A fault-signature matrix. Rows are four faults - internal leak, added friction, entrained air, position-sensor fault. Columns are the residuals - position, pressure, resonance frequency, cross-check. Leak: position down, pressure drops, resonance none, consistent. Friction: position lag, pressure up 10 bar, resonance none, consistent. Entrained air: position ringing, pressure none, resonance drops 12 to 8 Hz, consistent. Sensor fault: position jumps, pressure normal, resonance none, cross-check inconsistent pointing to the sensor. The pattern across residuals names the fault; a position change with normal pressure reveals a sensor fault.">
+<rect width="760" height="430" rx="16" fill="#F7F9FB"/>
+<text x="30" y="34" font-size="20" font-weight="700" fill="#0C2235">Detecting and diagnosing faults</text>
+<text x="30" y="55" font-size="12.5" fill="#586876">One residual detects; the pattern across signals diagnoses — which fired, which stayed quiet.</text>
+<rect x="190" y="76" width="119" height="28" rx="6" fill="#E7EDF2"/>
+<text x="249.5" y="95" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">position</text>
+<rect x="315" y="76" width="119" height="28" rx="6" fill="#E7EDF2"/>
+<text x="374.5" y="95" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">pressure</text>
+<rect x="440" y="76" width="119" height="28" rx="6" fill="#E7EDF2"/>
+<text x="499.5" y="95" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">resonance</text>
+<rect x="565" y="76" width="119" height="28" rx="6" fill="#E7EDF2"/>
+<text x="624.5" y="95" font-size="10.5" font-weight="700" fill="#1B3A55" text-anchor="middle">cross-check</text>
+<text x="176" y="95" font-size="10.5" font-weight="700" fill="#586876" text-anchor="end">fault ↓</text>
+<rect x="30" y="110" width="150" height="54" rx="7" fill="#C0392B"/>
+<text x="105.0" y="141.0" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">Internal leak</text>
+<rect x="190" y="110" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="249.5" y="135.0" font-size="15" font-weight="800" fill="#C0392B" text-anchor="middle">↓</text><text x="249.5" y="150.0" font-size="8" fill="#586876" text-anchor="middle">sags</text>
+<rect x="315" y="110" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="374.5" y="135.0" font-size="15" font-weight="800" fill="#DD841A" text-anchor="middle">↓</text><text x="374.5" y="150.0" font-size="8" fill="#586876" text-anchor="middle">drops</text>
+<rect x="440" y="110" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="499.5" y="141.0" font-size="13" fill="#8AA0AE" text-anchor="middle">—</text>
+<rect x="565" y="110" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="624.5" y="135.0" font-size="15" font-weight="800" fill="#0B6A3B" text-anchor="middle">✓</text><text x="624.5" y="150.0" font-size="8" fill="#586876" text-anchor="middle">real</text>
+<rect x="30" y="172" width="150" height="54" rx="7" fill="#DD841A"/>
+<text x="105.0" y="203.0" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">Added friction</text>
+<rect x="190" y="172" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="249.5" y="197.0" font-size="15" font-weight="800" fill="#DD841A" text-anchor="middle">~</text><text x="249.5" y="212.0" font-size="8" fill="#586876" text-anchor="middle">lags</text>
+<rect x="315" y="172" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="374.5" y="197.0" font-size="15" font-weight="800" fill="#C0392B" text-anchor="middle">↑</text><text x="374.5" y="212.0" font-size="8" fill="#586876" text-anchor="middle">+10 bar</text>
+<rect x="440" y="172" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="499.5" y="203.0" font-size="13" fill="#8AA0AE" text-anchor="middle">—</text>
+<rect x="565" y="172" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="624.5" y="197.0" font-size="15" font-weight="800" fill="#0B6A3B" text-anchor="middle">✓</text><text x="624.5" y="212.0" font-size="8" fill="#586876" text-anchor="middle">real</text>
+<rect x="30" y="234" width="150" height="54" rx="7" fill="#6B4FA0"/>
+<text x="105.0" y="265.0" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">Entrained air</text>
+<rect x="190" y="234" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="249.5" y="259.0" font-size="15" font-weight="800" fill="#6B4FA0" text-anchor="middle">~</text><text x="249.5" y="274.0" font-size="8" fill="#586876" text-anchor="middle">ring</text>
+<rect x="315" y="234" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="374.5" y="265.0" font-size="13" fill="#8AA0AE" text-anchor="middle">—</text>
+<rect x="440" y="234" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="499.5" y="259.0" font-size="15" font-weight="800" fill="#6B4FA0" text-anchor="middle">↓</text><text x="499.5" y="274.0" font-size="8" fill="#586876" text-anchor="middle">12→8 Hz</text>
+<rect x="565" y="234" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="624.5" y="259.0" font-size="15" font-weight="800" fill="#0B6A3B" text-anchor="middle">✓</text><text x="624.5" y="274.0" font-size="8" fill="#586876" text-anchor="middle">real</text>
+<rect x="30" y="296" width="150" height="54" rx="7" fill="#0E7E8C"/>
+<text x="105.0" y="327.0" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">Sensor fault</text>
+<rect x="190" y="296" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="249.5" y="321.0" font-size="15" font-weight="800" fill="#0E7E8C" text-anchor="middle">↑</text><text x="249.5" y="336.0" font-size="8" fill="#586876" text-anchor="middle">jumps</text>
+<rect x="315" y="296" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="374.5" y="327.0" font-size="13" fill="#8AA0AE" text-anchor="middle">—</text>
+<rect x="440" y="296" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="499.5" y="327.0" font-size="13" fill="#8AA0AE" text-anchor="middle">—</text>
+<rect x="565" y="296" width="119" height="54" rx="7" fill="#fff" stroke="#E2E8F0"/><text x="624.5" y="321.0" font-size="15" font-weight="800" fill="#C0392B" text-anchor="middle">✗</text><text x="624.5" y="336.0" font-size="8" fill="#586876" text-anchor="middle">SENSOR</text>
+<rect x="563" y="294" width="123" height="58" rx="8" fill="none" stroke="#C0392B" stroke-width="2"/>
+<rect x="30" y="364" width="700" height="52" rx="9" fill="#EAF6F5" stroke="#0E7E8C" stroke-width="1.2"/>
+<text x="380" y="386" font-size="11.5" font-weight="700" fill="#0B5A63" text-anchor="middle">The pattern is the diagnosis: each fault moves a different combination of signals.</text>
+<text x="380" y="404" font-size="11" fill="#0B5A63" text-anchor="middle">A position residual with NORMAL pressure is a contradiction — the sensor is lying, not the machine.</text>
+</svg>
