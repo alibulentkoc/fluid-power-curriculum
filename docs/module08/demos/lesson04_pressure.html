@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Sensing pressure and load</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.row{display:flex;gap:8px;margin:6px 0}
+.row button{flex:1 1 0;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:13px;font-weight:700;padding:9px 8px;border-radius:9px;cursor:pointer}
+.row button:hover{border-color:var(--teal)}.row button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+.ctrl{margin-top:14px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:6px}
+.reads{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.read{flex:1 1 120px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.read .k{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:19px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.verdict{margin-top:14px;font-size:13.5px;font-weight:700;padding:11px 14px;border-radius:10px;border:1px solid}
+.ok{background:#E8F3EC;color:var(--green);border-color:#BFE6CF}
+.warn{background:#FCF3E2;color:#9A6212;border-color:#EBD6A8}
+.bad{background:#FBEAE7;color:var(--red);border-color:#F0C4BC}
+</style></head>
+<body><div class="wrap">
+<h1>Sensing pressure and load</h1>
+<p class="sub">The cap-line transducer reads the load as pressure (F = p·A). Change the load, or trigger a hard-stop spike, and watch the gauge — and see why the range needs headroom.</p>
+<div class="card">
+<svg viewBox="0 0 680 210" xmlns="http://www.w3.org/2000/svg">
+  <!-- vertical gauge 0..FS -->
+  <text id="fslbl" x="70" y="20" font-size="11" font-weight="700" fill="#586876" text-anchor="middle">0–250 bar</text>
+  <rect x="40" y="30" width="60" height="160" rx="6" fill="#EEF2F5" stroke="#D3DDE6"/>
+  <rect id="znorm" x="40" y="0" width="60" height="0" fill="#DCEEE0"/>
+  <rect id="zcau" x="40" y="0" width="60" height="0" fill="#FCEFD8"/>
+  <rect id="fill" x="40" y="190" width="60" height="0" fill="#0E7E8C"/>
+  <line id="rell" x1="34" y1="0" x2="106" y2="0" stroke="#C0392B" stroke-width="2"/>
+  <text id="relll" x="110" y="0" font-size="10" font-weight="700" fill="#C0392B">115 relief</text>
+  <text id="satlbl" x="70" y="205" font-size="9" fill="#586876" text-anchor="middle"></text>
+  <!-- needle readout -->
+  <text x="150" y="70" font-size="12" fill="#586876">cap pressure</text>
+  <text id="pbig" x="150" y="100" font-size="30" font-weight="800" font-family="'IBM Plex Mono',monospace" fill="#0C2235">100</text>
+  <text x="150" y="118" font-size="12" fill="#586876">bar</text>
+  <text x="330" y="70" font-size="12" fill="#586876">transducer reads</text>
+  <text id="wbig" x="330" y="100" font-size="30" font-weight="800" font-family="'IBM Plex Mono',monospace" fill="#0E7E8C">2000</text>
+  <text x="330" y="118" font-size="12" fill="#586876">kg</text>
+</svg>
+<div class="ctrl"><label>Load on the platform = <span id="llbl">2000</span> kg</label>
+<input id="load" type="range" min="0" max="2600" step="50" value="2000"/></div>
+<div class="row">
+  <button id="stop">Simulate hard-stop spike (143 bar)</button>
+</div>
+<div class="row">
+  <button data-fs="250" id="fs250" class="active">Range 250 bar (headroom)</button>
+  <button data-fs="120" id="fs120">Range 120 bar</button>
+</div>
+<div class="reads">
+  <div class="read"><div class="k">Cap pressure</div><div class="v" id="rp">—</div></div>
+  <div class="read"><div class="k">Load (read)</div><div class="v" id="rw">—</div></div>
+  <div class="read"><div class="k">Zone</div><div class="v" id="rz" style="font-size:15px">—</div></div>
+</div>
+<div class="verdict" id="verdict"></div>
+</div></div>
+<script>
+  var A=1963.5e-6, relief=115, spike=143, FS=250, gy=30, gh=160, $=function(id){return document.getElementById(id);};
+  var spikeOn=false;
+  function yfor(bar){var y=gy+gh-(Math.min(bar,FS)/FS)*gh; return y;}
+  function draw(){
+    var load=+$('load').value; $('llbl').textContent=load;
+    var p = load*9.81/A/1e5;                 // bar from load
+    if(spikeOn) p = spike;                    // hard-stop overrides
+    var shown = Math.min(p, FS);              // transducer saturates at FS
+    var sat = p>FS;
+    // zones
+    $('znorm').setAttribute('y', yfor(105)); $('znorm').setAttribute('height', yfor(80)-yfor(105));
+    $('zcau').setAttribute('y', yfor(relief)); $('zcau').setAttribute('height', yfor(105)-yfor(relief));
+    $('rell').setAttribute('y1', yfor(relief)); $('rell').setAttribute('y2', yfor(relief)); $('relll').setAttribute('y', yfor(relief)+4);
+    $('fill').setAttribute('y', yfor(shown)); $('fill').setAttribute('height', gy+gh-yfor(shown));
+    $('fill').setAttribute('fill', p>relief? '#C0392B' : (p>105? '#DD841A':'#0E7E8C'));
+    $('fslbl').textContent='0–'+FS+' bar';
+    $('satlbl').textContent = sat? 'SATURATED' : '';
+    var wread = shown*1e5*A/9.81;             // kg the transducer can report (clipped if saturated)
+    $('pbig').textContent = p.toFixed(0);
+    $('wbig').textContent = Math.round(wread);
+    $('rp').textContent = p.toFixed(0)+' bar' + (sat? ' (clipped)':'');
+    $('rw').textContent = Math.round(wread)+' kg';
+    var zone,cls;
+    if(p>relief){zone='OVERLOAD';cls='bad';}
+    else if(p>105){zone='caution';cls='warn';}
+    else {zone='normal';cls='ok';}
+    $('rz').textContent=zone;
+    var vd=$('verdict');
+    if(spikeOn && sat){vd.className='verdict bad';vd.textContent='Hard-stop spike is '+spike+' bar but the '+FS+' bar range saturates at '+FS+' — the gauge clips and the true spike is invisible. A fault this hides cannot be diagnosed. Use more range.';}
+    else if(spikeOn){vd.className='verdict ok';vd.textContent='Hard-stop spike '+spike+' bar is captured on-scale (range '+FS+' bar). The event is recorded, so the fault can be diagnosed.';}
+    else if(p>relief){vd.className='verdict bad';vd.textContent='Load implies '+p.toFixed(0)+' bar — over the 115 bar relief. Overload: the control system should refuse the lift before the relief trips.';}
+    else if(p>105){vd.className='verdict warn';vd.textContent='Approaching the relief ('+p.toFixed(0)+' bar). Caution zone — near the load limit.';}
+    else {vd.className='verdict ok';vd.textContent='Normal: '+p.toFixed(0)+' bar reads '+Math.round(wread)+' kg. The cap transducer is weighing the load.';}
+  }
+  $('load').addEventListener('input',function(){spikeOn=false;draw();});
+  $('stop').addEventListener('click',function(){spikeOn=!spikeOn;draw();});
+  document.querySelectorAll('[data-fs]').forEach(function(b){b.onclick=function(){
+    document.querySelectorAll('[data-fs]').forEach(function(x){x.classList.toggle('active',x===b);});
+    FS=+b.dataset.fs; draw();
+  };});
+  draw();
+</script>
+</body></html>

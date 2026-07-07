@@ -98,3 +98,4 @@ nav:
       - "01 · Commanding with electricity": module08/01_commanding_with_electricity.md
       - "02 · On/off vs proportional": module08/02_on_off_vs_proportional.md
       - "03 · Sensing position": module08/03_sensing_position.md
+      - "04 · Sensing pressure and load": module08/04_sensing_pressure_and_load.md
