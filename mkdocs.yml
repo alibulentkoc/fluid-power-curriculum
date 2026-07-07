@@ -112,3 +112,4 @@ nav:
       - "01 · The feedback principle": module10/01_the_feedback_principle.md
       - "02 · Proportional control": module10/02_proportional_control.md
       - "03 · PID control": module10/03_pid_control.md
+      - "04 · Tuning and stability": module10/04_tuning_and_stability.md
