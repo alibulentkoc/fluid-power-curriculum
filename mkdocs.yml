@@ -107,3 +107,6 @@ nav:
       - "03 · Solving it numerically": module09/03_solving_it_numerically.md
       - "04 · Validating the model": module09/04_validating_the_model.md
       - "05 · Simulating the mission": module09/05_simulating_the_mission.md
+  - "Module 10 — Control Systems":
+      - Overview: module10/index.md
+      - "01 · The feedback principle": module10/01_the_feedback_principle.md

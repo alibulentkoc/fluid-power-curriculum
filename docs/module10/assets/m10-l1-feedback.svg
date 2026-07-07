@@ -1,0 +1,35 @@
+<svg viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif" role="img" aria-label="Two control structures. Top open-loop: setpoint to controller to plant to output position, no feedback path; a disturbance pushes the output off and it lands 15 mm high uncorrected. Bottom closed-loop: setpoint into a summing junction, error (setpoint minus measured position) to controller to plant to output; a sensor measures the output and feeds it back to the summing junction with a minus sign; a disturbance now grows the error and is corrected, holding to plus or minus 1 mm.">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#1B3A55"/></marker><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#C0392B"/></marker></defs>
+<rect width="760" height="430" rx="16" fill="#F7F9FB"/>
+<text x="30" y="38" font-size="20" font-weight="700" fill="#0C2235">The feedback principle</text>
+<text x="30" y="59" font-size="12.5" fill="#586876">One wire — the measured output fed back and subtracted — turns drifting into holding.</text>
+<text x="30" y="86" font-size="12" font-weight="700" fill="#C0392B">OPEN-LOOP — command and hope</text>
+<text x="40" y="120" font-size="11" fill="#586876">setpoint</text>
+<line x1="90" y1="116" x2="128" y2="116" stroke="#1B3A55" stroke-width="2" marker-end="url(#a)"/>
+<rect x="130" y="98" width="110" height="38" rx="9" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/><text x="185.0" y="121.0" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">controller</text>
+<line x1="240" y1="116" x2="288" y2="116" stroke="#1B3A55" stroke-width="2" marker-end="url(#a)"/>
+<rect x="290" y="98" width="120" height="38" rx="9" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/><text x="350.0" y="121.0" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">plant (platform)</text>
+<line x1="410" y1="116" x2="470" y2="116" stroke="#1B3A55" stroke-width="2" marker-end="url(#a)"/>
+<text x="476" y="120" font-size="11" font-weight="700" fill="#1B3A55">output x</text>
+<line x1="350" y1="76" x2="350" y2="96" stroke="#C0392B" stroke-width="2" marker-end="url(#ar)"/><text x="356" y="84" font-size="9.5" fill="#C0392B">disturbance</text>
+<text x="476" y="136" font-size="10" font-weight="700" fill="#C0392B">lands +15 mm (uncorrected)</text>
+<text x="30" y="246" font-size="12" font-weight="700" fill="#0B6A3B">CLOSED-LOOP — measure and correct</text>
+<text x="40" y="280" font-size="11" fill="#586876">setpoint</text>
+<line x1="90" y1="276" x2="112" y2="276" stroke="#1B3A55" stroke-width="2" marker-end="url(#a)"/>
+<circle cx="126" cy="276" r="14" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/><text x="126" y="281" font-size="14" font-weight="700" fill="#1B3A55" text-anchor="middle">∑</text>
+<text x="112" y="264" font-size="11" fill="#0B6A3B">+</text><text x="126" y="306" font-size="11" fill="#C0392B" text-anchor="middle">−</text>
+<line x1="140" y1="276" x2="168" y2="276" stroke="#1B3A55" stroke-width="2" marker-end="url(#a)"/><text x="154" y="268" font-size="10" font-weight="700" fill="#0E7E8C">e</text>
+<rect x="170" y="258" width="110" height="38" rx="9" fill="#fff" stroke="#0E7E8C" stroke-width="1.8"/><text x="225.0" y="281.0" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">controller</text>
+<line x1="280" y1="276" x2="308" y2="276" stroke="#1B3A55" stroke-width="2" marker-end="url(#a)"/><text x="294" y="268" font-size="10" fill="#586876">u</text>
+<rect x="310" y="258" width="120" height="38" rx="9" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/><text x="370.0" y="281.0" font-size="12" font-weight="700" fill="#0C2235" text-anchor="middle">plant (platform)</text>
+<line x1="430" y1="276" x2="500" y2="276" stroke="#1B3A55" stroke-width="2" marker-end="url(#a)"/><text x="506" y="280" font-size="11" font-weight="700" fill="#1B3A55">output x</text>
+<line x1="370" y1="236" x2="370" y2="256" stroke="#C0392B" stroke-width="2" marker-end="url(#ar)"/><text x="376" y="244" font-size="9.5" fill="#C0392B">disturbance</text>
+<circle cx="560" cy="276" r="3" fill="#1B3A55"/>
+<path d="M560,276 L560,332 L126,332 L126,290" fill="none" stroke="#0E7E8C" stroke-width="2" marker-end="url(#a)"/>
+<rect x="300" y="316" width="120" height="32" rx="9" fill="#fff" stroke="#0E7E8C" stroke-width="1.8"/><text x="360.0" y="336.0" font-size="10.5" font-weight="700" fill="#0C2235" text-anchor="middle">position sensor</text>
+<text x="340" y="362" font-size="10" font-weight="700" fill="#0B6A3B" text-anchor="middle">error corrected → holds ±1 mm</text>
+<rect x="560" y="248" width="175" height="60" rx="9" fill="#E8F3EC" stroke="#0B6A3B" stroke-width="1.2"/>
+<text x="647" y="268" font-size="10.5" font-weight="700" fill="#0B6A3B" text-anchor="middle">the one added wire:</text>
+<text x="647" y="284" font-size="9.5" fill="#0C2235" text-anchor="middle">output measured &amp;</text>
+<text x="647" y="298" font-size="9.5" fill="#0C2235" text-anchor="middle">subtracted from setpoint</text>
+</svg>
