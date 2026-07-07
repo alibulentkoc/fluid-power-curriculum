@@ -100,3 +100,6 @@ nav:
       - "03 · Sensing position": module08/03_sensing_position.md
       - "04 · Sensing pressure and load": module08/04_sensing_pressure_and_load.md
       - "05 · The driven-and-sensed platform": module08/05_the_driven_and_sensed_platform.md
+  - "Module 09 — Modeling & Simulation":
+      - Overview: module09/index.md
+      - "01 · Why model the platform": module09/01_why_model_the_platform.md

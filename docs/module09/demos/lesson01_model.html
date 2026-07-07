@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Why model — kinematic vs dynamic</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:14px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:6px}
+.reads{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.read{flex:1 1 130px;border-radius:10px;padding:10px 12px;border:1px solid var(--line)}
+.read.kin{background:#EAF6F5;border-color:#BFE6E2}
+.read.dyn{background:#FCF3E2;border-color:#EBD6A8}
+.read .k{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:21px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.note{margin-top:14px;font-size:13px;padding:11px 13px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2;font-weight:600}
+</style></head>
+<body><div class="wrap">
+<h1>Kinematic vs dynamic prediction</h1>
+<p class="sub">Set the raise height and command. Both models predict the arrival time — see how close they agree, and what the dynamic one adds.</p>
+<div class="card">
+<svg viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+  <text x="40" y="20" font-size="10" font-weight="700" fill="#586876">HEIGHT vs TIME</text>
+  <line id="yax" x1="50" y1="30" x2="50" y2="210" stroke="#1B3A55" stroke-width="1.4"/>
+  <line id="xax" x1="50" y1="210" x2="640" y2="210" stroke="#1B3A55" stroke-width="1.4"/>
+  <text id="ytop" x="44" y="34" font-size="9" fill="#586876" text-anchor="end">500</text>
+  <text x="44" y="212" font-size="9" fill="#586876" text-anchor="end">0</text>
+  <text x="345" y="234" font-size="10" fill="#586876" text-anchor="middle">time (s)</text>
+  <polyline id="kin" points="" fill="none" stroke="#0E7E8C" stroke-width="2.6"/>
+  <polyline id="dyn" points="" fill="none" stroke="#DD841A" stroke-width="2.2" stroke-dasharray="5 3"/>
+  <line x1="470" y1="34" x2="490" y2="34" stroke="#0E7E8C" stroke-width="2.6"/><text x="494" y="37" font-size="9.5" fill="#1B3A55">kinematic</text>
+  <line x1="470" y1="50" x2="490" y2="50" stroke="#DD841A" stroke-width="2.2" stroke-dasharray="5 3"/><text x="494" y="53" font-size="9.5" fill="#1B3A55">dynamic (+accel)</text>
+</svg>
+<div class="ctrl"><label>Raise height = <span id="hlbl">500</span> mm</label>
+<input id="h" type="range" min="50" max="600" step="10" value="500"/></div>
+<div class="ctrl"><label>Command u = <span id="ulbl">100</span>%</label>
+<input id="u" type="range" min="10" max="100" step="5" value="100"/></div>
+<div class="reads">
+  <div class="read kin"><div class="k">Kinematic arrival</div><div class="v" id="rk">—</div></div>
+  <div class="read dyn"><div class="k">Dynamic arrival</div><div class="v" id="rd">—</div></div>
+  <div class="read"><div class="k">Difference</div><div class="v" id="rdiff">—</div></div>
+</div>
+<div class="note" id="note"></div>
+</div></div>
+<script>
+  var vmax=0.085, m=2000, g=9.81, A=1963.5e-6, pwork=109e5, $=function(id){return document.getElementById(id);};
+  var a=(pwork*A-m*g)/m;   // ~0.89 m/s^2
+  function tkin(h,u){return h/(vmax*u);}
+  function tdyn(h,u){var vt=vmax*u, tacc=vt/a, dacc=0.5*a*tacc*tacc; return tacc+(h-dacc)/vt;}
+  function draw(){
+    var h=+$('h').value/1000, u=+$('u').value/100;
+    $('hlbl').textContent=Math.round(h*1000); $('ulbl').textContent=Math.round(u*100); $('ytop').textContent=Math.round(h*1000);
+    var tk=tkin(h,u), td=tdyn(h,u), Tmax=Math.max(td*1.08,0.5);
+    function px(t){return 50+(t/Tmax)*590;}
+    function py(x){return 210-(x/h)*180;}
+    // kinematic polyline
+    $('kin').setAttribute('points', px(0)+','+py(0)+' '+px(tk)+','+py(h));
+    // dynamic polyline: accel then cruise
+    var vt=vmax*u, tacc=vt/a, pts=[], t=0;
+    while(t<tacc){ pts.push(px(t)+','+py(0.5*a*t*t)); t+=tacc/6; }
+    pts.push(px(td)+','+py(h));
+    $('dyn').setAttribute('points', pts.join(' '));
+    $('rk').textContent=tk.toFixed(2)+' s';
+    $('rd').textContent=td.toFixed(2)+' s';
+    $('rdiff').textContent='+'+(td-tk).toFixed(2)+' s';
+    $('note').textContent='At '+Math.round(u*100)+'% the platform is flow-limited: it reaches '+(vmax*u*1000).toFixed(0)+' mm/s in '+tacc.toFixed(2)+' s (~'+(0.5*a*tacc*tacc*1000).toFixed(1)+' mm), so the dynamic model adds only '+(td-tk).toFixed(2)+' s. The dynamic model also predicts the pressure and startup lag — which a controller needs.';
+  }
+  $('h').addEventListener('input',draw); $('u').addEventListener('input',draw); draw();
+</script>
+</body></html>
