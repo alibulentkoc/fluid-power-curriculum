@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Solving it numerically</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:14px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:6px}
+.reads{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.read{flex:1 1 120px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.read .k{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:18px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.verdict{margin-top:14px;font-size:13.5px;font-weight:700;padding:11px 14px;border-radius:10px;border:1px solid}
+.ok{background:#E8F3EC;color:var(--green);border-color:#BFE6CF}
+.edge{background:#FCF3E2;color:#9A6212;border-color:#EBD6A8}
+.bad{background:#FBEAE7;color:var(--red);border-color:#F0C4BC}
+</style></head>
+<body><div class="wrap">
+<h1>Solving it numerically</h1>
+<p class="sub">Step the oil-spring response forward with a chosen time step. Small steps track the true motion; a step past the 26 ms stability limit diverges.</p>
+<div class="card">
+<svg viewBox="0 0 660 240" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="20" x2="40" y2="210" stroke="#1B3A55" stroke-width="1.3"/>
+  <line x1="40" y1="150" x2="640" y2="150" stroke="#1B3A55" stroke-width="1.3"/>
+  <text x="34" y="150" font-size="9" fill="#586876" text-anchor="end">0</text>
+  <text x="34" y="24" font-size="9" fill="#586876" text-anchor="end">peak</text>
+  <line id="tgt" x1="40" y1="0" x2="640" y2="0" stroke="#0B6A3B" stroke-width="1" stroke-dasharray="3 2"/>
+  <text x="636" y="228" font-size="9.5" fill="#586876" text-anchor="end">time (0.4 s) →</text>
+  <polyline id="curve" points="" fill="none" stroke="#0E7E8C" stroke-width="2"/>
+</svg>
+<div class="ctrl"><label>Time step Δt = <span id="dtlbl">1</span> ms</label>
+<input id="dt" type="range" min="0.5" max="40" step="0.5" value="1"/></div>
+<div class="reads">
+  <div class="read"><div class="k">Samples / oscillation</div><div class="v" id="rspp">—</div></div>
+  <div class="read"><div class="k">Peak</div><div class="v" id="rpeak">—</div></div>
+  <div class="read"><div class="k">Status</div><div class="v" id="rstat" style="font-size:15px">—</div></div>
+</div>
+<div class="verdict" id="verdict"></div>
+</div></div>
+<script>
+  var m=2000,k=1.18e7,c=30000,F=3000,wn=Math.sqrt(k/m),fn=wn/(2*Math.PI),Tn=1/fn;
+  var xeq=F/k, dtstab=2/wn, $=function(id){return document.getElementById(id);};
+  function draw(){
+    var dt=+$('dt').value/1000; $('dtlbl').textContent=(dt*1000).toFixed(1);
+    var x=0,v=0,t=0,T=0.4,pts=[],peak=0;
+    while(t<T){ var a=(F-k*x-c*v)/m; v+=a*dt; x+=v*dt; peak=Math.max(peak,Math.abs(x)); pts.push([t,x]); t+=dt; if(peak>1)break; }
+    // plot: y=0 at 150, scale so 3*xeq spans ~ up to 20px from top when stable; clamp
+    var yscale=110/(xeq*3), PX=function(tt){return 40+(tt/T)*600;}, PY=function(xx){var y=150-xx*yscale; return Math.max(16,Math.min(206,y));};
+    $('tgt').setAttribute('y1',PY(xeq)); $('tgt').setAttribute('y2',PY(xeq));
+    var poly=pts.map(function(p){return PX(p[0]).toFixed(1)+','+PY(p[1]).toFixed(1);}).join(' ');
+    $('curve').setAttribute('points',poly);
+    var spp=Tn/dt, diverged=peak>0.5;
+    $('curve').setAttribute('stroke', diverged?'#C0392B':(dt>0.004?'#DD841A':'#0E7E8C'));
+    $('rspp').textContent=diverged?'—':spp.toFixed(0);
+    $('rpeak').textContent=diverged?'blows up':(peak*1000).toFixed(3)+' mm';
+    var stat = diverged?'DIVERGED':(dt<=0.004?'stable+accurate':'stable, coarse');
+    $('rstat').textContent=stat;
+    var vd=$('verdict');
+    if(diverged){vd.className='verdict bad';vd.textContent='Δt = '+(dt*1000).toFixed(1)+' ms is past the 26 ms stability limit ('+dtstab*1000|0+' ms): the simulation diverges into nonsense — an artefact of the step, not the physics. Shorten Δt.';}
+    else if(dt>0.004){vd.className='verdict edge';vd.textContent='Δt = '+(dt*1000).toFixed(1)+' ms is stable but coarse ('+spp.toFixed(0)+' samples per oscillation). Bounded, but transients lose fidelity. Aim for ≤4 ms.';}
+    else {vd.className='verdict ok';vd.textContent='Δt = '+(dt*1000).toFixed(1)+' ms: '+spp.toFixed(0)+' samples per oscillation — the sim rings at 12 Hz and settles just like the real oil-spring platform. Trustworthy.';}
+  }
+  $('dt').addEventListener('input',draw); draw();
+</script>
+</body></html>
