@@ -93,3 +93,6 @@ nav:
       - "03 · Tracing the operating states": module07/03_tracing_the_operating_states.md
       - "04 · Pressure and flow budget": module07/04_pressure_and_flow_budget.md
       - "05 · The complete fail-safe circuit": module07/05_the_complete_fail_safe_circuit.md
+  - "Module 08 — Electrohydraulic Control":
+      - Overview: module08/index.md
+      - "01 · Commanding with electricity": module08/01_commanding_with_electricity.md

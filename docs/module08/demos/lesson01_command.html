@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Commanding with electricity</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:18px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:6px}
+.reads{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.read{flex:1 1 120px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.read .k{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:20px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.read .v small{font-size:12px;font-weight:600;color:var(--slate)}
+.note{margin-top:14px;font-size:13px;padding:11px 13px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2;font-weight:600}
+</style></head>
+<body><div class="wrap">
+<h1>Commanding with electricity</h1>
+<p class="sub">Sweep the command — the solenoid drives the spool, the spool meters the flow, and the platform speed follows v ≈ 85·u.</p>
+<div class="card">
+<svg viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- solenoid -->
+  <rect x="20" y="96" width="46" height="48" rx="4" fill="none" stroke="#1B3A55" stroke-width="1.8"/>
+  <text x="43" y="124" font-size="16" font-weight="700" fill="#1B3A55" text-anchor="middle">≋</text>
+  <text x="43" y="162" font-size="10" fill="#586876" text-anchor="middle">solenoid</text>
+  <!-- valve body -->
+  <rect x="90" y="88" width="150" height="64" rx="4" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/>
+  <!-- spool (slides right with command) -->
+  <g id="spool"><rect x="120" y="96" width="60" height="48" rx="3" fill="#DCE6EC" stroke="#1B3A55" stroke-width="1.4"/>
+  <rect x="146" y="96" width="8" height="48" fill="#1B3A55"/></g>
+  <text x="165" y="172" font-size="10" fill="#586876" text-anchor="middle">spool</text>
+  <!-- metering gap indicator -->
+  <text x="165" y="82" font-size="10" fill="#0E7E8C" text-anchor="middle" id="gaplbl">opening</text>
+  <!-- flow arrow -->
+  <line x1="240" y1="120" x2="360" y2="120" stroke="#0E7E8C" stroke-width="3" id="flow" marker-end="url(#fa)"/>
+  <defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker></defs>
+  <text id="flowlbl" x="300" y="110" font-size="11" fill="#0B5A63" text-anchor="middle" font-weight="700">Q</text>
+  <!-- cylinder + platform -->
+  <rect x="366" y="70" width="34" height="100" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/>
+  <rect x="367" y="128" width="32" height="5" fill="#1B3A55"/>
+  <line x1="383" y1="128" x2="383" y2="40" stroke="#5B6B79" stroke-width="6"/>
+  <rect x="360" y="24" width="46" height="16" rx="3" fill="#DD841A"/><text x="383" y="36" font-size="9" font-weight="700" fill="#fff" text-anchor="middle">2 t</text>
+  <!-- speed bar -->
+  <rect x="440" y="70" width="20" height="100" rx="4" fill="#EEF2F5" stroke="#D3DDE6"/>
+  <rect id="vbar" x="440" y="70" width="20" height="0" rx="4" fill="#0E7E8C"/>
+  <text x="450" y="184" font-size="10" fill="#586876" text-anchor="middle">speed</text>
+  <!-- mini graph -->
+  <g transform="translate(500,60)">
+    <line x1="0" y1="110" x2="0" y2="0" stroke="#1B3A55" stroke-width="1.3"/>
+    <line x1="0" y1="110" x2="150" y2="110" stroke="#1B3A55" stroke-width="1.3"/>
+    <line x1="0" y1="110" x2="150" y2="0" stroke="#0E7E8C" stroke-width="2.2"/>
+    <circle id="gpt" cx="0" cy="110" r="5" fill="#DD841A" stroke="#fff" stroke-width="1.5"/>
+    <text x="75" y="128" font-size="9.5" fill="#586876" text-anchor="middle">u → v</text>
+  </g>
+</svg>
+<div class="ctrl"><label>Command u = <span id="ulbl">0</span>%</label>
+<input id="u" type="range" min="0" max="100" value="0"/></div>
+<div class="reads">
+  <div class="read"><div class="k">Spool opening</div><div class="v" id="ropen">0<small>%</small></div></div>
+  <div class="read"><div class="k">Flow Q</div><div class="v" id="rq">0.0<small> L/min</small></div></div>
+  <div class="read"><div class="k">Platform speed</div><div class="v" id="rv">0.0<small> mm/s</small></div></div>
+</div>
+<div class="note" id="note"></div>
+</div></div>
+<script>
+  var Qmax=10.0, vmax=85.0, $=function(id){return document.getElementById(id);};
+  function upd(){
+    var u=+$('u').value, f=u/100;
+    $('ulbl').textContent=u;
+    // spool slides right proportional to command (0..48 px)
+    $('spool').setAttribute('transform','translate('+(f*46)+',0)');
+    // flow arrow thickness + label
+    $('flow').setAttribute('stroke-width', (1+f*6).toFixed(1));
+    var Q=(Qmax*f), v=(vmax*f);
+    $('flowlbl').textContent = Q.toFixed(1)+' L/min';
+    // speed bar height
+    var h=100*f; $('vbar').setAttribute('y', 70+100-h); $('vbar').setAttribute('height', h);
+    // graph point
+    $('gpt').setAttribute('cx', 150*f); $('gpt').setAttribute('cy', 110-110*f);
+    $('ropen').innerHTML=u+'<small>%</small>';
+    $('rq').innerHTML=Q.toFixed(1)+'<small> L/min</small>';
+    $('rv').innerHTML=v.toFixed(1)+'<small> mm/s</small>';
+    var msg;
+    if(u===0) msg='Zero command: spool centred, no flow, platform still.';
+    else if(u<=6) msg='Creep: ~'+v.toFixed(1)+' mm/s — slow enough to position finely.';
+    else if(u>=95) msg='Full traverse: '+v.toFixed(0)+' mm/s at 10 L/min.';
+    else msg='Command '+u+'% → speed '+v.toFixed(1)+' mm/s (= 85 × '+ (u/100).toFixed(2) +').';
+    $('note').textContent=msg;
+  }
+  $('u').addEventListener('input',upd); upd();
+</script>
+</body></html>
