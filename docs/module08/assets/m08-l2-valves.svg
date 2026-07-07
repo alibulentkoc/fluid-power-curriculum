@@ -1,0 +1,25 @@
+<svg viewBox="0 0 760 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif" role="img" aria-label="Speed versus position as the platform approaches a target, for two valve types. The on/off valve holds full 85 mm/s until past the target then drops to zero, overshooting about 1.7 mm and spiking pressure to 143 bar, over the 115 bar relief. The proportional valve ramps its speed down as it nears the target, coasting the last stretch at a 4 mm/s creep and reaching zero inside the plus or minus 1 mm band with only a 2 bar pressure blip. A side panel: on/off gives full flow or none and suits sequencing; proportional gives any flow and suits positioning.">
+<rect width="760" height="470" rx="16" fill="#F7F9FB"/>
+<text x="30" y="42" font-size="20" font-weight="700" fill="#0C2235">On/off vs proportional — approaching a target</text>
+<text x="30" y="64" font-size="12.5" fill="#586876">On/off overshoots and shocks; proportional ramps to a creep and settles on the mark.</text>
+<line x1="70" y1="110" x2="70" y2="360" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="70" y1="360" x2="510" y2="360" stroke="#1B3A55" stroke-width="1.6"/>
+<text x="62" y="116" font-size="11" fill="#586876" text-anchor="end">85</text><text x="62" y="364" font-size="11" fill="#586876" text-anchor="end">0</text>
+<text x="24" y="235.0" font-size="11" fill="#586876" text-anchor="middle" transform="rotate(-90 24 235.0)">speed (mm/s)</text>
+<text x="290.0" y="394" font-size="11" fill="#586876" text-anchor="middle">position → (approaching target)</text>
+<rect x="412" y="110" width="16" height="250" fill="#E8F3EC"/>
+<line x1="420" y1="104" x2="420" y2="360" stroke="#0B6A3B" stroke-width="1.6" stroke-dasharray="4 3"/>
+<text x="420" y="100" font-size="11" font-weight="700" fill="#0B6A3B" text-anchor="middle">target ±1 mm</text>
+<polyline points="70.0,110.0 75.8,110.0 81.7,110.0 87.5,110.0 93.3,110.0 99.2,110.0 105.0,110.0 110.8,110.0 116.7,110.0 122.5,110.0 128.3,110.0 134.2,110.0 140.0,110.0 145.8,110.0 151.7,110.0 157.5,110.0 163.3,110.0 169.2,110.0 175.0,110.0 180.8,110.0 186.7,110.0 192.5,110.0 198.3,110.0 204.2,110.0 210.0,110.0 215.8,110.0 221.7,110.0 227.5,110.0 233.3,110.0 239.2,110.0 245.0,110.0 250.8,110.0 256.7,110.0 262.5,110.0 268.3,124.6 274.2,139.0 280.0,152.9 285.8,166.6 291.7,179.8 297.5,192.8 303.3,205.3 309.2,217.5 315.0,229.3 320.8,240.7 326.7,251.8 332.5,262.4 338.3,272.6 344.2,282.4 350.0,291.7 355.8,300.6 361.7,309.0 367.5,316.9 373.3,324.3 379.2,331.2 385.0,337.5 390.8,343.2 396.7,348.2 402.5,352.6 408.3,356.1 414.2,358.7 420.0,360.0" fill="none" stroke="#0E7E8C" stroke-width="2.8"/>
+<circle cx="420" cy="360" r="4.5" fill="#0E7E8C" stroke="#fff" stroke-width="1.5"/>
+<text x="350" y="330" font-size="10.5" font-weight="700" fill="#0B5A63">proportional: ramp → 4 mm/s creep</text>
+<text x="364" y="376" font-size="9.5" fill="#0B5A63">stop spike ~2 bar</text>
+<polyline points="70,110 454,110 454,360" fill="none" stroke="#DD841A" stroke-width="2.8"/>
+<rect x="420" y="346" width="34" height="14" fill="#DD841A" opacity="0.25"/>
+<circle cx="454" cy="110" r="4.5" fill="#DD841A" stroke="#fff" stroke-width="1.5"/>
+<text x="86" y="128" font-size="10.5" font-weight="700" fill="#9A5A10">on/off: full 85 mm/s → cliff</text>
+<text x="460" y="340" font-size="9.5" font-weight="700" fill="#C0392B">overshoot ~1.7 mm</text>
+<text x="460" y="132" font-size="9.5" font-weight="700" fill="#C0392B">spike 143 bar &gt; relief</text>
+<rect x="540" y="110" width="190" height="112" rx="10" fill="#fff" stroke="#DD841A" stroke-width="1.8"/><text x="554" y="134" font-size="13" font-weight="700" fill="#DD841A">On/off (bang-bang)</text><text x="554" y="156" font-size="11" fill="#33414D">Flow: 0 or full only</text><text x="554" y="176" font-size="11" fill="#33414D">Fast, cheap, robust</text><text x="554" y="196" font-size="11" fill="#33414D">Right for: sequencing</text><text x="554" y="216" font-size="11" fill="#33414D">(clamp, eject, dump)</text>
+<rect x="540" y="238" width="190" height="112" rx="10" fill="#fff" stroke="#0E7E8C" stroke-width="1.8"/><text x="554" y="262" font-size="13" font-weight="700" fill="#0E7E8C">Proportional</text><text x="554" y="284" font-size="11" fill="#33414D">Flow: anything 0–full</text><text x="554" y="304" font-size="11" fill="#33414D">Creep → settle, no shock</text><text x="554" y="324" font-size="11" fill="#33414D">Right for: positioning</text><text x="554" y="344" font-size="11" fill="#33414D">→ the platform's choice</text>
+</svg>
