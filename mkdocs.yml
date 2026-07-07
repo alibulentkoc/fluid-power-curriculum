@@ -105,3 +105,4 @@ nav:
       - "01 · Why model the platform": module09/01_why_model_the_platform.md
       - "02 · The equations of motion": module09/02_the_equations_of_motion.md
       - "03 · Solving it numerically": module09/03_solving_it_numerically.md
+      - "04 · Validating the model": module09/04_validating_the_model.md
