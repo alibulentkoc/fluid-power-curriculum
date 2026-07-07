@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Proportional control</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--red:#C0392B;--green:#0B6A3B;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto}
+.ctrl{margin-top:14px}.ctrl label{font-size:13px;font-weight:700;color:var(--slate)}
+input[type=range]{width:100%;accent-color:#0C6A74;margin-top:6px}
+.reads{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.read{flex:1 1 100px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.read .k{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.read .v{font-size:17px;font-weight:800;font-family:var(--mono);color:#0C2235}
+.verdict{margin-top:14px;font-size:13.5px;font-weight:700;padding:11px 14px;border-radius:10px;border:1px solid}
+.ok{background:#E8F3EC;color:var(--green);border-color:#BFE6CF}
+.slow{background:#EEF2F5;color:#586876;border-color:#D3DDE6}
+.bad{background:#FBEAE7;color:var(--red);border-color:#F0C4BC}
+</style></head>
+<body><div class="wrap">
+<h1>Proportional control</h1>
+<p class="sub">Command a 5 mm step and tune the gain. Watch the response go from sluggish to crisp to ringing as the gain approaches the oil-spring resonance.</p>
+<div class="card">
+<svg viewBox="0 0 660 230" xmlns="http://www.w3.org/2000/svg">
+  <line x1="44" y1="16" x2="44" y2="200" stroke="#1B3A55" stroke-width="1.3"/>
+  <line x1="44" y1="200" x2="640" y2="200" stroke="#1B3A55" stroke-width="1.3"/>
+  <line id="tgt" x1="44" y1="90" x2="640" y2="90" stroke="#0B6A3B" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="636" y="86" font-size="9" fill="#0B6A3B" text-anchor="end">target (5 mm)</text>
+  <polyline id="curve" points="" fill="none" stroke="#0E7E8C" stroke-width="2.2"/>
+  <text x="636" y="218" font-size="9" fill="#586876" text-anchor="end">time →</text>
+</svg>
+<div class="ctrl"><label>Proportional gain Kₚ = <span id="klbl">0.15</span></label>
+<input id="kp" type="range" min="0.02" max="0.60" step="0.01" value="0.15"/></div>
+<div class="reads">
+  <div class="read"><div class="k">Settling τ</div><div class="v" id="rtau">—</div></div>
+  <div class="read"><div class="k">Droop (3 mm/s)</div><div class="v" id="rdroop">—</div></div>
+  <div class="read"><div class="k">Overshoot</div><div class="v" id="ros">—</div></div>
+</div>
+<div class="verdict" id="verdict"></div>
+</div></div>
+<script>
+  var vmax=85,wn=77,zeta=0.12,dt=5e-5,target=5.0,$=function(id){return document.getElementById(id);};
+  function sim(Kp){
+    var x=0,v=0,w=0,t=0,T=1.4,pts=[],peak=0;
+    while(t<T){ var u=Kp*(target-x); var dv=w,dw=wn*wn*(vmax*u-v)-2*zeta*wn*w;
+      v+=dv*dt; w+=dw*dt; x+=v*dt; t+=dt; peak=Math.max(peak,x);
+      if(pts.length===0||t-pts[pts.length-1][0]>=0.006) pts.push([t,x]); }
+    return {pts:pts,peak:peak};
+  }
+  function draw(){
+    var Kp=+$('kp').value; $('klbl').textContent=Kp.toFixed(2);
+    var r=sim(Kp), T=1.4;
+    function PX(t){return 44+(t/T)*596;} function PY(x){return 200-(x/9)*180;}
+    $('tgt').setAttribute('y1',PY(target)); $('tgt').setAttribute('y2',PY(target));
+    var os=(r.peak-target)/target*100; if(os<0)os=0;
+    $('curve').setAttribute('points', r.pts.map(function(q){return PX(q[0]).toFixed(1)+','+Math.max(6,Math.min(224,PY(q[1]))).toFixed(1);}).join(' '));
+    $('curve').setAttribute('stroke', os>40?'#C0392B':(Kp<0.05?'#8AA0AE':'#0E7E8C'));
+    $('rtau').textContent=(1/(vmax*Kp)).toFixed(2)+' s';
+    $('rdroop').textContent=(3/(vmax*Kp)).toFixed(2)+' mm';
+    $('ros').textContent=(os>200?'>200':os.toFixed(0))+' %';
+    var vd=$('verdict');
+    if(os>40){vd.className='verdict bad';vd.textContent='Kₚ='+Kp.toFixed(2)+' is too high: the loop bandwidth is nearing the ~12 Hz oil spring, so it overshoots '+os.toFixed(0)+'% and rings. Back off the gain.';}
+    else if(Kp<0.05){vd.className='verdict slow';vd.textContent='Kₚ='+Kp.toFixed(2)+' is low: stable and smooth but sluggish (τ='+(1/(vmax*Kp)).toFixed(2)+' s) with '+(3/(vmax*Kp)).toFixed(2)+' mm droop. Raise the gain for speed and tightness.';}
+    else {vd.className='verdict ok';vd.textContent='Kₚ='+Kp.toFixed(2)+': crisp and well-damped — τ='+(1/(vmax*Kp)).toFixed(2)+' s, droop '+(3/(vmax*Kp)).toFixed(2)+' mm, safely below the resonance. A small droop remains (integral action erases it in Lesson 03).';}
+  }
+  $('kp').addEventListener('input',draw); draw();
+</script>
+</body></html>
