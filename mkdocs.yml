@@ -92,3 +92,4 @@ nav:
       - "02 · Assembling the platform circuit": module07/02_assembling_the_platform_circuit.md
       - "03 · Tracing the operating states": module07/03_tracing_the_operating_states.md
       - "04 · Pressure and flow budget": module07/04_pressure_and_flow_budget.md
+      - "05 · The complete fail-safe circuit": module07/05_the_complete_fail_safe_circuit.md

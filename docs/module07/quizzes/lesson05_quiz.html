@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Knowledge check · The complete fail-safe circuit</title>
+<style>
+  :root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;
+    --teal:#0E7E8C;--teal-soft:#ECFAF8;--green:#1B8A5A;--green-soft:#E7F6EE;--red:#C2463B;--red-soft:#FBECEA;
+    --sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.55}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:13.5px;margin:0 0 8px}
+  .banner{font-size:12.5px;background:var(--teal-soft);color:var(--teal);border:1px solid #9FE0DA;border-radius:10px;padding:10px 14px;margin:0 0 22px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(12,34,53,.05)}
+  .q .num{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal)}
+  .q .stem{font-size:15px;font-weight:600;margin:6px 0 14px}
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:9px;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:600}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .fb{font-size:13px;margin-top:8px;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}.fb.ok{background:var(--green-soft);color:var(--green)}.fb.no{background:var(--red-soft);color:var(--red)}
+  .score{position:sticky;bottom:14px;background:#0C2235;color:#fff;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;box-shadow:0 4px 16px rgba(12,34,53,.25)}
+  .score b{font-size:18px}
+  .retry{background:none;border:1px solid #3a5670;color:#cfe0ec;font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .retry:hover{border-color:#7FD7D0;color:#7FD7D0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Knowledge check — The complete fail-safe circuit</h1>
+  <p class="sub">Module 07 · Lesson 05</p>
+  <p class="banner">Check your understanding — unlimited attempts, immediate feedback, not graded.</p>
+  <div id="quiz"></div>
+  <div class="score"><span>Answered <b id="done">0</b> / 5 &nbsp;·&nbsp; Correct <b id="right">0</b></span>
+    <button class="retry" id="retry">Start over</button></div>
+</div>
+<script>
+const QUESTIONS=[
+  {stem:"If the cap hose bursts, what holds the load — and why does its placement matter?",
+   opts:["the relief valve; placement is irrelevant","the counterbalance valve mounted at the cylinder cap — it sits upstream of the hose and stays shut without a pilot, so the load hangs on a closed valve","the pump; it keeps pushing oil","the filter; it blocks the leak"], correct:1,
+   why:"Because the counterbalance is bolted to the cylinder, the burst hose is downstream of it. With no rod-line pilot it stays shut, so the load is held. A valve out at the manifold could not protect a hose between it and the cylinder."},
+  {stem:"On power loss mid-lift, what returns the directional valve to a safe state, and what keeps the load up?",
+   opts:["nothing — the valve stays wherever it was","the valve is spring-centred, so it snaps back to the blocked tandem centre; with the pump stopped there is no pilot, and the counterbalance holds drop-tight","the operator must react in time","the relief valve holds it"], correct:1,
+   why:"Spring-centring makes de-energising fail to the blocked centre. No pump means no pilot to the counterbalance, so the trapped cap oil holds the load frozen in place."},
+  {stem:"Which failure does the <b>relief valve</b> protect against, and where must it sit?",
+   opts:["a burst hose; at the cylinder","overload / overpressure; on the pressure line, where it caps the system at 115 bar","a power loss; at the tank","contamination; on the return"], correct:1,
+   why:"The relief covers the one failure the counterbalance cannot — overpressure. On the pressure line it caps the whole system at 115 bar, protecting the pump and lines."},
+  {stem:"What single principle makes the circuit fail-safe across all these modes?",
+   opts:["adding extra safety devices everywhere","the load moves only under active, commanded pump pressure — so every passive failure removes the command and leaves the load held","running the pump continuously","keeping the relief set very high"], correct:1,
+   why:"The safe (held) state is the default rest state. Burst, power loss, or de-energising all drive the pilot to zero, and the counterbalance’s default answer is to stay shut — so it takes deliberate powered action to move the load."},
+  {stem:"Why must the counterbalance valve be mounted <b>at the cylinder</b> rather than at the valve stack?",
+   opts:["to save hose","so that any burst hose is downstream of it — a valve at the stack leaves the hose to the cylinder unprotected, and a burst there would drop the load","for easier maintenance","it makes no difference"], correct:1,
+   why:"Placement is the protection. Only a cylinder-mounted valve keeps the burst-prone hose downstream; relocate it to the manifold and a burst between manifold and cylinder drops the load — which is why standards mandate actuator-mounted load-holding valves."}
+];
+const quiz=document.getElementById('quiz'),doneEl=document.getElementById('done'),rightEl=document.getElementById('right');
+let answered,correctCount;
+function render(){
+  answered=new Array(QUESTIONS.length).fill(false);correctCount=0;doneEl.textContent='0';rightEl.textContent='0';quiz.innerHTML='';
+  QUESTIONS.forEach((q,qi)=>{const card=document.createElement('div');card.className='q';
+    card.innerHTML=`<div class="num">Question ${qi+1}</div><div class="stem">${q.stem}</div>`;
+    q.opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
+    const fb=document.createElement('div');fb.className='fb';card.appendChild(fb);quiz.appendChild(card);});
+}
+function choose(qi,oi,card,q){
+  if(answered[qi])return;answered[qi]=true;
+  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});
+  const fb=card.querySelector('.fb');
+  if(oi===q.correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
+  else{btns[oi].classList.add('wrong');fb.className='fb show no';fb.innerHTML='Not quite. '+q.why;}
+  doneEl.textContent=answered.filter(Boolean).length;rightEl.textContent=correctCount;
+}
+document.getElementById('retry').onclick=render;render();
+</script>
+</body>
+</html>
