@@ -1,0 +1,51 @@
+<svg viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif" role="img" aria-label="Pressure and flow budget table for the platform circuit. Rows are the four lines P supply, A cap, B rod, T return; columns are raise, hold, lower; each cell gives flow and pressure. Cap and return lines peak at 14.6 litres per minute while lowering (highlighted). The P line peaks at about 109 bar while raising, six bar under the 115 bar relief (highlighted).">
+<rect width="760" height="430" rx="16" fill="#F7F9FB"/>
+<text x="30" y="44" font-size="20" font-weight="700" fill="#0C2235">Pressure &amp; flow budget</text>
+<text x="30" y="66" font-size="12.5" fill="#586876">Flow and pressure on every line, per state. Worst case per line is highlighted.</text>
+<rect x="180" y="76" width="172" height="28" rx="7" fill="#0C6A74"/><text x="266.0" y="95" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">RAISE</text>
+<rect x="360" y="76" width="172" height="28" rx="7" fill="#0C6A74"/><text x="446.0" y="95" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">HOLD</text>
+<rect x="540" y="76" width="172" height="28" rx="7" fill="#0C6A74"/><text x="626.0" y="95" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">LOWER</text>
+<text x="30" y="95" font-size="11" font-weight="700" letter-spacing="1" fill="#8AA0AE">LINE</text>
+<text x="30" y="144.0" font-size="13" font-weight="700" fill="#1B3A55">P — supply</text>
+<rect x="180" y="110" width="172" height="56" rx="8" fill="#E8F3EC" stroke="#0E7E8C" stroke-width="1.8"/>
+<text x="194" y="134" font-size="13.5" font-weight="700" fill="#1B3A55">10.0 L/min</text>
+<text x="194" y="153" font-size="11.5" fill="#586876">~109 bar</text>
+<rect x="360" y="110" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="374" y="134" font-size="13.5" font-weight="700" fill="#1B3A55">10.0 L/min</text>
+<text x="374" y="153" font-size="11.5" fill="#586876">~5 bar</text>
+<rect x="540" y="110" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="554" y="134" font-size="13.5" font-weight="700" fill="#1B3A55">10.0 L/min</text>
+<text x="554" y="153" font-size="11.5" fill="#586876">low</text>
+<text x="30" y="208.0" font-size="13" font-weight="700" fill="#1B3A55">A — cap line</text>
+<rect x="180" y="174" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="194" y="198" font-size="13.5" font-weight="700" fill="#1B3A55">10.0 L/min</text>
+<text x="194" y="217" font-size="11.5" fill="#586876">~100 bar</text>
+<rect x="360" y="174" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="374" y="198" font-size="13.5" font-weight="700" fill="#1B3A55">0 (held)</text>
+<text x="374" y="217" font-size="11.5" fill="#586876">100 bar</text>
+<rect x="540" y="174" width="172" height="56" rx="8" fill="#FCEFD8" stroke="#DD841A" stroke-width="1.8"/>
+<text x="554" y="198" font-size="13.5" font-weight="700" fill="#1B3A55">14.6 L/min</text>
+<text x="554" y="217" font-size="11.5" fill="#586876">metered</text>
+<text x="30" y="272.0" font-size="13" font-weight="700" fill="#1B3A55">B — rod line</text>
+<rect x="180" y="238" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="194" y="262" font-size="13.5" font-weight="700" fill="#1B3A55">6.9 L/min</text>
+<text x="194" y="281" font-size="11.5" fill="#586876">low</text>
+<rect x="360" y="238" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="374" y="262" font-size="13.5" font-weight="700" fill="#1B3A55">0</text>
+<text x="374" y="281" font-size="11.5" fill="#586876">—</text>
+<rect x="540" y="238" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="554" y="262" font-size="13.5" font-weight="700" fill="#1B3A55">10.0 L/min</text>
+<text x="554" y="281" font-size="11.5" fill="#586876">low</text>
+<text x="30" y="336.0" font-size="13" font-weight="700" fill="#1B3A55">T — return</text>
+<rect x="180" y="302" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="194" y="326" font-size="13.5" font-weight="700" fill="#1B3A55">6.9 L/min</text>
+<text x="194" y="345" font-size="11.5" fill="#586876">low</text>
+<rect x="360" y="302" width="172" height="56" rx="8" fill="#FFFFFF" stroke="#D3DDE6" stroke-width="1"/>
+<text x="374" y="326" font-size="13.5" font-weight="700" fill="#1B3A55">10.0 L/min</text>
+<text x="374" y="345" font-size="11.5" fill="#586876">~0</text>
+<rect x="540" y="302" width="172" height="56" rx="8" fill="#FCEFD8" stroke="#DD841A" stroke-width="1.8"/>
+<text x="554" y="326" font-size="13.5" font-weight="700" fill="#1B3A55">14.6 L/min</text>
+<text x="554" y="345" font-size="11.5" fill="#586876">low</text>
+<circle cx="40" cy="382" r="6" fill="#FCEFD8" stroke="#DD841A" stroke-width="1.5"/><text x="54" y="386" font-size="11.5" fill="#0C2235">Worst-case flow 14.6 L/min — while lowering (load assists) — sizes the cap &amp; return lines.</text>
+<circle cx="40" cy="406" r="6" fill="#E8F3EC" stroke="#0E7E8C" stroke-width="1.5"/><text x="54" y="410" font-size="11.5" fill="#0C2235">Peak pressure ~109 bar — while raising — sits 6 bar under the 115 bar relief.</text>
+</svg>

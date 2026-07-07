@@ -91,3 +91,4 @@ nav:
       - "01 · Reading a hydraulic circuit": module07/01_reading_a_hydraulic_circuit.md
       - "02 · Assembling the platform circuit": module07/02_assembling_the_platform_circuit.md
       - "03 · Tracing the operating states": module07/03_tracing_the_operating_states.md
+      - "04 · Pressure and flow budget": module07/04_pressure_and_flow_budget.md

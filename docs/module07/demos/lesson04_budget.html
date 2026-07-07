@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo · Pressure and flow budget</title>
+<style>
+:root{--ink:#0C2235;--slate:#586876;--line:#D3DDE6;--bg:#F7F9FB;--card:#FFFFFF;--teal:#0E7E8C;--amber:#DD841A;--sans:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto}h1{font-size:20px;margin:0 0 4px}.sub{color:var(--slate);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
+svg{display:block;width:100%;height:auto;background:#F5F8FA;border:1px solid var(--line);border-radius:12px}
+#dcv-spool{transition:transform .3s ease}
+.row{display:flex;gap:8px;margin-top:14px}
+.row button{flex:1 1 0;background:var(--bg);border:1px solid var(--line);color:var(--slate);font-family:var(--sans);font-size:14px;font-weight:700;padding:11px 10px;border-radius:9px;cursor:pointer}
+.row button:hover{border-color:var(--teal)}.row button.active{background:#0C6A74;border-color:#0C6A74;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--slate);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+tr.worst td{background:#FCEFD8}
+td.flow{font-weight:700}
+.note{margin-top:12px;font-size:13px;padding:12px 14px;border-radius:10px;background:#EAF6F5;color:#0B5A63;border:1px solid #BFE6E2;font-weight:600}
+.wire{transition:opacity .18s}
+</style></head>
+<body><div class="wrap">
+<h1>Pressure &amp; flow budget</h1>
+<p class="sub">Switch the command — the spool shifts, the active path lights up, and the budget shows the flow and pressure on every line.</p>
+<div class="card">
+<svg id="c" viewBox="0 0 720 700" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans',system-ui,sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#0E7E8C"/></marker></defs><g id="grp-supply" class="wire"><line x1="200" y1="562" x2="200" y2="510" stroke="#1B3A55" stroke-width="2.6"/><line x1="200" y1="510" x2="291" y2="510" stroke="#1B3A55" stroke-width="2.6"/><line x1="291" y1="510" x2="291" y2="468" stroke="#1B3A55" stroke-width="2.6"/><line x1="276" y1="510" x2="276" y2="570" stroke="#1B3A55" stroke-width="2.6"/><line x1="224" y1="570" x2="224" y2="665" stroke="#1B3A55" stroke-width="2.6"/><line x1="200" y1="618" x2="200" y2="665" stroke="#1B3A55" stroke-width="2.6"/></g><g id="grp-return" class="wire"><line x1="309" y1="468" x2="309" y2="545" stroke="#1B3A55" stroke-width="2.6"/><line x1="309" y1="545" x2="505" y2="545" stroke="#1B3A55" stroke-width="2.6"/><line x1="505" y1="545" x2="505" y2="584" stroke="#1B3A55" stroke-width="2.6"/><line x1="505" y1="636" x2="505" y2="665" stroke="#1B3A55" stroke-width="2.6"/></g><g id="grp-cap" class="wire"><line x1="413.0" y1="216" x2="339.6" y2="216" stroke="#1B3A55" stroke-width="2.6"/><line x1="339.6" y1="216" x2="339.6" y2="261.0" stroke="#1B3A55" stroke-width="2.6"/><line x1="260.4" y1="261.0" x2="260.4" y2="400" stroke="#1B3A55" stroke-width="2.6"/><line x1="260.4" y1="400" x2="291" y2="400" stroke="#1B3A55" stroke-width="2.6"/><line x1="291" y1="400" x2="291" y2="432" stroke="#1B3A55" stroke-width="2.6"/></g><g id="grp-rod" class="wire"><line x1="413.0" y1="124" x2="395" y2="124" stroke="#1B3A55" stroke-width="2.6"/><line x1="395" y1="124" x2="395" y2="415" stroke="#1B3A55" stroke-width="2.6"/><line x1="395" y1="415" x2="309" y2="415" stroke="#1B3A55" stroke-width="2.6"/><line x1="309" y1="415" x2="309" y2="432" stroke="#1B3A55" stroke-width="2.6"/></g><g id="grp-pilot" class="wire"><line x1="395" y1="300" x2="300" y2="300" stroke="#0E7E8C" stroke-width="2.6" stroke-dasharray="5 3"/><line x1="300" y1="300" x2="300" y2="232.4" stroke="#0E7E8C" stroke-width="2.6" stroke-dasharray="5 3"/></g><rect x="423.0" y="110" width="34" height="120" fill="#fff" stroke="#1B3A55" stroke-width="1.9"/><rect x="424.0" y="188" width="32" height="5" fill="#fff" stroke="#1B3A55" stroke-width="1.6"/><line x1="440" y1="190" x2="440" y2="64" stroke="#5B6B79" stroke-width="6"/><rect x="416" y="44" width="48" height="22" rx="3" fill="#DD841A"/><text x="440" y="59" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">2 t</text><text x="440" y="222" font-size="9" fill="#0B5A63" text-anchor="middle">cylinder</text><line x1="423.0" y1="216" x2="413.0" y2="216" stroke="#1B3A55" stroke-width="1.8"/><line x1="423.0" y1="124" x2="413.0" y2="124" stroke="#1B3A55" stroke-width="1.8"/><rect x="282.4" y="232.4" width="35.2" height="35.2" fill="none" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="313.2" y1="261.0" x2="286.8" y2="261.0" stroke="#1B3A55" stroke-width="1.6"/>
+<polygon points="291.2,258.2 286.8,261.0 291.2,263.8" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<polyline points="300.0,232.4 305.5,228.0 294.5,222.5 305.5,217.0 294.5,211.5 300.0,207.1" fill="none" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="291.2" y1="230.2" x2="308.8" y2="204.9" stroke="#1B3A55" stroke-width="1.4"/>
+<polygon points="308.8,204.9 305.5,208.2 307.7,209.3" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<line x1="260.4" y1="261.0" x2="282.4" y2="261.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="317.6" y1="261.0" x2="339.6" y2="261.0" stroke="#1B3A55" stroke-width="1.6"/>
+<circle cx="269.2" cy="261.0" r="2.0" fill="#1B3A55" stroke="#1B3A55" stroke-width="1.3"/>
+<circle cx="330.8" cy="261.0" r="2.0" fill="#1B3A55" stroke="#1B3A55" stroke-width="1.3"/>
+<line x1="269.2" y1="261.0" x2="269.2" y2="278.6" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="330.8" y1="278.6" x2="330.8" y2="261.0" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="269.2" y1="278.6" x2="290.1" y2="278.6" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="304.4" y1="278.6" x2="330.8" y2="278.6" stroke="#1B3A55" stroke-width="1.4"/>
+<polyline points="294.5,273.1 290.1,278.6 294.5,284.1" fill="none" stroke="#1B3A55" stroke-width="1.3"/>
+<circle cx="300.0" cy="278.6" r="4.4" fill="#FFFFFF" stroke="#1B3A55" stroke-width="1.3"/>
+<polyline points="322.0,261.0 322.0,269.8 300.0,269.8 300.0,267.6" fill="none" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="4 2"/><text x="300" y="292" font-size="9" font-weight="700" fill="#1B3A55" text-anchor="middle">counterbalance · 130 bar</text><line x1="291.0" y1="432.0" x2="291.0" y2="416.0" stroke="#1B3A55" stroke-width="1.6"/><line x1="309.0" y1="432.0" x2="309.0" y2="416.0" stroke="#1B3A55" stroke-width="1.6"/><line x1="291.0" y1="468.0" x2="291.0" y2="484.0" stroke="#1B3A55" stroke-width="1.6"/><line x1="309.0" y1="468.0" x2="309.0" y2="484.0" stroke="#1B3A55" stroke-width="1.6"/><text x="291.0" y="413.0" font-size="9.0" font-weight="700" fill="#1B3A55" text-anchor="middle">A</text><text x="309.0" y="413.0" font-size="9.0" font-weight="700" fill="#1B3A55" text-anchor="middle">B</text><text x="291.0" y="495.0" font-size="9.0" font-weight="700" fill="#1B3A55" text-anchor="middle">P</text><text x="309.0" y="495.0" font-size="9.0" font-weight="700" fill="#1B3A55" text-anchor="middle">T</text><g id="dcv-spool" style="transition:transform .3s ease"><rect x="252.0" y="432.0" width="32.0" height="36.0" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/><rect x="284.0" y="432.0" width="32.0" height="36.0" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/><rect x="316.0" y="432.0" width="32.0" height="36.0" fill="#fff" stroke="#1B3A55" stroke-width="1.8"/><polyline points="291.0,465.0 291.0,458.0 309.0,458.0 309.0,465.0" fill="none" stroke="#0E7E8C" stroke-width="1.5"/><line x1="291.0" y1="435.0" x2="291.0" y2="441.0" stroke="#0E7E8C" stroke-width="1.4"/><line x1="287.5" y1="441.0" x2="294.5" y2="441.0" stroke="#0E7E8C" stroke-width="1.4"/><line x1="309.0" y1="435.0" x2="309.0" y2="441.0" stroke="#0E7E8C" stroke-width="1.4"/><line x1="305.5" y1="441.0" x2="312.5" y2="441.0" stroke="#0E7E8C" stroke-width="1.4"/><line x1="259.0" y1="464.0" x2="259.0" y2="438.0" stroke="#0E7E8C" stroke-width="1.4" marker-end="url(#ah)"/><line x1="277.0" y1="436.0" x2="277.0" y2="462.0" stroke="#0E7E8C" stroke-width="1.4" marker-end="url(#ah)"/><line x1="323.0" y1="464.0" x2="341.0" y2="438.0" stroke="#0E7E8C" stroke-width="1.4" marker-end="url(#ah)"/><line x1="341.0" y1="464.0" x2="323.0" y2="438.0" stroke="#0E7E8C" stroke-width="1.4" marker-end="url(#ah)"/><rect x="236.0" y="442.0" width="14.0" height="16.0" fill="none" stroke="#1B3A55" stroke-width="1.3"/><line x1="236.0" y1="458.0" x2="250.0" y2="442.0" stroke="#1B3A55" stroke-width="1.1"/><rect x="350.0" y="442.0" width="14.0" height="16.0" fill="none" stroke="#1B3A55" stroke-width="1.3"/><line x1="350.0" y1="458.0" x2="364.0" y2="442.0" stroke="#1B3A55" stroke-width="1.1"/></g><text x="300" y="492" font-size="9" fill="#0B5A63" text-anchor="middle">4/3 proportional · tandem centre</text><path d="M150,639 L150,665 L560,665 L560,639" fill="none" stroke="#1B3A55" stroke-width="2.2"/><text x="355.0" y="656" font-size="9" fill="#8AA0AE" text-anchor="middle">reservoir</text><circle cx="200.0" cy="590.0" r="16.0" fill="none" stroke="#1B3A55" stroke-width="1.3"/>
+<polygon points="196.0,581.0 200.0,574.0 204.0,581.0" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<line x1="200.0" y1="574.0" x2="200.0" y2="562.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="200.0" y1="606.0" x2="200.0" y2="618.0" stroke="#1B3A55" stroke-width="1.6"/><text x="200" y="630" font-size="9" fill="#0B5A63" text-anchor="middle">pump</text><circle cx="140.0" cy="590.0" r="16.0" fill="none" stroke="#1B3A55" stroke-width="1.3"/>
+<text x="140" y="595.5" font-size="16" font-weight="700" fill="#1B3A55" text-anchor="middle" font-family="sans-serif">M</text>
+<line x1="140.0" y1="574.0" x2="140.0" y2="562.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="140.0" y1="606.0" x2="140.0" y2="618.0" stroke="#1B3A55" stroke-width="1.6"/><text x="140" y="630" font-size="9" fill="#0B5A63" text-anchor="middle">motor</text><line x1="156" y1="590" x2="184" y2="590" stroke="#1B3A55" stroke-width="2"/><rect x="234.0" y="544.0" width="32.0" height="32.0" fill="none" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="262.0" y1="570.0" x2="238.0" y2="570.0" stroke="#1B3A55" stroke-width="1.6"/>
+<polygon points="242.0,567.5 238.0,570.0 242.0,572.5" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<polyline points="250.0,544.0 255.0,540.0 245.0,535.0 255.0,530.0 245.0,525.0 250.0,521.0" fill="none" stroke="#1B3A55" stroke-width="1.4"/>
+<line x1="242.0" y1="542.0" x2="258.0" y2="519.0" stroke="#1B3A55" stroke-width="1.4"/>
+<polygon points="258.0,519.0 255.0,522.0 257.0,523.0" fill="#1B3A55" stroke="#1B3A55" stroke-width="1"/>
+<line x1="234.0" y1="570.0" x2="224.0" y2="570.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="266.0" y1="570.0" x2="276.0" y2="570.0" stroke="#1B3A55" stroke-width="1.6"/>
+<polyline points="270.0,570.0 270.0,582.0 250.0,582.0 250.0,576.0" fill="none" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="4 2"/><text x="250" y="530" font-size="8.5" font-weight="700" fill="#1B3A55" text-anchor="middle">115 bar</text><polyline points="505.0,592.0 523.0,610.0 505.0,628.0 487.0,610.0 505.0,592.0" fill="none" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="487.0" y1="610.0" x2="523.0" y2="610.0" stroke="#1B3A55" stroke-width="1.2" stroke-dasharray="3 2"/>
+<line x1="505.0" y1="592.0" x2="505.0" y2="584.0" stroke="#1B3A55" stroke-width="1.6"/>
+<line x1="505.0" y1="628.0" x2="505.0" y2="636.0" stroke="#1B3A55" stroke-width="1.6"/><text x="535" y="613" font-size="8.5" fill="#8AA0AE">filter</text><circle cx="276" cy="510" r="2.4" fill="#1B3A55"/><circle cx="395" cy="300" r="2.4" fill="#0E7E8C"/><text x="405" y="296" font-size="8.5" font-weight="700" fill="#0B5A63">pilot</text></svg>
+<div class="row">
+<button data-k="raise" class="active">Raise</button>
+<button data-k="hold">Hold</button>
+<button data-k="lower">Lower</button>
+</div>
+<table><thead><tr><th>Line</th><th>Flow</th><th>Pressure</th></tr></thead><tbody id="bud"></tbody></table>
+<div class="note" id="note"></div>
+</div></div>
+<script>
+const STATES={"raise": {"active": ["supply", "cap", "rod", "return"], "shift": 32, "budget": [["P \u2014 supply", "10.0 L/min", "~109 bar", true], ["A \u2014 cap", "10.0 L/min", "~100 bar", false], ["B \u2014 rod", "6.9 L/min", "low", false], ["T \u2014 return", "6.9 L/min", "low", false]], "note": "RAISE \u2014 pump makes ~109 bar to lift the 100 bar load (6 bar under the relief). The cap fills at the pump\u2019s 10 L/min; the smaller rod chamber expels only 6.9 L/min."}, "hold": {"active": ["supply", "return"], "shift": 0, "budget": [["P \u2014 supply", "10.0 L/min", "~5 bar", false], ["A \u2014 cap", "0 (held)", "100 bar", false], ["B \u2014 rod", "0", "\u2014", false], ["T \u2014 return", "10.0 L/min", "~0 bar", false]], "note": "HOLD \u2014 the tandem centre loops the pump\u2019s 10 L/min back to tank at almost no pressure. The cap is held at 100 bar by the counterbalance, with no flow."}, "lower": {"active": ["supply", "cap", "rod", "pilot", "return"], "shift": -32, "budget": [["P \u2014 supply", "10.0 L/min", "low", false], ["A \u2014 cap", "14.6 L/min", "metered", true], ["B \u2014 rod", "10.0 L/min", "low", false], ["T \u2014 return", "14.6 L/min", "low", true]], "note": "LOWER \u2014 the pump feeds the rod at 10 L/min, so the piston drops fast (124 mm/s) and the big cap chamber expels 14.6 L/min \u2014 more than the pump. That extra flow is the load; the counterbalance meters it."}};
+const ALL=["supply","return","cap","rod","pilot"];
+const $=id=>document.getElementById(id);
+function pick(k,btn){document.querySelectorAll('.row button').forEach(b=>b.classList.toggle('active',b===btn));const S=STATES[k];const on=new Set(S.active);ALL.forEach(g=>{const el=$('grp-'+g);if(el)el.style.opacity=on.has(g)?'1':'0.1';});const sp=$('dcv-spool');if(sp)sp.style.transform='translate('+S.shift+'px,0)';$('bud').innerHTML=S.budget.map(r=>'<tr class="'+(r[3]?'worst':'')+'"><td>'+r[0]+'</td><td class="flow">'+r[1]+'</td><td>'+r[2]+'</td></tr>').join('');$('note').textContent=S.note;}
+document.querySelectorAll('.row button').forEach(b=>b.onclick=()=>pick(b.dataset.k,b));
+pick('raise',document.querySelector('.row button.active'));
+</script></body></html>
