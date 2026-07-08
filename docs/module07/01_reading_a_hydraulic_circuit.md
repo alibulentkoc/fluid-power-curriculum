@@ -76,8 +76,6 @@ $$ \boxed{\text{A power-supply fragment: pump + relief + reservoir} = \text{a pr
 
 <iframe src="demos/lesson01_symbols.html" title="Reading a hydraulic circuit — the ISO 1219 symbols" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_symbols.html)
-
 Pick a component and see its ISO 1219 symbol, what it does, and which module built it. Then switch the line type to see how a working line, a pilot line, and a drain are drawn differently — the difference between a line that carries power and one that carries a command.
 
 ## 8. Coding Exercise
@@ -106,8 +104,6 @@ for name, meaning in SYMBOLS.items():
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="Reading a hydraulic circuit — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. What does a hydraulic schematic represent — physical layout or function?
 2. How is a pump drawn, and how do you tell which way it pumps?

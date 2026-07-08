@@ -83,8 +83,6 @@ $$ \text{Complete set} = \text{reservoir} + \text{motor} + \text{pump} + \text{r
 
 <iframe src="demos/lesson04_component_set.html" title="The complete platform circuit — raise, hold, lower" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_component_set.html)
-
 Command the directional control valve: **Raise** routes the pump's flow to the cap side and the platform rises; **Hold** blocks both ports and it stays put; **Lower** routes flow to the rod side and it descends under control. Watch the active path light up around the loop, through the relief valve, the cylinder, and back past the filter to the reservoir.
 
 ## 8. Coding Exercise
@@ -115,8 +113,6 @@ print(f"\nfull-lift time = {V_L / Q_Lmin * 60:.1f} s")   # expect ~7.1 s
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="The complete component set — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. Why is a hydraulic system described as a closed loop rather than a one-way path?
 2. What single component lets the platform raise, hold, *and* lower the load?

@@ -80,8 +80,6 @@ $$ \boxed{\text{Reads } \approx 2000\text{ kg}; \text{ range clears the spike; w
 
 <iframe src="demos/lesson04_pressure.html" title="Sensing pressure and load — pressure to force" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_pressure.html)
-
 Change the load on the platform and watch the cap pressure — and the weight the transducer reads — track it, moving through the normal, caution, and overload zones toward the relief. See why the range needs headroom past the relief to catch a spike.
 
 ## 8. Coding Exercise
@@ -106,8 +104,6 @@ print("range clears spike:", p_fs > spike, "| load resolution:", round(load_kg(d
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Sensing pressure and load — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. How does a cap-line pressure reading give the load, and what does 100 bar correspond to?
 2. Why must the transducer's range clear ~143 bar, not just the 115 bar relief?

@@ -83,8 +83,6 @@ $$ \boxed{\text{Clean oil (1.8 GPa): 0.34 mm} \;\checkmark \qquad \sim 1.5\% \te
 
 <iframe src="demos/lesson03_bulk_modulus.html" title="Bulk modulus — stiffness and entrained air" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_bulk_modulus.html)
-
 Add entrained air, a fraction of a percent at a time, and watch the effective bulk modulus collapse, the trapped-column spring soften, and the sag under a fixed disturbance climb toward — and then past — the ±1 mm line. Clean oil holds with room to spare; a little air is all it takes to lose the platform's precision.
 
 ## 8. Coding Exercise
@@ -116,8 +114,6 @@ for air in (0.0, 0.005, 0.01, 0.015):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Bulk modulus — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. In plain terms, what does a fluid's bulk modulus measure?
 2. Clean hydraulic oil is about 1.8 GPa. Does a *higher* number mean stiffer or softer?

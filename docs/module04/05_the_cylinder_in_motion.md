@@ -86,8 +86,6 @@ $$ \boxed{f_n \approx 17\ \text{Hz loaded (clean oil)};\quad \approx 450\ \text{
 
 <iframe src="demos/lesson05_dynamics.html" title="The cylinder in motion — mass on a fluid spring" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_dynamics.html)
-
 Set the moving mass and the oil's effective stiffness (add air to soften it) and watch two things move together: the natural frequency, and the step response as the piston is commanded to a new position. Heavier loads and softer oil both lower the frequency, slow the response, and grow the overshoot — see how clean, quick motion needs a stiff, air-free oil and rewards a lighter tool.
 
 ## 8. Coding Exercise
@@ -113,8 +111,6 @@ print(round(natural_freq(0.5e9, 2000), 1), "Hz  loaded, aerated oil")     # ~10
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="The cylinder in motion — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. In the cylinder's equation of motion, what does the left side ($m\ddot{x}$) represent, and what three forces act on the right?
 2. Where does the "spring" in the mass–spring picture come from?

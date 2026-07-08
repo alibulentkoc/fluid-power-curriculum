@@ -76,8 +76,6 @@ $$ \boxed{\text{Open-loop } +15\text{ mm; closed-loop holds } \approx 300\text{ 
 
 <iframe src="demos/lesson01_feedback.html" title="The feedback principle — open vs closed loop" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_feedback.html)
-
 Toggle feedback on and off and apply a drift or a disturbance. Watch the open-loop platform sail past the target and stay off, while the closed-loop platform corrects and holds — the same machine, transformed by one feedback connection.
 
 ## 8. Coding Exercise
@@ -109,8 +107,6 @@ print("closed-loop, -3 mm/s disturbance:", round(closed_loop(0.05, -3.0), 2), "m
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="The feedback principle — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. What is the feedback principle, in one sentence?
 2. What is the error, and how does a proportional controller use it?

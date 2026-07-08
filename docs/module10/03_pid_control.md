@@ -80,8 +80,6 @@ $$ \boxed{\text{I erases the 0.24 mm droop; D turns a 110\% overshoot into 5\%}}
 
 <iframe src="demos/lesson03_pid.html" title="PID control — add integral and derivative" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_pid.html)
-
 Switch between P, PI, and PID and watch the platform hold a target under a disturbance: proportional leaves a droop, integral drives it to zero, and derivative damps the settle. See each term earn its place.
 
 ## 8. Coding Exercise
@@ -112,8 +110,6 @@ print("PID droop:", round(hold(0.15, 0.4, 0.006), 3), "mm")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="PID control — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. What are the three terms of a PID controller, and what does each respond to?
 2. How does the integral term erase the steady-state droop?

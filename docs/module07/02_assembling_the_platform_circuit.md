@@ -77,8 +77,6 @@ $$ \boxed{\text{All three states exist: the counterbalance in the cap line with 
 
 <iframe src="demos/lesson02_assemble.html" title="Assembling the platform circuit — the connection map" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_assemble.html)
-
 Select each line of the circuit — supply, return, cap, rod, pilot — to highlight it and see what it connects and what it carries. Notice where the counterbalance valve sits (the cap line) and where its pilot comes from (the rod line): the two connections that make holding and lowering work.
 
 ## 8. Coding Exercise
@@ -112,8 +110,6 @@ for s in ("raise","hold","lower"):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="Assembling the platform circuit — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. Which valve is the "hub" of the circuit, and what do its P, T, A, B ports connect to?
 2. In which line does the counterbalance valve belong, and why there?

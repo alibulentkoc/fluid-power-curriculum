@@ -81,8 +81,6 @@ $$ \boxed{v(u)\approx 85\,u\ \text{mm/s};\ \text{creep }\sim4\text{ mm/s at 5\%}
 
 <iframe src="demos/lesson04_metering.html" title="Metering flow — proportional command and meter-in vs meter-out" style="width:100%;height:880px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_metering.html)
-
 Dial the command and watch the opening, flow, and speed scale with it — from a 4 mm/s creep to the full 85 mm/s. Then switch a *lowering* load between meter-in and meter-out: meter-in lets gravity run the load away, while meter-out holds the back-pressure that keeps the descent at the speed you command.
 
 ## 8. Coding Exercise
@@ -108,8 +106,6 @@ for u in (1.0, 0.5, 0.05):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Metering flow — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. How does a proportional valve differ from a plain directional valve?
 2. Why does piston speed scale with the command in a proportional valve?

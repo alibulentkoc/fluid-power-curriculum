@@ -15,6 +15,7 @@
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
   svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
   #lifter{transition:transform .35s ease}
+  #fluidG{transform-box:fill-box;transform-origin:center bottom;transition:transform .35s ease}
   .controls{display:grid;gap:16px;margin-top:18px}
   .ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;margin-bottom:8px}
   .ctl .val{font-family:var(--mono);font-size:15px;color:var(--teal);font-weight:700}
@@ -53,8 +54,7 @@
 
       <!-- CYLINDER (bore set by JS) -->
       <rect id="barrel" x="430" y="170" width="80" height="140" rx="8" fill="#fff" stroke="#1B3A55" stroke-width="2.5"/>
-      <rect id="capFluid" x="436" y="250" width="68" height="54" rx="3" fill="#1FB6AE" opacity="0.9"/>
-      <rect id="piston" x="436" y="234" width="68" height="16" rx="3" fill="#1B3A55"/>
+      <g id="fluidG"><rect id="capFluid" x="436" y="250" width="68" height="54" rx="3" fill="#1FB6AE" opacity="0.9"/></g>
       <rect x="464" y="306" width="12" height="9" rx="2" fill="#1B3A55"/>  <!-- cap port -->
 
       <!-- HOSE: outlet port -> under frame -> cap port -->
@@ -69,6 +69,7 @@
 
       <!-- lifter: rod + platform + load (rises only when it lifts) -->
       <g id="lifter">
+        <rect id="piston" x="436" y="234" width="68" height="16" rx="3" fill="#1B3A55"/>
         <rect id="rod" x="463" y="150" width="14" height="92" fill="#5B6B79"/>
         <rect x="384" y="136" width="172" height="14" rx="4" fill="#1B3A55"/>
         <rect x="438" y="102" width="64" height="34" rx="5" fill="#DD841A"/>
@@ -97,7 +98,7 @@
   const bVal=document.getElementById('bVal'),pVal=document.getElementById('pVal');
   const aOut=document.getElementById('aOut'),fOut=document.getElementById('fOut');
   const needle=document.getElementById('needle'),gaugeTxt=document.getElementById('gaugeTxt'),note=document.getElementById('note');
-  const barrel=document.getElementById('barrel'),capFluid=document.getElementById('capFluid'),piston=document.getElementById('piston'),lifter=document.getElementById('lifter');
+  const barrel=document.getElementById('barrel'),capFluid=document.getElementById('capFluid'),piston=document.getElementById('piston'),lifter=document.getElementById('lifter'),fluidG=document.getElementById('fluidG');
   const statusTile=document.getElementById('statusTile'),statusK=document.getElementById('statusK'),statusV=document.getElementById('statusV');
   const CX=470, LOAD=19620, PMAX=160;   // load = 2 t = 19,620 N
 
@@ -119,7 +120,11 @@
     piston.setAttribute('x',CX-W/2+6); piston.setAttribute('width',W-12);
 
     const lifts = F>=LOAD;
+    // Piston, rod, platform and load are one rigid assembly: they rise together (piston is inside #lifter).
     lifter.style.transform = lifts ? 'translateY(-34px)' : 'translateY(0)';
+    // Fluid fills from the cap port to follow the piston up: grow the column from its bottom edge
+    // by the same 34 px (rest height 54 -> 88), so its top always meets the piston.
+    fluidG.style.transform = lifts ? 'scaleY('+((54+34)/54).toFixed(4)+')' : 'scaleY(1)';
     statusTile.className = 'tile status '+(lifts?'ok':'no');
     statusK.textContent = lifts?'Lifts 2 t':'Too small';
     statusV.textContent = lifts?'✓':'✗';

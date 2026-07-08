@@ -80,8 +80,6 @@ $$ \boxed{\text{Observer gives clean hidden states and, extended, tracks driftin
 
 <iframe src="demos/lesson04_observer.html" title="Estimating hidden state — the observer" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_observer.html)
-
 Start the observer with a wrong initial guess and watch it converge onto the true position. Adjust the observer gain to trade smoothness against speed, and compare the observer's clean velocity estimate with the noisy result of differentiating the position directly.
 
 ## 8. Coding Exercise
@@ -116,8 +114,6 @@ for L in (2, 8, 30):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Estimating hidden state — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. What is a state observer, and what does the correction term do?
 2. Why does differentiating noisy position fail to give a usable velocity?

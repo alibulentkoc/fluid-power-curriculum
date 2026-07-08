@@ -82,8 +82,6 @@ $$ \boxed{\text{demand: }10\ \text{L/min at }100\ \text{bar} = 1.67\ \text{kW hy
 
 <iframe src="demos/lesson01_power_demand.html" title="The power-unit demand — flow, pressure, power" style="width:100%;height:840px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_power_demand.html)
-
 Set the flow and pressure and watch the hydraulic power the unit must deliver, and the electrical power it draws once efficiency is included. Find the platform's operating point — 10 L/min and 100 bar — and confirm 1.67 kW of fluid power for about 2 kW at the wall. See how raising pressure or flow raises both, and how a less efficient unit widens the gap between them.
 
 ## 8. Coding Exercise
@@ -107,8 +105,6 @@ print(round(hyd, 2), "kW hydraulic;", round(elec, 2), "kW electrical")   # 1.67 
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="What the power unit must supply — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. What three numbers make up the platform's demand on its power unit?
 2. What are the four parts of a hydraulic power unit, and what does each do?

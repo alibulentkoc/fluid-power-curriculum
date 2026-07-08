@@ -85,8 +85,6 @@ $$ \boxed{\text{Spool centre drifts out of }\pm1\text{ mm in }\sim12\text{ s};\ 
 
 <iframe src="demos/lesson03_holding.html" title="Holding the load — spool drift vs pilot-operated check valve" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_holding.html)
-
 Choose the hold — a blocked spool centre or a pilot-operated check valve — and set the leakage. Watch the drift rate and the time to breach the ±1 mm band: the spool walks the platform out of tolerance in seconds, worse the more it leaks, while the check valve stays flat on zero however long you wait.
 
 ## 8. Coding Exercise
@@ -114,8 +112,6 @@ print(time_to_1mm(0), "s for a drop-tight POCV")       # inf
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Holding the load — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. Why can't a blocked spool centre hold the load to ±1 mm?
 2. How does a check valve seal differently from a spool, and why does that matter?

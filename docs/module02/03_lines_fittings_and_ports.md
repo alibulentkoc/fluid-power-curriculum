@@ -83,8 +83,6 @@ $$ d_{\min} \approx 6.5\ \text{mm} \;\Rightarrow\; \text{choose an 8 mm bore}, \
 
 <iframe src="demos/lesson03_lines_ports.html" title="Line bore, velocity, and choke — interactive demo" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_lines_ports.html)
-
 Set the line bore and watch two numbers respond: the fluid velocity and the pressure lost to friction. At 8 mm the flow is calm and the loss is small. Pinch it toward 5 mm and the line **chokes** — the velocity and the loss jump together, and the platform feels it as lost lifting pressure. Open it toward 16 mm and the flow barely whispers.
 
 ## 8. Coding Exercise
@@ -108,8 +106,6 @@ print(f"{line_bore_mm(10, 5):.1f} mm")     # pressure line, expect: 6.5 mm
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Lines, fittings, and ports — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. The flow through a line is fixed. What sets the fluid velocity?
 2. Why must a pressure line not be sized too small?

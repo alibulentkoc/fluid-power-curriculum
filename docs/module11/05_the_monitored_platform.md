@@ -81,8 +81,6 @@ $$ \boxed{\text{Fault caught at } \sim5\%\ \text{of failure level, with } \sim20
 
 <iframe src="demos/lesson05_monitored.html" title="The monitored platform — detect a fault before failure" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_monitored.html)
-
 Run the complete monitored platform against a developing leak. Watch the position hold flat on target while the leak grows, the monitor detect and quantify it early, and the failure point sit far ahead — the lead time the whole system buys.
 
 ## 8. Coding Exercise
@@ -116,8 +114,6 @@ print(f"lead time: {fail[0]-det[0]:.1f}s")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="The monitored platform — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. What are the parts of the complete monitored platform, and what does each contribute?
 2. Why does the controller holding ±1 mm make monitoring more important, not less?

@@ -88,8 +88,6 @@ $$ \boxed{p_\text{set}\approx130\text{ bar};\ \sim10\text{ bar pilot to lower};\
 
 <iframe src="demos/lesson05_counterbalance.html" title="Controlling the overrunning load — the counterbalance valve" style="width:100%;height:880px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_counterbalance.html)
-
 Set the counterbalance pressure and the rod-side pilot, and try to lower the load. Too little pilot and it stays locked (safe); enough pilot and it descends — but push the load toward overrun and watch the valve self-throttle to hold the speed. The load cannot run away, and with no pilot it simply holds.
 
 ## 8. Coding Exercise
@@ -112,8 +110,6 @@ print(cbv(85, 130, 10))     # locked again -> valve clamps down on overrun
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="Controlling the overrunning load — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. Why is manual meter-out (Lesson 04) not enough for a heavy overrunning load?
 2. What three jobs does a counterbalance valve do at once?

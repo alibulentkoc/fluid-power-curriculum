@@ -77,8 +77,6 @@ $$ \boxed{\text{Identify } \beta_\text{eff}\approx0.77\text{ GPa and } \zeta\app
 
 <iframe src="demos/lesson04_validation.html" title="Validating the model — fit the parameters to the data" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_validation.html)
-
 Adjust the effective bulk modulus and the friction until the model's step response overlays the measured data. Watch the fit error fall as you match the ringing frequency (stiffness) and the decay (friction) — identifying the uncertain parameters by hand.
 
 ## 8. Coding Exercise
@@ -108,8 +106,6 @@ for OS in (0.30, 0.10):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Validating the model — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. What is validation, and how does it differ from simply running the model?
 2. Which platform parameters are trusted, and which must be identified from data?

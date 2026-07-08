@@ -76,8 +76,6 @@ $$ \boxed{\text{(A) leak — bleeds holding pressure, platform sags; (B) sensor 
 
 <iframe src="demos/lesson03_diagnosis.html" title="Detecting and diagnosing faults — the signature matrix" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_diagnosis.html)
-
 Inject each fault — leak, friction, entrained air, or a sensor fault — and watch the three residual indicators light up in that fault's characteristic pattern, with the diagnosis and the cross-check verdict. See how the combination, not any single signal, names the cause.
 
 ## 8. Coding Exercise
@@ -109,8 +107,6 @@ print(diagnose("jump", "none", "none", False))  # -> sensor
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Detecting and diagnosing faults — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. What is the difference between detecting and diagnosing a fault?
 2. What is the signature of an internal leak across the three residuals?

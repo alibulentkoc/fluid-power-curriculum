@@ -88,7 +88,7 @@ $$ d \approx 0.050\ \text{m} = 50\ \text{mm} $$
 
 ## 7. Interactive Demonstration
 
-[Open the demo in a new tab ↗](demos/lesson03_bore_sizing.html)
+<iframe src="demos/lesson03_bore_sizing.html" title="Interactive demonstration" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 Size the cylinder yourself. Shrink the bore and watch the force fall until the platform can no longer lift the two-tonne load; widen it and watch the force climb. Find the smallest bore that still lifts at 100 bar — then raise the pressure and see the required bore shrink. The status badge tells you whether your design works.
 
@@ -110,7 +110,7 @@ print(f"{d*1000:.1f} mm")                # expect: 50.0 mm
 
 ## 9. Knowledge Check
 
-[Open the knowledge check in a new tab ↗](quizzes/lesson03_quiz.html)
+<iframe src="quizzes/lesson03_quiz.html" title="Knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 *Unlimited attempts, immediate feedback, not graded.*
 

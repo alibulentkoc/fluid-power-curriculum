@@ -84,8 +84,6 @@ $$ \boxed{K_p=0.15,\ K_i=0.4,\ K_d=0.01:\ 2.7\times\ \text{gain margin, bandwidt
 
 <iframe src="demos/lesson04_tuning.html" title="Tuning and stability — gain margin against the resonance" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_tuning.html)
-
 Raise the proportional gain and watch the response approach the oscillation edge — the ultimate gain. Then add derivative and see the edge move up, restoring margin. Read the gain margin and settling time as you tune toward fast-but-safe.
 
 ## 8. Coding Exercise
@@ -120,8 +118,6 @@ print("gain margin at Kp=0.15:", round(ultimate_gain(0.01)/0.15, 1), "x")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Tuning and stability — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. What is the ultimate gain, and what is gain margin?
 2. Why tune to a margin below the ultimate gain rather than to the edge?

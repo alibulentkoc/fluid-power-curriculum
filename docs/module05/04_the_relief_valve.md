@@ -83,8 +83,6 @@ $$ \boxed{p_\text{relief} \approx 115\ \text{bar};\quad \text{holding dumps} \ap
 
 <iframe src="demos/lesson04_relief.html" title="Setting the relief valve" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_relief.html)
-
 Slide the relief setting and see whether it lands in the safe window — above the working pressure (or it opens during a lift and starves the platform) and below the component limit (or it fails to protect them). Then watch the heat the fixed pump dumps over it during a hold climb with the setting. Find 115 bar: safely set, ~1.9 kW of hold heat for the reservoir to shed.
 
 ## 8. Coding Exercise
@@ -108,8 +106,6 @@ print(relief_ok(105), relief_ok(135)) # too-tight vs high-but-ok
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="The relief valve — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. What does a relief valve do, and what would happen without one when the platform holds?
 2. Why is the relief set *above* the working pressure rather than at it?

@@ -80,8 +80,6 @@ $$ \boxed{\text{3σ} = 0.07\text{ mm (0.27\% false); gross leak instant; subtle 
 
 <iframe src="demos/lesson02_residual.html" title="The residual signal — threshold and filtering" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_residual.html)
-
 Adjust the threshold in sigma and the filter window, with a subtle drift developing in the residual. Watch the false-alarm rate trade against detection as you move the threshold, and see filtering pull the slow drift out of the noise.
 
 ## 8. Coding Exercise
@@ -115,8 +113,6 @@ print("filtered std (W=50):", round(filtered_sigma(sd, 50), 4), "mm")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="The residual signal — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. What are the two components of the healthy residual band?
 2. What does the threshold's height in sigma trade off?

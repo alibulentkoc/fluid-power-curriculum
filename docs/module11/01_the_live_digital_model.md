@@ -80,8 +80,6 @@ $$ \boxed{\text{Healthy } \sim0.07\text{ mm; leak } \to \sim30\text{ mm; a } 0.3
 
 <iframe src="demos/lesson01_live_model.html" title="The live digital model — predicted vs measured" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_live_model.html)
-
 Run the model and machine together and watch the residual stay near zero while healthy. Then inject a fault — a leak or added friction — and see the residual climb away from the noise floor and cross the alarm threshold, even as the controller keeps holding position.
 
 ## 8. Coding Exercise
@@ -115,8 +113,6 @@ print("leak residual:", round(run('leak'), 1), "mm")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="The live digital model — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. What is a live digital model, and how is it run relative to the machine?
 2. What is the residual, and what does its size indicate?

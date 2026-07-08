@@ -88,8 +88,6 @@ $$ \boxed{\text{breakaway } 120\ \text{N} \;\to\; \text{running } 77\ \text{N};\
 
 <iframe src="demos/lesson03_friction.html" title="Friction and the usable force" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_friction.html)
-
 Sweep the piston speed along the Stribeck curve. Watch the friction start at the 120 N breakaway, dip as the piston gets moving, then climb with the viscous term — and see the usable force (ideal minus friction) track just below 19.6 kN. Notice how much higher the friction is at a crawl than at running speed: that gap is where precision is lost.
 
 ## 8. Coding Exercise
@@ -117,8 +115,6 @@ print("breakaway:", Fc + (Fs - Fc), "N")       # 120
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Friction and the usable force — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. What is "breakaway" (static) friction, and how does it compare to the friction once moving?
 2. The usable force is only about 0.4 % below the ideal. So why does friction matter so much here?

@@ -79,8 +79,6 @@ $$ \boxed{\text{1 ms: stable \& accurate; 4 ms: borderline; 30 ms: diverges}} $$
 
 <iframe src="demos/lesson03_numerical.html" title="Solving it numerically — time step and stability" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_numerical.html)
-
 Set the time step and run the oil-spring step response. Watch a small step track the true motion, a moderate step coarsen it, and a step past the 26 ms limit diverge into nonsense — the same equations, made trustworthy or useless by the step alone.
 
 ## 8. Coding Exercise
@@ -115,8 +113,6 @@ print("stability limit 2/wn =", round(2/wn*1000), "ms")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Solving it numerically — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. What does numerical integration do to the continuous equations of motion?
 2. Write the Euler step for the platform's state — how is each variable advanced?

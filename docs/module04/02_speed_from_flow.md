@@ -89,8 +89,6 @@ $$ \boxed{v_\text{ext} = 85\ \text{mm/s}\ (7.1\ \text{s}) \qquad v_\text{ret} = 
 
 <iframe src="demos/lesson02_speed.html" title="Cylinder speed — extend vs retract from flow" style="width:100%;height:840px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_speed.html)
-
 Set the pump flow and compare the strokes. Extending fills the full bore and moves slower; retracting fills the annulus and moves faster — always by the ratio 1.457. Find 10 L/min and confirm 85 mm/s extending and 124 mm/s retracting, and watch the power reading stay put as the speed and force trade against each other.
 
 ## 8. Coding Exercise
@@ -116,8 +114,6 @@ print(round(speed_mm_s(Ar)/speed_mm_s(Ab), 3))     # 1.457  (= area ratio)
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="Speed from flow — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. Cylinder speed comes from which supply quantity — pressure or flow?
 2. Which stroke is faster on the same flow, and why?

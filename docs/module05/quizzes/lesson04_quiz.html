@@ -62,14 +62,14 @@ function render(){
   answered=new Array(QUESTIONS.length).fill(false);correctCount=0;doneEl.textContent='0';rightEl.textContent='0';quiz.innerHTML='';
   QUESTIONS.forEach((q,qi)=>{const card=document.createElement('div');card.className='q';
     card.innerHTML=`<div class="num">Question ${qi+1}</div><div class="stem">${q.stem}</div>`;
-    q.opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
+    const order=q.opts.map((_,i)=>i);for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=order[i];order[i]=order[j];order[j]=t;}q._opts=order.map(i=>q.opts[i]);q._correct=order.indexOf(q.correct);q._opts.forEach((o,oi)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=o;b.onclick=()=>choose(qi,oi,card,q);card.appendChild(b);});
     const fb=document.createElement('div');fb.className='fb';card.appendChild(fb);quiz.appendChild(card);});
 }
 function choose(qi,oi,card,q){
   if(answered[qi])return;answered[qi]=true;
-  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q.correct)b.classList.add('correct');});
+  const btns=card.querySelectorAll('.opt');btns.forEach((b,i)=>{b.disabled=true;if(i===q._correct)b.classList.add('correct');});
   const fb=card.querySelector('.fb');
-  if(oi===q.correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
+  if(oi===q._correct){correctCount++;fb.className='fb show ok';fb.innerHTML='Correct. '+q.why;}
   else{btns[oi].classList.add('wrong');fb.className='fb show no';fb.innerHTML='Not quite. '+q.why;}
   doneEl.textContent=answered.filter(Boolean).length;rightEl.textContent=correctCount;
 }

@@ -76,8 +76,6 @@ $$ \boxed{\text{On/off: 1.7 mm overshoot + 143 bar spike (fails). Proportional c
 
 <iframe src="demos/lesson02_valves.html" title="On/off vs proportional — approaching a target" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_valves.html)
-
 Send the platform to a target with each valve. Watch the on/off valve overshoot the mark and spike the pressure past the relief, and the proportional valve ramp down to a creep and settle inside the ±1 mm band. Change the target and see which valve keeps its promise.
 
 ## 8. Coding Exercise
@@ -99,8 +97,6 @@ for name, v in (("on/off (full)", v_full), ("proportional creep", 0.0042)):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="On/off vs proportional — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. What flow can an on/off valve produce, versus a proportional valve?
 2. Why does an on/off valve overshoot the platform's target by more than 1 mm?

@@ -80,8 +80,6 @@ $$ \boxed{\text{Kinematic } 5.9\text{ s; dynamic } 5.93\text{ s — the transien
 
 <iframe src="demos/lesson01_model.html" title="Why model — kinematic vs dynamic prediction" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_model.html)
-
 Set the raise height and command, and compare the kinematic and dynamic predictions of the arrival time and the motion. Watch the dynamic model's brief acceleration and see how close the two agree — and where the dynamic one carries extra information the kinematic one cannot.
 
 ## 8. Coding Exercise
@@ -109,8 +107,6 @@ for h in (0.10, 0.50):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="Why model the platform — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. Why build a model before building and controlling the real platform?
 2. What is a model of the platform, in terms of inputs and outputs?

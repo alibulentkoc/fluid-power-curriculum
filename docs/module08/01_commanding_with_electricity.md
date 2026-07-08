@@ -76,8 +76,6 @@ $$ \boxed{85 / 25.5 / 4.2\ \text{mm/s at }100/30/5\%; \quad 20\ \text{mm/s needs
 
 <iframe src="demos/lesson01_command.html" title="Commanding with electricity — command to speed" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_command.html)
-
 Sweep the command from 0 to 100% and watch the solenoid drive the spool, the spool meter the flow, and the platform speed follow — a straight line from creep to full traverse. Find the command for a target speed and see the whole chain respond.
 
 ## 8. Coding Exercise
@@ -101,8 +99,6 @@ print("command for 20 mm/s:", round(command(20)*100, 1), "%")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="Commanding with electricity — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. What does a proportional solenoid convert the command current into, and how?
 2. Name the four links of the chain from current to platform speed.

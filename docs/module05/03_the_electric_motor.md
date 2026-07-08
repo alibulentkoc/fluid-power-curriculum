@@ -87,8 +87,6 @@ $$ \boxed{\text{2.2 kW, 4-pole, }\sim1450\ \text{rpm, continuous};\quad \text{dr
 
 <iframe src="demos/lesson03_motor.html" title="Sizing the motor — standard sizes and margin" style="width:100%;height:840px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_motor.html)
-
 Set the pump's shaft-power demand and watch which standard motor size is selected — always the next rung up — with its torque margin and the electrical power it draws. Find the platform's 1.85 kW and confirm a 2.2 kW motor, 1.19× torque margin, and ~2.06 kW at the wall. Push the demand just over a rung and watch the choice jump to the next size.
 
 ## 8. Coding Exercise
@@ -114,8 +112,6 @@ print(choose_motor(1.85))     # (2.2, 14.5, 2.06)
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="The electric motor — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. What must the motor's output power at least equal, and why pick the next standard size up?
 2. Why is the pump driven at 1450 rpm — where does that number come from?

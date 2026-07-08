@@ -76,8 +76,6 @@ $$ \boxed{\text{Raise needs ~100 bar at the cap; hold needs no pressure; lower n
 
 <iframe src="demos/lesson03_states.html" title="Tracing the operating states — raise, hold, lower" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_states.html)
-
 Switch between **raise**, **hold**, and **lower** to shift the directional valve and light up the active flow path through the circuit. Watch where pressure goes, what the counterbalance valve does, and how the same hardware produces all three motions.
 
 ## 8. Coding Exercise
@@ -104,8 +102,6 @@ for s in ("raise", "hold", "lower"):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Tracing the operating states — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. In **raise**, which path does the oil take from the pump to the cap, and where does the rod oil go?
 2. In **hold**, what does the tandem centre do with the pump flow, and what actually holds the load?

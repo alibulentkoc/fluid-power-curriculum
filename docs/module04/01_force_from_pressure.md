@@ -90,8 +90,6 @@ $$ \boxed{F_\text{ext} = 19.6\ \text{kN} \;\;(\text{meets the 19.6 kN load})\qqu
 
 <iframe src="demos/lesson01_force.html" title="Cylinder force — extend vs retract" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_force.html)
-
 Set the pressure and switch between extend and retract. Watch the driven area change — full bore one way, annulus the other — and the force with it. Find 100 bar and confirm 19.6 kN extending, 13.5 kN retracting, and see the area ratio hold at 1.457 whatever the pressure.
 
 ## 8. Coding Exercise
@@ -118,8 +116,6 @@ print(round(Ab/Ar, 3), "area ratio")                 # 1.457
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="Force from pressure — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. Which stroke — extend or retract — gives the larger force, and why?
 2. What is the "annulus" area, and why is it smaller than the bore?

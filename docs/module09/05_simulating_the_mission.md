@@ -84,8 +84,6 @@ $$ \boxed{\text{Feasible: } 6.0\text{ s},\ 105\text{ bar (10 under relief)},\ 10
 
 <iframe src="demos/lesson05_mission.html" title="Simulating the mission — run the raise to height" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_mission.html)
-
 Set the raise height and run the mission. Watch the position, velocity, and pressure play out, and read the verdict — arrival time, pressure margin, flow — against the limits. Then see the open-loop drift that keeps it from holding ±1 mm.
 
 ## 8. Coding Exercise
@@ -116,8 +114,6 @@ print("open-loop hold error at 3% drift:", round(vmax*0.03*t*1000), "mm")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="Simulating the mission — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. What does simulating the mission answer, and what are the three limits it checks?
 2. What arrival time does the raise give, and why is it flow-limited?

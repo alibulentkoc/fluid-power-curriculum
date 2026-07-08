@@ -83,8 +83,6 @@ $$ \boxed{A \approx 7.6\ \text{mm}^2 \text{ opening at }5\text{ bar drop};\quad 
 
 <iframe src="demos/lesson01_valve_functions.html" title="What the valves must do — raise, lower, hold" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_valve_functions.html)
-
 Switch the directional valve between raise, lower, and hold and watch the flow path light up and the cylinder respond — P→A to extend, P→B to retract, all blocked to hold. Then open the spool a little or a lot and see the orifice law set the flow: a small gap meters a trickle, a wider one passes the full 10 L/min.
 
 ## 8. Coding Exercise
@@ -114,8 +112,6 @@ print(round(orifice_flow_Lmin(7.6, 5), 1), "L/min through 7.6 mm^2")    # ~10
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="What the valves must do — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. What three commands must the platform's valves provide?
 2. In a 4/3 directional valve, what are the four ports and the three positions?

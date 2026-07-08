@@ -84,8 +84,6 @@ $$ \boxed{\text{Reaches } 500\text{ mm in } 6.1\text{ s, holds } \le0.02\text{ m
 
 <iframe src="demos/lesson05_closed_loop.html" title="The closed-loop platform — run the full mission" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_closed_loop.html)
-
 Run the full closed-loop mission: watch the platform track its profile to 500 mm and settle inside ±1 mm. Then hit it with a load disturbance and see the controller drive it straight back to target — the curriculum's goal, in action.
 
 ## 8. Coding Exercise
@@ -125,8 +123,6 @@ print(f"hold error {hold:.3f} mm (<1), final after disturbance {final:.3f} mm")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="The closed-loop platform — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. What two parts make up the complete closed-loop controller, and what does each handle?
 2. Why does the motion profile prevent the arrival overshoot?

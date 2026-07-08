@@ -118,14 +118,21 @@
       ? "At 100 bar and 10 L/min the line delivers 1.67 kW to the load. Flow sets how fast the platform climbs; pressure sets how hard it pushes; the power is their product."
       : "Power delivered = pressure × flow. More flow lifts faster; more pressure pushes harder. Watch the platform speed track the flow, not the pressure.";
   }
+  const MAXRISE=38;  // piston stroke that keeps the piston inside the cylinder body
   function frame(){
     const t=now(), dt=(t-last)/1000; last=t; const c=compute();
-    // flow animates the dashes and the platform rise speed (flow = how fast)
+    // flow animates the dashes and the piston-rise speed (flow = how fast)
     dashOff-=c.q*1.4*dt*16; dash.setAttribute('stroke-dashoffset',dashOff.toFixed(1));
-    rise+=c.q*0.9*dt; if(rise>64) rise=0;  // platform climbs at a rate set by flow, then resets
+    rise+=c.q*0.9*dt; if(rise>MAXRISE) rise=0;  // fluid keeps filling; piston strokes up, then loops the demo
     const dy=-rise;
+    // Fluid enters through the cap port and FILLS the cylinder from the bottom, growing the column.
+    fluid.setAttribute('y',236+dy); fluid.setAttribute('height',(50+rise).toFixed(1));
+    // The piston is pushed UP by the fluid; the rod is bolted to the piston, so it rises WITH it
+    // at constant length (rod bottom always meets the piston top).
+    piston.setAttribute('y',220+dy);
+    rod.setAttribute('y',164+dy);
+    // Platform and load sit on the rod and rise by the same amount.
     platform.setAttribute('y',150+dy); load.setAttribute('y',116+dy); loadTxt.setAttribute('y',138+dy);
-    rod.setAttribute('y',164+dy); rod.setAttribute('height',56+rise);
     raf(frame);
   }
   [Q,P].forEach(el=>el.addEventListener('input',readout));

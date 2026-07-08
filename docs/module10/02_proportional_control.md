@@ -84,8 +84,6 @@ $$ \boxed{K_p=0.15:\ \tau\approx0.08\text{ s},\ \text{droop }0.24\text{ mm},\ \t
 
 <iframe src="demos/lesson02_proportional.html" title="Proportional control — tune the gain" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_proportional.html)
-
 Turn the proportional gain up and down and watch the step response — sluggish at low gain, crisp in the middle, ringing into oscillation as the gain approaches the resonance. See the settling time and droop fall as you raise the gain, until the oil spring takes over.
 
 ## 8. Coding Exercise
@@ -113,8 +111,6 @@ for Kp in (0.05, 0.15, 0.4):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="Proportional control — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. What is the proportional control law, and what does the gain do?
 2. How do response speed and droop change as the gain rises?

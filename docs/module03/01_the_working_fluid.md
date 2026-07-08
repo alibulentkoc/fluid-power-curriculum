@@ -83,8 +83,6 @@ $$ P \approx 1.67\ \text{kW} $$
 
 <iframe src="demos/lesson01_working_fluid.html" title="Hydraulic power — pressure times flow" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson01_working_fluid.html)
-
 Set the pressure and the flow and watch the power the fluid carries, $P = p\,Q$. Find the platform's operating point — 100 bar and 10 L/min — and confirm it lands at about 1.67 kW. Then see how raising either one alone raises the power, and why pressure with no flow (a held load) does no lifting work at all.
 
 ## 8. Coding Exercise
@@ -110,8 +108,6 @@ for p, Q in [(100, 10), (150, 10), (100, 15)]:
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson01_quiz.html" title="The working fluid — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson01_quiz.html)
 
 1. Hydraulic power is the product of which two quantities?
 2. A load is held perfectly still at pressure but nothing moves. How much lifting power is the fluid delivering, and why?

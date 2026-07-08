@@ -76,8 +76,6 @@ $$ \boxed{\text{Use }\geq 14\text{-bit } (\leq 0.037\text{ mm}) \text{ over 600 
 
 <iframe src="demos/lesson03_position.html" title="Sensing position — resolution vs the ±1 mm goal" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson03_position.html)
-
 Set the sensor's bit depth and read off the resolution over the 600 mm stroke. Watch the resolvable step shrink as bits rise, and see it cross below the 0.1 mm line — the threshold where the sensor becomes fine enough to hold ±1 mm.
 
 ## 8. Coding Exercise
@@ -104,8 +102,6 @@ print("min sample rate:", round(min_rate), "Hz  -> use ~1 kHz")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson03_quiz.html" title="Sensing position — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson03_quiz.html)
 
 1. Why must the sensor resolve much finer than the ±1 mm control goal?
 2. What resolution, and roughly what bit depth over 600 mm, does a ±1 mm goal imply?

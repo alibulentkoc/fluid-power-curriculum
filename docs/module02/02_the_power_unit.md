@@ -80,7 +80,7 @@ $$ Q \approx 10\ \text{L/min}, \qquad P \approx 1.67\ \text{kW} $$
 
 ## 7. Interactive Demonstration
 
-[Open the demo in a new tab ↗](demos/lesson02_power_unit.html)
+<iframe src="demos/lesson02_power_unit.html" title="Interactive demonstration" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 Set the pump flow and run a lift. At 10 L/min the platform takes about seven seconds; double the flow and it lifts in half the time — but watch the motor power double too. Flow buys speed, and you pay for it in motor size.
 
@@ -105,7 +105,7 @@ print(f"{Q:.1f} L/min, {P:.2f} kW")        # expect: 10.0 L/min, 1.67 kW
 
 ## 9. Knowledge Check
 
-[Open the knowledge check in a new tab ↗](quizzes/lesson02_quiz.html)
+<iframe src="quizzes/lesson02_quiz.html" title="Knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 *Unlimited attempts, immediate feedback, not graded.*
 

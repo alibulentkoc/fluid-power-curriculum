@@ -76,8 +76,6 @@ $$ \boxed{\text{The safe (held) state is the default; only active, commanded pum
 
 <iframe src="demos/lesson05_failsafe.html" title="The complete fail-safe circuit — failure modes and protections" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_failsafe.html)
-
 Trigger each failure — burst hose, power loss, overload, runaway — and watch which component holds the line and what happens to the load. Notice that three of the four end at the counterbalance valve, and that the load stays safe in every case.
 
 ## 8. Coding Exercise
@@ -105,8 +103,6 @@ print("\nuncommanded (pump off, no pilot) held?", held(False, 0))
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="The complete fail-safe circuit — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. If the cap hose bursts, what holds the load, and why does its placement matter?
 2. On power loss mid-lift, what returns the directional valve to a safe state, and what keeps the load up?

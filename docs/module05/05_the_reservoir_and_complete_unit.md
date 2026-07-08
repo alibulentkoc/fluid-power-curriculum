@@ -81,8 +81,6 @@ $$ \boxed{V \approx 40\ \text{L},\ 4\ \text{min dwell};\ \text{sheds}\ \sim0.45\
 
 <iframe src="demos/lesson05_reservoir.html" title="Sizing the reservoir — volume, dwell, and cooling" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_reservoir.html)
-
 Set the reservoir volume and see the dwell time it buys and the heat its surface can shed, against the two heat loads — working (0.39 kW) and holding (1.9 kW). Find ~40 L: a comfortable 4-minute dwell that passively handles the working heat, but watch the hold heat stay stubbornly above the line — the demo shows exactly when an added cooler becomes unavoidable.
 
 ## 8. Coding Exercise
@@ -108,8 +106,6 @@ print("hold 1.9 kW ->", "OK" if P >= 1.9 else "needs a cooler")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="The reservoir and complete unit — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. Name the reservoir's four jobs beyond simply holding oil.
 2. What does the volume rule (3–5× flow) actually buy you?

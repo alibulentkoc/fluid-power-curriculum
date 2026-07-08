@@ -89,8 +89,6 @@ $$ \boxed{\text{tandem centre: }\sim0.08\ \text{kW hold heat vs }1.9\ \text{kW c
 
 <iframe src="demos/lesson02_dcv.html" title="The directional control valve — centre conditions" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_dcv.html)
-
 Slide the spool between raise, lower, and centre, and switch the centre condition between closed, tandem, and open. Watch what each does to the load (held or floating) and to the pump (deadheaded or unloaded), and see the hold heat swing from ~1.9 kW with a closed centre to ~0.08 kW with a tandem centre.
 
 ## 8. Coding Exercise
@@ -113,8 +111,6 @@ print(round(hold_heat_kW(115)/hold_heat_kW(5), 0), "x less with tandem")
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="The directional control valve — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. What single moving part routes the flow in a directional valve, and how?
 2. What does a valve's "centre condition" describe?

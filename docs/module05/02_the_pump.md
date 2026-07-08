@@ -87,8 +87,6 @@ $$ \boxed{D \approx 7.5\ \text{cm}^3/\text{rev (fixed-displacement gear pump)};\
 
 <iframe src="demos/lesson02_pump.html" title="Sizing the pump — displacement, speed, flow" style="width:100%;height:840px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_pump.html)
-
 Set the displacement and drive speed and watch the delivered flow. Find the pair that lands on 10 L/min — a small 7.5 cm³/rev pump at 1450 rpm — and see how a bigger scoop needs less speed and vice versa. Switch pump type and watch its pressure ceiling move against the platform's 100 bar operating point.
 
 ## 8. Coding Exercise
@@ -113,8 +111,6 @@ print(round(pump_flow(D, 1450) , 2))             # delivered check
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="The pump — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. Does a pump make pressure or flow? Where does pressure come from?
 2. What is a pump's "displacement," and how does it set the flow?

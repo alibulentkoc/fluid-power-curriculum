@@ -84,7 +84,7 @@ $$ T \approx 79.6\ \text{N}\,\text{m} $$
 
 ## 7. Interactive Demonstration
 
-[Open the demo in a new tab ↗](demos/lesson04_actuator_types.html)
+<iframe src="demos/lesson04_actuator_types.html" title="Interactive demonstration" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 Keep the power unit and pressure fixed, and swap the actuator. In **cylinder** mode you get a straight-line force that lifts the platform; in **motor** mode the same pressure becomes a torque that spins a drum. Watch the readout change from kN to N·m as the output changes from force to torque.
 
@@ -105,7 +105,7 @@ print(f"{T:.1f} N·m")                  # expect: 79.6 N·m
 
 ## 9. Knowledge Check
 
-[Open the knowledge check in a new tab ↗](quizzes/lesson04_quiz.html)
+<iframe src="quizzes/lesson04_quiz.html" title="Knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 *Unlimited attempts, immediate feedback, not graded.*
 

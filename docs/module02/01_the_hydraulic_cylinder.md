@@ -73,7 +73,7 @@ $$ V \approx 1.18\ \text{L} $$
 
 ## 7. Interactive Demonstration
 
-[Open the demo in a new tab ↗](demos/lesson01_cylinder.html)
+<iframe src="demos/lesson01_cylinder.html" title="Interactive demonstration" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 Set the stroke and watch the swept volume change — a longer stroke lifts higher but needs more fluid. Then switch between single- and double-acting on the return: single-acting drops the load on its own weight with no rod-side line, while double-acting drives it down through the rod port. Watch which port carries the fluid in each case.
 
@@ -95,7 +95,7 @@ print(f"{V*1000:.2f} L")           # expect: 1.18 L
 
 ## 9. Knowledge Check
 
-[Open the knowledge check in a new tab ↗](quizzes/lesson01_quiz.html)
+<iframe src="quizzes/lesson01_quiz.html" title="Knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 *Unlimited attempts, immediate feedback, not graded.*
 

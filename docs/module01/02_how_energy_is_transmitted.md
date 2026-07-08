@@ -78,7 +78,7 @@ $$ P \approx 1{,}660\ \text{W} \approx 1.66\ \text{kW} $$
 
 ## 7. Interactive Demonstration
 
-[Open the demo in a new tab ↗](demos/lesson02_energy_transmission.html)
+<iframe src="demos/lesson02_energy_transmission.html" title="Interactive demonstration" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 Drive the platform with the power unit. Raise the **flow** and watch the platform climb faster — flow is *how fast*. Raise the **pressure** and watch the gauge, not the speed — pressure is *how hard*. The power readout is their product. Predict before you drag: if you double the flow, what happens to the power delivered?
 
@@ -98,7 +98,7 @@ print(f"{P/1000:.2f} kW")   # expect: 1.66 kW
 
 ## 9. Knowledge Check
 
-[Open the knowledge check in a new tab ↗](quizzes/lesson02_quiz.html)
+<iframe src="quizzes/lesson02_quiz.html" title="Knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 *Unlimited attempts, immediate feedback, not graded.*
 

@@ -80,8 +80,6 @@ $$ \boxed{\text{Cap/return lines: size for 14.6 L/min (lowering); raise pump } \
 
 <iframe src="demos/lesson04_budget.html" title="Pressure and flow budget — raise, hold, lower" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_budget.html)
-
 Switch between raise, hold, and lower to read the flow and pressure on every line, with the worst-case line and the relief margin called out. Watch the cap and return lines peak in *lower*, and the pump pressure peak in *raise*.
 
 ## 8. Coding Exercise
@@ -108,8 +106,6 @@ print("raise pump:", p_load+losses, "bar   margin:", relief-(p_load+losses), "ba
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Pressure and flow budget — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. In which state do the cap and return lines carry their heaviest flow, and roughly how much?
 2. Why does the cap line expel more than the pump's 10 L/min while lowering?

@@ -1,2 +1,5 @@
-mkdocs-material>=9.5
-pymdown-extensions>=10.7
+# Pinned for reproducible builds — a new upstream release will NOT change or break the site.
+# Verified building with mkdocs build --strict on Python 3.12.
+mkdocs==1.6.1
+mkdocs-material==9.7.6
+pymdown-extensions==10.21.2

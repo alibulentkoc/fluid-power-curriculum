@@ -90,7 +90,7 @@ $$ F \approx 19.6\ \text{kN} \approx 2{,}000\ \text{kg of lift — two tonnes.} 
 
 ## 7. Interactive Demonstration
 
-[Open the demo in a new tab ↗](demos/lesson01_force_multiplier.html)
+<iframe src="demos/lesson01_force_multiplier.html" title="Interactive demonstration" style="width:100%;height:820px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 Push on a small piston and watch the force come out of a larger one. Change your push and the two piston sizes, and see how the **same pressure** on a **bigger area** makes a bigger force. Try to answer a question before you drag: if you double the large piston's diameter, does the output force double — or more? (Watch what the area does.) The demo is your intuition, made movable.
 
@@ -114,7 +114,7 @@ print(f"{F:.0f} N  (about {F/9.81:.0f} kg of lift)")   # expect: 19635 N (about 
 
 ## 9. Knowledge Check
 
-[Open the knowledge check in a new tab ↗](quizzes/lesson01_quiz.html)
+<iframe src="quizzes/lesson01_quiz.html" title="Knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
 *Unlimited attempts, immediate feedback, not graded — check that the idea landed.*
 

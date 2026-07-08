@@ -83,8 +83,6 @@ $$ \boxed{\text{cushion } 289\ \text{N at }1.5\ \text{bar} \quad\text{vs}\quad \
 
 <iframe src="demos/lesson04_cushioning.html" title="Cushioning — stopping force vs cushion length" style="width:100%;height:840px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_cushioning.html)
-
 Set the cushion length and watch the stopping force and deceleration. Shrink it toward a hard stop and the force rockets up the $1/L_c$ curve into the kilonewtons; stretch it and the stop becomes gentle. Compare extend and retract, and see the cushion pressure stay far below the 100 bar supply — a soft landing, by design.
 
 ## 8. Coding Exercise
@@ -111,8 +109,6 @@ for v in (0.085, 0.124):                 # extend, retract
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Cushioning — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. What does a cushion actually do to stop the piston gently?
 2. In $F = E_k/L_c$, what happens to the force if you halve the cushion length?

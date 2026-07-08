@@ -80,8 +80,6 @@ $$ \boxed{\text{Open loop: }68\text{ mm move, load } \approx 2000\text{ kg; hold
 
 <iframe src="demos/lesson05_interface.html" title="The driven-and-sensed platform — command in, measurements out" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson05_interface.html)
-
 Command a speed and run the clock: watch the position output climb and the pressure output report the load — the platform driven and sensed through one interface. Try to land on the target by command and timing alone, and see why, with the feedback path still open, you cannot reliably hold it.
 
 ## 8. Coding Exercise
@@ -112,8 +110,6 @@ target = 300
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson05_quiz.html" title="The driven-and-sensed platform — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson05_quiz.html)
 
 1. What is the platform's interface — which signal goes in, which come out?
 2. Why is treating the platform as a "plant" with defined inputs and outputs useful?

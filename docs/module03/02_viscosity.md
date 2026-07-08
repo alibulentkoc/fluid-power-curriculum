@@ -83,8 +83,6 @@ $$ \boxed{\text{ISO VG 46} — \text{stays } 13.2\text{–}79.5\ \text{cSt acros
 
 <iframe src="demos/lesson02_viscosity.html" title="Viscosity versus temperature — choosing the grade" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson02_viscosity.html)
-
 Pick a grade — VG 32, VG 46, or VG 68 — and sweep the temperature. Watch the viscosity ride up when cold and drop when hot, and see whether it stays inside the 13–80 cSt band across the 29–74 °C window. Only VG 46 threads the band from edge to edge; the others slip out at one end or the other.
 
 ## 8. Coding Exercise
@@ -112,8 +110,6 @@ for vg in (32, 46, 68):
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson02_quiz.html" title="Viscosity — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson02_quiz.html)
 
 1. In one phrase, what is viscosity?
 2. What does the "46" in ISO VG 46 tell you, exactly?

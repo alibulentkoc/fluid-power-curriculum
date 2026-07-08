@@ -82,8 +82,6 @@ $$ \boxed{\text{Sample ISO } 18/16/13 = \text{target} \;\checkmark \qquad (\ge 1
 
 <iframe src="demos/lesson04_cleanliness.html" title="ISO 4406 cleanliness — reading the code" style="width:100%;height:860px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
 
-[Open this demo in a new tab ↗](demos/lesson04_cleanliness.html)
-
 Dirty the oil or clean it up and watch the three ISO codes rise and fall. The reading meets **ISO 18/16/13** only when all three codes are at or below the target — and the ≥14 µm count is the first to fail. See how much filtration it takes to pull a dirty sample back into spec.
 
 ## 8. Coding Exercise
@@ -113,8 +111,6 @@ print(meets((4800, 1200, 190)))   # -> ((19,17,15), False)
 Formative — unlimited attempts, immediate feedback; does not affect your grade.
 
 <iframe src="quizzes/lesson04_quiz.html" title="Fluid cleanliness — knowledge check" style="width:100%;height:900px;border:1px solid #e2e8f0;border-radius:12px"></iframe>
-
-[Open this quiz in a new tab ↗](quizzes/lesson04_quiz.html)
 
 1. What do the three numbers in an ISO 4406 code like 18/16/13 count?
 2. Does a higher ISO code mean cleaner or dirtier oil?
