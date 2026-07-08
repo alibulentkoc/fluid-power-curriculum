@@ -66,10 +66,10 @@
       <text x="500" y="344" font-size="10.5" font-weight="700" fill="#586876">cap port</text>
       <g id="lifter" class="lifter">
         <rect id="piston" x="408" y="290" width="78" height="16" rx="3" fill="#1B3A55"/>
-        <rect x="437" y="214" width="20" height="76" fill="#5B6B79"/>
-        <rect x="372" y="200" width="150" height="14" rx="4" fill="#1B3A55"/>
-        <rect x="412" y="166" width="70" height="34" rx="5" fill="#DD841A"/>
-        <text x="447" y="188" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+        <rect x="437" y="120" width="20" height="170" fill="#5B6B79"/>
+        <rect x="372" y="106" width="150" height="14" rx="4" fill="#1B3A55"/>
+        <rect x="412" y="72" width="70" height="34" rx="5" fill="#DD841A"/>
+        <text x="447" y="94" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
       </g>
     </svg>
 
@@ -101,7 +101,7 @@
   const lifter=document.getElementById('lifter'),capFluid=document.getElementById('capFluid');
   const bRun=document.getElementById('bRun'),bReset=document.getElementById('bReset');
   const Q=10/60000, RHO=870, NU=32e-6, RUN_L=2.0, V_MAX=5.0, P_SYS=100;
-  const STROKE_MM=600, LIFT_PX=170, LIFT_T=7.07;
+  const STROKE_MM=600, LIFT_PX=64, LIFT_T=7.07;
 
   function metrics(){
     const d_mm=+D.value, d=d_mm/1000, A=Math.PI/4*d*d;

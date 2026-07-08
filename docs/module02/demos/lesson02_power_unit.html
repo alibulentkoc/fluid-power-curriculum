@@ -65,10 +65,10 @@
       <text x="500" y="376" font-size="10.5" font-weight="700" fill="#586876" text-anchor="start">cap port</text>
       <g id="lifter" class="lifter">
         <rect id="piston" x="408" y="320" width="78" height="16" rx="3" fill="#1B3A55"/>
-        <rect x="437" y="244" width="20" height="76" fill="#5B6B79"/>
-        <rect x="372" y="230" width="150" height="14" rx="4" fill="#1B3A55"/>
-        <rect x="412" y="196" width="70" height="34" rx="5" fill="#DD841A"/>
-        <text x="447" y="218" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+        <rect x="437" y="150" width="20" height="170" fill="#5B6B79"/>
+        <rect x="372" y="136" width="150" height="14" rx="4" fill="#1B3A55"/>
+        <rect x="412" y="102" width="70" height="34" rx="5" fill="#DD841A"/>
+        <text x="447" y="124" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
       </g>
     </svg>
 
@@ -93,7 +93,7 @@
   const Q=document.getElementById('q'),qVal=document.getElementById('qVal'),vOut=document.getElementById('vOut'),tOut=document.getElementById('tOut'),pOut=document.getElementById('pOut'),note=document.getElementById('note');
   const lifter=document.getElementById('lifter'),capFluid=document.getElementById('capFluid');
   const bRun=document.getElementById('bRun'),bReset=document.getElementById('bReset');
-  const BORE=0.050, A=Math.PI/4*BORE*BORE, PRES=1e7, STROKE_MM=600, LIFT_PX=134;
+  const BORE=0.050, A=Math.PI/4*BORE*BORE, PRES=1e7, STROKE_MM=600, LIFT_PX=90;
   let lastTime=7.07;
 
   function metrics(){

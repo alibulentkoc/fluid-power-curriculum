@@ -59,10 +59,10 @@
 
       <g id="lifter" class="lifter">
         <rect id="piston" x="366" y="320" width="98" height="16" rx="3" fill="#1B3A55"/>
-        <rect x="405" y="240" width="20" height="80" fill="#5B6B79"/>
-        <rect x="330" y="226" width="170" height="14" rx="4" fill="#1B3A55"/>
-        <rect x="378" y="192" width="74" height="34" rx="5" fill="#DD841A"/>
-        <text x="415" y="214" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
+        <rect x="405" y="150" width="20" height="170" fill="#5B6B79"/>
+        <rect x="330" y="136" width="170" height="14" rx="4" fill="#1B3A55"/>
+        <rect x="378" y="102" width="74" height="34" rx="5" fill="#DD841A"/>
+        <text x="415" y="124" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',monospace">2 t</text>
       </g>
 
       <g id="gravity" style="display:none">
@@ -98,7 +98,7 @@
   const lifter=document.getElementById('lifter'),capFluid=document.getElementById('capFluid'),rodFluid=document.getElementById('rodFluid');
   const capHose=document.getElementById('capHose'),rodHose=document.getElementById('rodHose'),rodPortLbl=document.getElementById('rodPortLbl'),gravity=document.getElementById('gravity');
   const bExt=document.getElementById('bExt'),bRet=document.getElementById('bRet'),bDouble=document.getElementById('bDouble'),bSingle=document.getElementById('bSingle');
-  const BORE=0.050, MAXPX=150, MAXMM=700;
+  const BORE=0.050, MAXPX=95, MAXMM=700;
   let extended=true, dbl=true;
 
   function update(){

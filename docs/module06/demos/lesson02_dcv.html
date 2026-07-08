@@ -67,13 +67,13 @@
 <script>
   const $=id=>document.getElementById(id);
   let spool='centre', centre='tandem';
-  function place(px,capW,rodW){ $('piston').setAttribute('x',px); $('rod').setAttribute('x',px+14); $('rod').setAttribute('width',Math.max(4,460-(px+14))); $('load').setAttribute('x',px+14+Math.max(4,460-(px+14))); $('capFill').setAttribute('width',capW); }
+  function place(px,capW){ const ROD_W=146; $('piston').setAttribute('x',px); $('rod').setAttribute('x',px+14); $('rod').setAttribute('width',ROD_W); $('load').setAttribute('x',px+14+ROD_W); $('capFill').setAttribute('width',capW); }
   function setSpool(s,b){ spool=s; [['bRaise','raise'],['bCentre','centre'],['bLower','lower']].forEach(([id,v])=>$(id).classList.toggle('active',v===s)); render(); }
   function setCentre(c,b){ centre=c; [['bClosed','closed'],['bTandem','tandem'],['bOpen','open']].forEach(([id,v])=>$(id).classList.toggle('active',v===c)); render(); }
   function render(){
     let route,pump,load,heat,px;
     if(spool==='raise'){ route='raise: P→A · B→T'; pump='working'; load='rising'; heat=null; px=380; }
-    else if(spool==='lower'){ route='lower: P→B · A→T'; pump='working'; load='lowering'; heat=null; px=210; }
+    else if(spool==='lower'){ route='lower: P→B · A→T'; pump='working'; load='lowering'; heat=null; px=240; }
     else { // centre
       px=300;
       if(centre==='closed'){ route='closed: all ports blocked'; pump='deadheads → relief'; load='held'; heat=1.92; }
