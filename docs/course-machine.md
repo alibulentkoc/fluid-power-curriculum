@@ -32,7 +32,6 @@ Each module picks up the same platform and adds one layer of capability. The thr
 8. **Electrohydraulics** — adding electrical control and sensing.
 9. **Modelling and simulation** — predicting the machine's behaviour.
 10. **Control systems** — closing the loop for precise positioning.
-11. **Digital models** — a virtual counterpart of the real platform.
-12. **Fluid-powered physical AI** — autonomy built on top of the machine.
+11. **The live digital model** — a validated model running beside the real platform, monitoring its health.
 
 Open **[Module 01](module01/index.md)** to begin.

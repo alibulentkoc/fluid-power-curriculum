@@ -32,7 +32,15 @@ Each lesson also carries an **AI Learning Companion** (prompts to go deeper) and
 | Module | Title | Status |
 |--------|-------|--------|
 | 01 | Introduction to Fluid Power | Complete — 4 lessons |
-| 02 | Fluid Power Components | In progress — 2 of 4 lessons |
-| 03–12 | Fluid, actuators, power units, valves, circuits, electrohydraulics, simulation, control, digital models, physical AI | Planned |
+| 02 | Fluid Power Components | Complete — 4 lessons |
+| 03 | Fluid Fundamentals | Complete — 4 lessons |
+| 04 | Actuators | Complete — 5 lessons |
+| 05 | Power Units | Complete — 5 lessons |
+| 06 | Valves & Control | Complete — 5 lessons |
+| 07 | Circuits | Complete — 5 lessons |
+| 08 | Electrohydraulic Control | Complete — 5 lessons |
+| 09 | Modeling & Simulation | Complete — 5 lessons |
+| 10 | Control Systems | Complete — 5 lessons |
+| 11 | The Live Digital Model | Complete — 5 lessons |
 
 Start with **[The Course Machine](course-machine.md)** to meet the platform every lesson is building, then open **[Module 01](module01/index.md)**.
