@@ -15,6 +15,7 @@
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(12,34,53,.06)}
   svg{display:block;width:100%;height:auto;background:#F2F6F9;border:1px solid var(--line);border-radius:12px}
   .lifter{transition:transform 7s linear}
+  #dcvBody{transition:transform .5s ease}
   #capFluid{transition:none}
   .flow{transition:stroke .25s, stroke-width .25s}
   .toggle{display:flex;gap:8px;margin-top:16px}
@@ -68,6 +69,7 @@
       <text x="229" y="383" font-size="8" font-weight="700" fill="#B5670F" text-anchor="middle">relief</text>
 
       <!-- DIRECTIONAL CONTROL VALVE (4/3, closed centre) -->
+      <g id="dcvBody">
       <rect x="251" y="250" width="34" height="40" fill="#fff" stroke="#0E7E8C" stroke-width="1.8"/>
       <rect id="dcv" x="285" y="250" width="34" height="40" fill="#fff" stroke="#0E7E8C" stroke-width="2.5"/>
       <rect x="319" y="250" width="34" height="40" fill="#fff" stroke="#0E7E8C" stroke-width="1.8"/>
@@ -85,6 +87,7 @@
       <!-- solenoid + spring ends -->
       <rect x="233" y="261" width="16" height="18" fill="#fff" stroke="#1B3A55" stroke-width="1.3"/><line x1="233" y1="279" x2="249" y2="261" stroke="#1B3A55" stroke-width="1"/>
       <rect x="355" y="261" width="16" height="18" fill="#fff" stroke="#1B3A55" stroke-width="1.3"/><line x1="355" y1="261" x2="371" y2="279" stroke="#1B3A55" stroke-width="1"/>
+      </g>
       <!-- port letters -->
       <text x="294" y="246" font-size="8.5" font-weight="700" fill="#0B5A63" text-anchor="middle">B</text>
       <text x="310" y="246" font-size="8.5" font-weight="700" fill="#0B5A63" text-anchor="middle">A</text>
@@ -134,7 +137,7 @@
 </div>
 
 <script>
-  const lifter=document.getElementById('lifter'), capFluid=document.getElementById('capFluid');
+  const lifter=document.getElementById('lifter'), capFluid=document.getElementById('capFluid'), dcvBody=document.getElementById('dcvBody');
   const statusOut=document.getElementById('statusOut'), valveOut=document.getElementById('valveOut'), note=document.getElementById('note');
   const bRaise=document.getElementById('bRaise'), bHold=document.getElementById('bHold'), bLower=document.getElementById('bLower');
   const pPath=document.getElementById('pPath'), aPath=document.getElementById('aPath'), bPath=document.getElementById('bPath'), rPath=document.getElementById('rPath');
@@ -145,21 +148,21 @@
     if(a==='raise'){ pPath.setAttribute('stroke',LIVE); aPath.setAttribute('stroke',LIVE); rPath.setAttribute('stroke',LIVE); }
     else if(a==='lower'){ pPath.setAttribute('stroke',LIVE); bPath.setAttribute('stroke',LIVE); rPath.setAttribute('stroke',LIVE); } }
   function raise(){
-    setActive(bRaise); statusOut.textContent='Raising'; valveOut.textContent='P\u2192A (cap)'; paint('raise');
+    setActive(bRaise); statusOut.textContent='Raising'; valveOut.textContent='P\u2192A (cap)'; paint('raise'); dcvBody.style.transform='translateX(34px)';
     lifter.style.transitionDuration=T+'s'; lifter.style.transform='translateY(-'+LIFT+'px)';
     capFluid.style.transition='y '+T+'s linear, height '+T+'s linear';
     capFluid.setAttribute('y', CAP_Y0-LIFT); capFluid.setAttribute('height', CAP_H0+LIFT);
     note.textContent='Raising: the valve routes the pump\u2019s flow to the cap side. Oil fills the cap chamber below the piston and the rod extends, lifting the load.';
   }
   function lower(){
-    setActive(bLower); statusOut.textContent='Lowering'; valveOut.textContent='P\u2192B (rod)'; paint('lower');
+    setActive(bLower); statusOut.textContent='Lowering'; valveOut.textContent='P\u2192B (rod)'; paint('lower'); dcvBody.style.transform='translateX(-34px)';
     lifter.style.transitionDuration=T+'s'; lifter.style.transform='translateY(0px)';
     capFluid.style.transition='y '+T+'s linear, height '+T+'s linear';
     capFluid.setAttribute('y', CAP_Y0); capFluid.setAttribute('height', CAP_H0);
     note.textContent='Lowering: the valve routes flow to the rod side, driving the piston back down so the load descends under control.';
   }
   function hold(){
-    setActive(bHold); statusOut.textContent='Holding'; valveOut.textContent='closed'; paint('hold');
+    setActive(bHold); statusOut.textContent='Holding'; valveOut.textContent='closed'; paint('hold'); dcvBody.style.transform='translateX(0px)';
     try{ const m=new DOMMatrixReadOnly(getComputedStyle(lifter).transform); lifter.style.transitionDuration='0s'; lifter.style.transform='translateY('+(m.m42||0)+'px)'; }
     catch(e){ lifter.style.transitionDuration='0s'; }
     capFluid.style.transition='none';

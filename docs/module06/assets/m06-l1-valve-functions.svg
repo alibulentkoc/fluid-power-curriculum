@@ -15,8 +15,8 @@
 <text x="110" y="320" font-size="9.5" font-weight="700" fill="#0B5A63" text-anchor="middle">P</text>
 <text x="210" y="320" font-size="9.5" font-weight="700" fill="#586876" text-anchor="middle">T</text>
 <line x1="110" y1="304" x2="110" y2="258" stroke="#0E7E8C" stroke-width="3.5" marker-end="url(#tm)"/>
-<line x1="116" y1="266" x2="76" y2="156" stroke="#0E7E8C" stroke-width="3.5" marker-end="url(#tm)"/>
-<line x1="224" y1="156" x2="204" y2="266" stroke="#8AA0AE" stroke-width="3.5" marker-end="url(#gm)"/>
+<line x1="116" y1="250" x2="76" y2="154" stroke="#0E7E8C" stroke-width="3.5" marker-end="url(#tm)"/>
+<line x1="224" y1="154" x2="204" y2="250" stroke="#8AA0AE" stroke-width="3.5" marker-end="url(#gm)"/>
 <line x1="210" y1="258" x2="210" y2="304" stroke="#8AA0AE" stroke-width="3.5" marker-end="url(#gm)"/>
 <text x="450" y="94" font-size="13" font-weight="700" fill="#1B3A55" text-anchor="middle">LOWER — P→B, A→T</text>
 <rect x="350" y="110" width="180" height="44" rx="5" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/>
@@ -30,8 +30,8 @@
 <text x="400" y="320" font-size="9.5" font-weight="700" fill="#0B5A63" text-anchor="middle">P</text>
 <text x="500" y="320" font-size="9.5" font-weight="700" fill="#586876" text-anchor="middle">T</text>
 <line x1="400" y1="304" x2="400" y2="258" stroke="#0E7E8C" stroke-width="3.5" marker-end="url(#tm)"/>
-<line x1="406" y1="266" x2="514" y2="156" stroke="#0E7E8C" stroke-width="3.5" marker-end="url(#tm)"/>
-<line x1="366" y1="156" x2="494" y2="266" stroke="#8AA0AE" stroke-width="3.5" marker-end="url(#gm)"/>
+<line x1="406" y1="250" x2="514" y2="154" stroke="#0E7E8C" stroke-width="3.5" marker-end="url(#tm)"/>
+<line x1="366" y1="154" x2="494" y2="250" stroke="#8AA0AE" stroke-width="3.5" marker-end="url(#gm)"/>
 <line x1="500" y1="258" x2="500" y2="304" stroke="#8AA0AE" stroke-width="3.5" marker-end="url(#gm)"/>
 <text x="740" y="94" font-size="13" font-weight="700" fill="#1B3A55" text-anchor="middle">HOLD — centre blocked</text>
 <rect x="640" y="110" width="180" height="44" rx="5" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/>
@@ -43,9 +43,9 @@
 <rect x="650" y="250" width="180" height="54" rx="6" fill="#FFFFFF" stroke="#1B3A55" stroke-width="2"/>
 <text x="690" y="320" font-size="9.5" font-weight="700" fill="#0B5A63" text-anchor="middle">P</text>
 <text x="790" y="320" font-size="9.5" font-weight="700" fill="#586876" text-anchor="middle">T</text>
-<line x1="656" y1="156" x2="656" y2="250" stroke="#B9C7D1" stroke-width="3"/>
+<line x1="656" y1="154" x2="656" y2="250" stroke="#B9C7D1" stroke-width="3"/>
 <line x1="648" y1="244" x2="664" y2="244" stroke="#C2463B" stroke-width="3"/>
-<line x1="804" y1="156" x2="804" y2="250" stroke="#B9C7D1" stroke-width="3"/>
+<line x1="804" y1="154" x2="804" y2="250" stroke="#B9C7D1" stroke-width="3"/>
 <line x1="796" y1="244" x2="812" y2="244" stroke="#C2463B" stroke-width="3"/>
 <text x="740" y="282" font-size="11" font-weight="700" fill="#9A2f27" text-anchor="middle">all ports blocked</text>
 <rect x="40" y="345" width="820" height="112" rx="12" fill="#FFFFFF" stroke="#D3DDE6"/>
