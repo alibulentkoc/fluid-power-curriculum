@@ -72,7 +72,7 @@
   const $=id=>document.getElementById(id);
   let cmd='raise';
   const flow=A=>Cd*(A*1e-6)*Math.sqrt(2*dP/rho)*60000;   // L/min
-  function place(px){ $('piston').setAttribute('x',px); $('rod').setAttribute('x',px+14); $('rod').setAttribute('width',Math.max(4,460-(px+14))); $('load').setAttribute('x',px+14+Math.max(4,460-(px+14))); $('capFill').setAttribute('width',px-182); }
+  function place(px){ const ROD_W=194; $('piston').setAttribute('x',px); $('rod').setAttribute('x',px+14); $('rod').setAttribute('width',ROD_W); $('load').setAttribute('x',px+14+ROD_W); $('capFill').setAttribute('width',px-182); }
   function setCmd(c,btn){ cmd=c; for(const b of [$('bRaise'),$('bLower'),$('bHold')]) b.classList.toggle('active',b===btn); render(); }
   function render(){
     const A=+$('openRange').value, Q=cmd==='hold'?0:flow(A);
@@ -83,7 +83,7 @@
     $('lineA').setAttribute('stroke', cmd==='raise'?'#0E7E8C':cmd==='lower'?'#8AA0AE':'#B9C7D1');
     $('lineB').setAttribute('stroke', cmd==='lower'?'#0E7E8C':cmd==='raise'?'#8AA0AE':'#B9C7D1');
     // piston target: raise -> extended (right), lower -> retracted (left), hold -> mid
-    place(cmd==='raise'?380:cmd==='lower'?210:300);
+    place(cmd==='raise'?380:cmd==='lower'?252:300);
     $('note').innerHTML = cmd==='hold'
       ? 'Centre position: all four ports blocked, so the trapped oil holds the load — no flow, whatever the opening.'
       : `${cmd==='raise'?'Raising':'Lowering'}: the valve routes <b>${route}</b>, metering <b>${Q.toFixed(1)} L/min</b> through a ${A.toFixed(1)} mm² opening. Wider opening → more flow → faster.`;

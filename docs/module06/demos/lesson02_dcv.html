@@ -73,9 +73,9 @@
   function render(){
     let route,pump,load,heat,px;
     if(spool==='raise'){ route='raise: P→A · B→T'; pump='working'; load='rising'; heat=null; px=380; }
-    else if(spool==='lower'){ route='lower: P→B · A→T'; pump='working'; load='lowering'; heat=null; px=240; }
+    else if(spool==='lower'){ route='lower: P→B · A→T'; pump='working'; load='lowering'; heat=null; px=300; }
     else { // centre
-      px=300;
+      px=340;
       if(centre==='closed'){ route='closed: all ports blocked'; pump='deadheads → relief'; load='held'; heat=1.92; }
       else if(centre==='tandem'){ route='tandem: P→T · A,B blocked'; pump='unloaded'; load='held'; heat=0.08; }
       else { route='open: all ports → T'; pump='unloaded'; load='floating'; heat=0.08; }
